@@ -1,0 +1,4 @@
+../Drivers/HW/MySAIadapter.c:14:6:saiAdapter_Init	16	static,ignoring_inline_asm
+../Drivers/HW/MySAIadapter.c:41:9:saiAdapter_getNextSample	0	static
+../Drivers/HW/MySAIadapter.c:50:6:saiAdapter_setNextSample	0	static
+../Drivers/HW/MySAIadapter.c:58:21:saiAdapterCheckUpdate	0	static

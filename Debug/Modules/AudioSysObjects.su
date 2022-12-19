@@ -1,0 +1,8 @@
+../Modules/AudioSysObjects.cpp:64:6:virtual void AudioSys::includeModules()	0	static
+../Modules/AudioSysObjects.cpp:79:6:virtual void AudioSys::init()	8	static
+../Modules/../Modules/../Modules/mixer/Mixer.hpp:18:2:Mixer::Mixer(Parameter*)	0	static
+../Modules/../Modules/../Modules/../Modules/libModules/Wire.hpp:42:7:void Wire::Plug()	0	static
+../Modules/AudioSysObjects.cpp:108:1:void __static_initialization_and_destruction_0(int, int)	24	static
+../Modules/AudioSysObjects.cpp:88:6:void HAL_SAI_RxHalfCpltCallback(SAI_HandleTypeDef*)	8	static
+../Modules/AudioSysObjects.cpp:99:6:void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef*)	8	static
+../Modules/AudioSysObjects.cpp:108:1:cpp)	8	static

@@ -1,0 +1,2 @@
+../TouchGFX/generated/fonts/src/Table_verdana_10_4bpp.cpp:25:160:void __tcf_0()	0	static
+../TouchGFX/generated/fonts/src/Table_verdana_10_4bpp.cpp:23:26:touchgfx::GeneratedFont& getFont_verdana_10_4bpp()	56	static

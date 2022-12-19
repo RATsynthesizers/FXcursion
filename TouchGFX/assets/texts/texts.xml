@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextDatabase xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="texts.xsd" Version="4.20.0">
+  <Languages>
+    <Language Id="GB" />
+  </Languages>
+  <Texts>
+    <TextGroup Id="Group1" />
+    <TextGroup Id="Unsorted">
+      <Text Id="__SingleUse_8ZFJ" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">wow</Translation>
+      </Text>
+      <Text Id="__SingleUse_O00W" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">such</Translation>
+      </Text>
+      <Text Id="__SingleUse_6OX8" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">cool</Translation>
+      </Text>
+      <Text Id="__SingleUse_YDVI" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">interface</Translation>
+      </Text>
+      <Text Id="__SingleUse_32DX" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">oh my</Translation>
+      </Text>
+      <Text Id="__SingleUse_5MF9" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">mission</Translation>
+      </Text>
+      <Text Id="__SingleUse_DAL9" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">complete</Translation>
+      </Text>
+      <Text Id="__SingleUse_259E" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">subMenu 1</Translation>
+      </Text>
+      <Text Id="__SingleUse_LVER" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">subMenu 2</Translation>
+      </Text>
+      <Text Id="__SingleUse_NSA5" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">subMenu 3</Translation>
+      </Text>
+      <Text Id="__SingleUse_RQ47" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">subMenu 4</Translation>
+      </Text>
+      <Text Id="__SingleUse_2I6G" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">subMenu 5</Translation>
+      </Text>
+      <Text Id="__SingleUse_MY87" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">subMenu 6</Translation>
+      </Text>
+      <Text Id="__SingleUse_4NKK" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">subMenu 7</Translation>
+      </Text>
+      <Text Id="__SingleUse_F9UR" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">Menu 7</Translation>
+      </Text>
+      <Text Id="__SingleUse_OIYE" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">Menu 6</Translation>
+      </Text>
+      <Text Id="__SingleUse_R3UE" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">Menu 5</Translation>
+      </Text>
+      <Text Id="__SingleUse_LXBN" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">Menu 4</Translation>
+      </Text>
+      <Text Id="__SingleUse_NECP" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">Menu 3</Translation>
+      </Text>
+      <Text Id="__SingleUse_9Q39" Alignment="Center" TypographyId="Large">
+        <Translation Language="GB">Menu 2</Translation>
+      </Text>
+      <Text Id="__SingleUse_N1EQ" Alignment="Left" TypographyId="Large">
+        <Translation Language="GB">Menu 1</Translation>
+      </Text>
+    </TextGroup>
+  </Texts>
+  <Typographies>
+    <Typography Id="Default" Font="verdana.ttf" Size="20" Bpp="4" Direction="LTR" FallbackCharacter="?" />
+    <Typography Id="Large" Font="verdana.ttf" Size="40" Bpp="4" Direction="LTR" FallbackCharacter="?" />
+    <Typography Id="Small" Font="verdana.ttf" Size="10" Bpp="4" Direction="LTR" FallbackCharacter="?" />
+  </Typographies>
+</TextDatabase>

@@ -1,0 +1,15 @@
+../Middlewares/ST/touchgfx/framework/include/mvp/Presenter.hpp:37:18:virtual void touchgfx::Presenter::activate()	0	static
+../Middlewares/ST/touchgfx/framework/include/mvp/Presenter.hpp:47:18:virtual void touchgfx::Presenter::deactivate()	0	static
+../Middlewares/ST/touchgfx/framework/include/mvp/Presenter.hpp:52:13:touchgfx::Presenter::~Presenter()	0	static
+../TouchGFX/gui/src/screen1_1_screen/Screen1_1Presenter.cpp:10:6:virtual void Screen1_1Presenter::activate()	0	static
+../TouchGFX/gui/src/screen1_1_screen/Screen1_1Presenter.cpp:15:6:virtual void Screen1_1Presenter::deactivate()	0	static
+../TouchGFX/gui/src/screen1_1_screen/Screen1_1Presenter.cpp:20:6:virtual void Screen1_1Presenter::scrollWindow(int8_t)	8	static
+../TouchGFX/gui/src/screen1_1_screen/Screen1_1Presenter.cpp:25:6:virtual void Screen1_1Presenter::changeScreenRight()	0	static
+../TouchGFX/gui/src/screen1_1_screen/Screen1_1Presenter.cpp:35:6:virtual void Screen1_1Presenter::parameterChange()	0	static
+../TouchGFX/gui/include/gui/screen1_1_screen/Screen1_1Presenter.hpp:11:7:Screen1_1Presenter::~Screen1_1Presenter()	0	static
+../Middlewares/ST/touchgfx/framework/include/mvp/Presenter.hpp:52:13:virtual touchgfx::Presenter::~Presenter()	8	static
+../TouchGFX/gui/include/gui/screen1_1_screen/Screen1_1Presenter.hpp:11:7:virtual Screen1_1Presenter::~Screen1_1Presenter()	8	static
+../TouchGFX/gui/src/screen1_1_screen/Screen1_1Presenter.cpp:30:6:virtual void Screen1_1Presenter::changeScreenLeft()	8	static
+../TouchGFX/gui/include/gui/screen1_1_screen/Screen1_1Presenter.hpp:11:7:virtual void* Screen1_1Presenter::_ZThn4_N18Screen1_1PresenterD1Ev()	0	static
+../TouchGFX/gui/include/gui/screen1_1_screen/Screen1_1Presenter.hpp:11:7:virtual void* Screen1_1Presenter::_ZThn4_N18Screen1_1PresenterD0Ev()	8	static
+../TouchGFX/gui/src/screen1_1_screen/Screen1_1Presenter.cpp:4:1:Screen1_1Presenter::Screen1_1Presenter(Screen1_1View&)	4	static
