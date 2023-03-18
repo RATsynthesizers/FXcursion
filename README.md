@@ -5,17 +5,19 @@ A guitar processor based on STM32H743VITX. Currently in prototype phase.
 
 ## Features
 
-- **A powerful mixer with 3 stereo inputs and outputs.** Easily integrate your
-  guitar with other instruments and equipment.
+- **A powerful mixer with 3 stereo inputs and outputs.** \
+  Easily integrate your guitar with other instruments and equipment.
 
-- **Built-in looper and recording capabilities.** Capture your musical ideas on
-  the spot and save them to the included SD-card.
+- **Built-in looper and recording capabilities.** \
+	Capture your musical ideas on the spot and save them to the included SD-card.
 
-- **Dynamic effects chain.** Arrange reverb, chorus, distortion, flanger, and
-  more effects in any order you choose.
+- **Dynamic effects chain.** \
+	Arrange reverb, chorus, distortion, flanger, and more effects in any order
+  you choose.
 
-- **Intuitive interface that's out of your way.** Easily adjust parameters and
-  fine-tune your sound while staying focused on your music.
+- **Intuitive interface that's out of your way.** \
+	Easily adjust parameters and fine-tune your sound while staying focused on
+  your music.
 
 - **Separate visualization display** that shows your current waveform and
   preset names.
