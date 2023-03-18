@@ -1,4 +1,4 @@
-# ProtoStack_H743VI_V0.2
+# FXcursion
 
 A guitar processor based on STM32H743VITX. Currently in prototype phase.
 
@@ -6,7 +6,7 @@ A guitar processor based on STM32H743VITX. Currently in prototype phase.
 ## Getting started
 
 ```
-git clone https://github.com/Predtech4/ProtoStack_H743VI_V0.2.git
+git clone https://github.com/Predtech4/FXcursion.git
 ```
 
 We use [STM32CubeIDE][] for development. Building from command line (or other
