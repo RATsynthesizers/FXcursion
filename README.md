@@ -9,7 +9,7 @@ A guitar processor based on STM32H743VITX. Currently in prototype phase.
   Easily integrate your guitar with other instruments and equipment.
 
 - **Built-in looper and recording capabilities.** \
-	Capture your musical ideas on the spot and save them to the included SD-card.
+	Capture your musical ideas on the spot and save them to an SD-card.
 
 - **Dynamic effects chain.** \
 	Arrange reverb, chorus, distortion, flanger, and more effects in any order
