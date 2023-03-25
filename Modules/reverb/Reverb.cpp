@@ -7,8 +7,10 @@
 
 #include "../../Modules/reverb/Reverb.hpp"
 
-void Reverb::process(void) {
-	for (u8 lr = 0; lr < STEREO; lr++) {
+void Reverb::process(void)
+{
+	for (u8 lr = 0; lr < STEREO; lr++)
+	{
 		u8 rl = !(lr); 			// inverse
 
 		for (u8 k = 0; k < REV_ALLP; k++) {
@@ -32,5 +34,3 @@ void Reverb::process(void) {
 		this->output[lr] = ( APs[lr][REV_ALLP-1].out * dryWet->val ) + ( *input[lr][0] * ( 1 - dryWet->val ) );
 	}
 }
-
-

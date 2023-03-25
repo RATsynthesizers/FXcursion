@@ -80,18 +80,6 @@ static void MPU_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
-//void WriteFile(char const* filename, char* buffer, size_t size)
-//{
-//    FIL file;
-//    FATFS fs;
-//    UINT bw;
-//    __IO FRESULT fr;
-//    fr = f_mount(&fs, "0:/", 3);
-//    fr = f_open(&file, filename, FA_WRITE | FA_CREATE_ALWAYS);
-//    fr = f_write(&file, buffer, size, &bw);
-//    fr = f_close(&file);
-//}
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -153,72 +141,12 @@ int main(void) {
 	MX_TouchGFX_PreOSInit();
 	/* USER CODE BEGIN 2 */
 
-//  __IO HAL_SD_CardStateTypeDef state;
-//
-//  HAL_SD_InitCard(&hsd1);
-//  HAL_Delay(1);
-//  if(HAL_SD_Erase(&hsd1, 0, 512)  == HAL_OK)
-//  	  while(HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER) {}
-//
-//  __IO uint32_t time = HAL_GetTick();
-//  if(HAL_SD_WriteBlocks(&hsd1, txData, BlockAdd, NumberOfBlocks, 20)  == HAL_OK)
-//	  while(HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER) {}
-//  time = HAL_GetTick() - time;
-//
-//  time = HAL_GetTick();
-//  if(HAL_SD_ReadBlocks(&hsd1, rxData, BlockAdd, NumberOfBlocks, 20)  == HAL_OK)
-//  	  while(HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER) {}
-//  time = HAL_GetTick() - time;
-
-//  WriteFile("0:/test.txt", "hello", 5);
-
-//	 HAL_SD_CardInfoTypeDef info;
-//
-//	 HAL_SD_GetCardInfo(&hsd1, &info);
-	////////////////////////////////////////////////
-//	if(f_mount(&SDFatFS, (TCHAR const*)SDPath, 0) != FR_OK)
-//	{
-//		Error_Handler();
-//	}
-//	else
-//	{
-//		if(f_mkfs((TCHAR const*)SDPath, FM_ANY, 0, rtext, sizeof(rtext)) != FR_OK)
-//	    {
-//			Error_Handler();
-//	    }
-//		else
-//		{
-//			//Open file for writing (Create)
-//			if(f_open(&SDFile, "STM32.TXT", FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
-//			{
-//				Error_Handler();
-//			}
-//			else
-//			{
-//
-//				//Write to the text file
-//				res = f_write(&SDFile, (void *)wtext, strlen((char *)wtext), (UINT *)&byteswritten);
-//				if((byteswritten == 0) || (res != FR_OK))
-//				{
-//					Error_Handler();
-//				}
-//				else
-//				{
-//
-//					f_close(&SDFile);
-//				}
-//			}
-//		}
-//	}
-//	f_mount(&SDFatFS, (TCHAR const*)NULL, 0);
-	///////////////////////////////////////////////////////
-
 	HAL_TIM_Base_Start_IT(&htim1);
 	UIadapter_Init(&UIadapterReg);
 
 	ili9341_Init();
-	ili9341_FillScreen(MAGENTA);
-	HAL_Delay(500);
+//	ili9341_FillScreen(MAGENTA);
+//	HAL_Delay(500);
 
 	for (int i = 0; i < BUTTONS_NUM; i++)
 		buttons[i]->update();

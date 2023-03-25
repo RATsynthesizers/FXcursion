@@ -46,7 +46,7 @@ typedef enum {
 } UIObject_Option;
 
 typedef enum {
-	MODULE_AMP, MODULE_REVERB
+	MODULE_MIX, MODULE_REVERB
 } AudioModule_Option;
 
 typedef enum {

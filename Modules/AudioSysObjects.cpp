@@ -13,9 +13,9 @@ IN_RAMD1 Parameter paramAlloc[MAX_SYNTH_PARAMS];
 
 //
 //
-//                             -->[rev]--
-//  	            -->[amp1]--|
-//[SAI1]->[input1]--|          -->[output1]-->[SAI1]
+//                             -->[rev]--|
+//  	            -->[mix1]--|
+//[SAI1]->[input1]--|          			 -->[output1]-->[SAI1]
 //  	            -->
 //
 //
@@ -48,13 +48,13 @@ IN_RAMD1 Wire looperWireOut(&looper, &inputMixer);
 //
 //	IN_RAMD1 Amp amp5(paramAlloc);
 //	IN_RAMD1 Wire amp4_2amp5(&amp4, &amp5);
-
+//
 //	IN_RAMD1 Reverb rev1(paramAlloc);
 //	IN_RAMD1 Wire amp5_2rev1(&amp1, &rev1);
-
+//
 //	IN_RAMD1 Reverb rev2(paramAlloc);
 //	IN_RAMD1 Wire rev1_2rev2(&rev1, &rev2);
-
+//
 //	IN_RAMD1 Reverb rev3(paramAlloc);
 //	IN_RAMD1 Wire rev2_2rev3(&rev2, &rev3);
 
