@@ -32,19 +32,19 @@ Screen1_1ViewBase::Screen1_1ViewBase()
 void Screen1_1ViewBase::setupScreen()
 {
 	for (int i = 0; i < NUMBER_OF_OPTIONS; i++)
+	{
+		if(currentMenuPos == i)
 		{
-			if(currentMenuPos == i)
-			{
-				MenuBoxes[i].setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
-				MenuTexts[i].setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-			}
-			else
-			{
-				MenuBoxes[i].setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
-				MenuTexts[i].setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
-			}
-
-			MenuBoxes[i].invalidate();
-			MenuTexts[i].invalidate();
+			MenuBoxes[i].setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
+			MenuTexts[i].setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
 		}
+		else
+		{
+			MenuBoxes[i].setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+			MenuTexts[i].setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
+		}
+
+		MenuBoxes[i].invalidate();
+		MenuTexts[i].invalidate();
+	}
 }

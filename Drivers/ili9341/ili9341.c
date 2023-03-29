@@ -333,9 +333,9 @@ void ili9341_DrawBitmap_8bit(const uint8_t * colors, uint16_t w,uint16_t h) {
 	}
 }
 
-uint16_t ili9341_GetRandColor(void) {
-	return HAL_RNG_GetRandomNumber(&hrng) & 0x0000FFFF;
-}
+//uint16_t ili9341_GetRandColor(void) {
+//	return HAL_RNG_GetRandomNumber(&hrng) & 0x0000FFFF;
+//}
 
 void ili9341_Test_BlinkRandColor_3000(void) {
 	for (int i = 0; i < 3000; i++) {
@@ -411,12 +411,12 @@ void ili9341_DrawLine(uint16_t color, uint16_t x1, uint16_t y1, uint16_t x2,	uin
 }
 
 
-void ili9341_DrawRandomLine(void) {
-	ili9341_DrawLine(ili9341_GetRandColor(), HAL_RNG_GetRandomNumber(&hrng) % 240,
-			HAL_RNG_GetRandomNumber(&hrng) % 320,
-			HAL_RNG_GetRandomNumber(&hrng) % 240,
-			HAL_RNG_GetRandomNumber(&hrng) % 320);
-}
+//void ili9341_DrawRandomLine(void) {
+//	ili9341_DrawLine(ili9341_GetRandColor(), HAL_RNG_GetRandomNumber(&hrng) % 240,
+//			HAL_RNG_GetRandomNumber(&hrng) % 320,
+//			HAL_RNG_GetRandomNumber(&hrng) % 240,
+//			HAL_RNG_GetRandomNumber(&hrng) % 320);
+//}
 
 
 void ili9341_DrawRect(uint16_t color, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
@@ -458,7 +458,7 @@ void ili9341_DrawCircle(uint16_t x0, uint16_t y0, int r, uint16_t color) {
 }
 
 
-void ili9341_DrawRandomCircle(void) {
-	ili9341_DrawCircle(HAL_RNG_GetRandomNumber(&hrng) % 200 + 20,
-			HAL_RNG_GetRandomNumber(&hrng) % 280 + 20, HAL_RNG_GetRandomNumber(&hrng) % 50, ili9341_GetRandColor());
-}
+//void ili9341_DrawRandomCircle(void) {
+//	ili9341_DrawCircle(HAL_RNG_GetRandomNumber(&hrng) % 200 + 20,
+//			HAL_RNG_GetRandomNumber(&hrng) % 280 + 20, HAL_RNG_GetRandomNumber(&hrng) % 50, ili9341_GetRandColor());
+//}

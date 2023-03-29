@@ -25,12 +25,18 @@ void UIadapter_Init(UIadapter_reg_TypeDef *UIadapter) {
 	}
 }
 
-// TODO make non-blocking register polling
 void UIadapter_ReadWriteUI(UIadapter_reg_TypeDef *UIadapter) {
+
+	/*
+     * Transmit and receive info from (encs, buttons) and to (leds) UI
+     */
+
 	for (uint8_t i = 0; i < NUM_OF_UI_REGS; i++) // store old input regs states
 		UIadapter->UIinputRegsPrev[i] = UIadapter->UIinputRegs[i];
 
-	HAL_GPIO_WritePin(FREE_SPI6_SW_CS_GPIO_Port, FREE_SPI6_SW_CS_Pin, GPIO_PIN_SET);// pull UI software CS pin high (latch written values in hc595)
+	// pull UI software CS pin high (latch written values in hc595)
+	HAL_GPIO_WritePin(FREE_SPI6_SW_CS_GPIO_Port, FREE_SPI6_SW_CS_Pin, GPIO_PIN_SET);
+	// transmit and receive bytes via spi6
 	HAL_SPI_TransmitReceive_IT(&hspi6, UIadapter->UIoutputRegs, UIadapter->UIinputRegs, 3);
 	// --then wait until spi6 rxtx cplt callback is called, and contnue
 }

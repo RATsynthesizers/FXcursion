@@ -11,8 +11,9 @@
 #include "../../DSP_MY/dsp.hpp"
 #include "../../Modules/libModules/Module.hpp"
 
-#define REV_PARAMETERS 48
+
 #define REV_ALLP 4 // number allpass filters in series
+#define REV_PARAMETERS ((REV_ALLP * STEREO) * 5 + 6)
 
 class Reverb: public Module {
 public:
@@ -61,44 +62,43 @@ public:
 		this->paramNum = tmp - this->p; // calculate actual number of used parameters TODO print it
 
 		//----------------- parameter values init  ----------------------------//
-				const float ap_feedbacks_ini[][REV_ALLP] =	{	{0.3f, 0.4f, 0.4f, 0.4f},
-																{0.3f, 0.4f, 0.4f, 0.4f}	};
-				const float lenmodfreqs_ini[][REV_ALLP]   = 	{	{.53f, .03f, .02f, .023f},
-																	{.51f, .03f, .02f, .023f}	};
-				const float lenmodamps_ini[][REV_ALLP] = {	{ALLPASS_DELAYLEN/66.0f, ALLPASS_DELAYLEN/65.0f, ALLPASS_DELAYLEN/78.0f, ALLPASS_DELAYLEN/78.0f},
-															{ALLPASS_DELAYLEN/69.0f, ALLPASS_DELAYLEN/67.0f, ALLPASS_DELAYLEN/78.0f, ALLPASS_DELAYLEN/78.0f}	};
-				const float lenmodoffsets_ini[][REV_ALLP] = {	{ALLPASS_DELAYLEN*.74f, ALLPASS_DELAYLEN*.33f, ALLPASS_DELAYLEN*.33f, ALLPASS_DELAYLEN*.37f},
-																{ALLPASS_DELAYLEN*.75f, ALLPASS_DELAYLEN*.49f, ALLPASS_DELAYLEN*.33f, ALLPASS_DELAYLEN*.37f}	};
-				const u8 lenmodphases_ini[][REV_ALLP] =	{	{1,1,1,0},
-															{0,0,1,1}	};
-				for(u32 i = 0; i < STEREO * REV_ALLP; i++)
-					APfeedbacks[i/REV_ALLP][i%REV_ALLP]->val = ap_feedbacks_ini[i/REV_ALLP][i%REV_ALLP];
-				for(u32 i = 0; i < STEREO * REV_ALLP; i++)
-					lenModFreqs[i/REV_ALLP][i%REV_ALLP]->val = lenmodfreqs_ini[i/REV_ALLP][i%REV_ALLP];
-				for(u32 i = 0; i < STEREO * REV_ALLP; i++)
-					lenModAmps[i/REV_ALLP][i%REV_ALLP]->val  = lenmodamps_ini[i/REV_ALLP][i%REV_ALLP];
-				for(u32 i = 0; i < STEREO * REV_ALLP; i++)
-					lenModOffsets[i/REV_ALLP][i%REV_ALLP]->val = lenmodoffsets_ini[i/REV_ALLP][i%REV_ALLP];
-				for(u32 i = 0; i < STEREO * REV_ALLP; i++)
-					lenModPhases[i/REV_ALLP][i%REV_ALLP]->val  = lenmodphases_ini[i/REV_ALLP][i%REV_ALLP];
+		const float ap_feedbacks_ini[][REV_ALLP] =	{	{0.3f, 0.4f, 0.4f, 0.4f},
+														{0.3f, 0.4f, 0.4f, 0.4f}	};
+		const float lenmodfreqs_ini[][REV_ALLP]   = 	{	{.53f, .03f, .02f, .023f},
+															{.51f, .03f, .02f, .023f}	};
+		const float lenmodamps_ini[][REV_ALLP] = {	{ALLPASS_DELAYLEN/66.0f, ALLPASS_DELAYLEN/65.0f, ALLPASS_DELAYLEN/78.0f, ALLPASS_DELAYLEN/78.0f},
+													{ALLPASS_DELAYLEN/69.0f, ALLPASS_DELAYLEN/67.0f, ALLPASS_DELAYLEN/78.0f, ALLPASS_DELAYLEN/78.0f}	};
+		const float lenmodoffsets_ini[][REV_ALLP] = {	{ALLPASS_DELAYLEN*.74f, ALLPASS_DELAYLEN*.33f, ALLPASS_DELAYLEN*.33f, ALLPASS_DELAYLEN*.37f},
+														{ALLPASS_DELAYLEN*.75f, ALLPASS_DELAYLEN*.49f, ALLPASS_DELAYLEN*.33f, ALLPASS_DELAYLEN*.37f}	};
+		const u8 lenmodphases_ini[][REV_ALLP] =	{	{1,1,1,0},
+													{0,0,1,1}	};
+		for(u32 i = 0; i < STEREO * REV_ALLP; i++)
+			APfeedbacks[i/REV_ALLP][i%REV_ALLP]->val = ap_feedbacks_ini[i/REV_ALLP][i%REV_ALLP];
+		for(u32 i = 0; i < STEREO * REV_ALLP; i++)
+			lenModFreqs[i/REV_ALLP][i%REV_ALLP]->val = lenmodfreqs_ini[i/REV_ALLP][i%REV_ALLP];
+		for(u32 i = 0; i < STEREO * REV_ALLP; i++)
+			lenModAmps[i/REV_ALLP][i%REV_ALLP]->val  = lenmodamps_ini[i/REV_ALLP][i%REV_ALLP];
+		for(u32 i = 0; i < STEREO * REV_ALLP; i++)
+			lenModOffsets[i/REV_ALLP][i%REV_ALLP]->val = lenmodoffsets_ini[i/REV_ALLP][i%REV_ALLP];
+		for(u32 i = 0; i < STEREO * REV_ALLP; i++)
+			lenModPhases[i/REV_ALLP][i%REV_ALLP]->val  = lenmodphases_ini[i/REV_ALLP][i%REV_ALLP];
 
-				for(u32 i = 0; i < STEREO * REV_ALLP; i++)
-					revOSCs[i/REV_ALLP][i%REV_ALLP].setFA(lenmodfreqs_ini[i/REV_ALLP][i%REV_ALLP], lenmodamps_ini[i/REV_ALLP][i%REV_ALLP], lenmodphases_ini[i/REV_ALLP][i%REV_ALLP]);
+		for(u32 i = 0; i < STEREO * REV_ALLP; i++)
+			revOSCs[i/REV_ALLP][i%REV_ALLP].setFA(lenmodfreqs_ini[i/REV_ALLP][i%REV_ALLP], lenmodamps_ini[i/REV_ALLP][i%REV_ALLP], lenmodphases_ini[i/REV_ALLP][i%REV_ALLP]);
 
-				*(input[LEFT][0]) = 0;
-				*(input[RIGHT][0]) = 0;
-				lenModUpLim->val = .95f*ALLPASS_DELAYLEN;
-				lenModLoLim->val = .05f*ALLPASS_DELAYLEN;
-				dampingLPcutoff->val = 10000.0f/(SAMPLINGFREQ); // normalized
-				dampingHPcutoff->val =  1000.0f/(SAMPLINGFREQ);
-				fbAmount->val = 0.7f; //1.25
-				dryWet->val = 0.9f;  // % dry
+		*(input[LEFT][0]) = 0;
+		*(input[RIGHT][0]) = 0;
+		lenModUpLim->val = .95f*ALLPASS_DELAYLEN;
+		lenModLoLim->val = .05f*ALLPASS_DELAYLEN;
+		dampingLPcutoff->val = 10000.0f/(SAMPLINGFREQ); // normalized
+		dampingHPcutoff->val =  1000.0f/(SAMPLINGFREQ);
+		fbAmount->val = 0.7f; //1.25
+		dryWet->val = 0.9f;  // % dry
 
-				for(u32 i = 0; i < STEREO; i++) {
-					dampingFilterLP[i].setFc(dampingLPcutoff->val);
-					dampingFilterHP[i].setFc(dampingHPcutoff->val);
-				}
-
+		for(u32 i = 0; i < STEREO; i++) {
+			dampingFilterLP[i].setFc(dampingLPcutoff->val);
+			dampingFilterHP[i].setFc(dampingHPcutoff->val);
+		}
 	}
 
 	void process(void);
