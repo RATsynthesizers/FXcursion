@@ -2,6 +2,7 @@
 
 A guitar processor based on STM32H743VITX. Currently in prototype phase.
 
+<img src="https://user-images.githubusercontent.com/1298948/232513645-18dd9126-a2e6-42c4-89a1-5d45171cd0a9.png" alt="FXcursion render" width="50%" align="right" />
 
 ## Features
 
