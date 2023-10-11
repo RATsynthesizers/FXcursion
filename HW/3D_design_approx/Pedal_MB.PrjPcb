@@ -208,7 +208,7 @@ ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=
+DocumentUniqueId=DPDRHCCK
 
 [Document11]
 DocumentPath=..\..\..\Stud\Prog\Synth\_Altium\DAC_ADC\Analog.PcbLib
@@ -246,6 +246,23 @@ DocumentUniqueId=
 
 [Document13]
 DocumentPath=3D_design_approx.BomDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document14]
+DocumentPath=Pedal_MB.IntLib
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
