@@ -1,0 +1,10 @@
+../TouchGFX/target/generated/OSWrappers.cpp:36:6:static void touchgfx::OSWrappers::initialize()	8	static
+../TouchGFX/target/generated/OSWrappers.cpp:50:6:static void touchgfx::OSWrappers::takeFrameBufferSemaphore()	8	static
+../TouchGFX/target/generated/OSWrappers.cpp:58:6:static void touchgfx::OSWrappers::giveFrameBufferSemaphore()	8	static
+../TouchGFX/target/generated/OSWrappers.cpp:70:6:static void touchgfx::OSWrappers::tryTakeFrameBufferSemaphore()	8	static
+../TouchGFX/target/generated/OSWrappers.cpp:82:6:static void touchgfx::OSWrappers::giveFrameBufferSemaphoreFromISR()	8	static
+../TouchGFX/target/generated/OSWrappers.cpp:93:6:static void touchgfx::OSWrappers::signalVSync()	8	static
+../TouchGFX/target/generated/OSWrappers.cpp:102:6:static void touchgfx::OSWrappers::signalRenderingDone()	4	static
+../TouchGFX/target/generated/OSWrappers.cpp:113:6:static void touchgfx::OSWrappers::waitForVSync()	16	static
+../TouchGFX/target/generated/OSWrappers.cpp:136:6:static void touchgfx::OSWrappers::taskDelay(uint16_t)	16	static
+../TouchGFX/target/generated/OSWrappers.cpp:151:6:static void touchgfx::OSWrappers::taskYield()	8	static

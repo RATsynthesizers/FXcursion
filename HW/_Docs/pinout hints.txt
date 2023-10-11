@@ -1,0 +1,13 @@
+_SD
+_Codec sai
+_Codec i2c
+_FLASH qspi
+_Display1 fmc
+_Ltdc
+_EEPROM i2c
+_PSRAM spi
+_UI spi
+_Display2_i2c
+
+Display2 spi - spi4 when disp1->LTDC (tx only, no HWcs)
+Display2 spi - spi4 when disp1->FMC (full support)

@@ -1,0 +1,7 @@
+AudioSys.cpp:13:6:void AudioSys::getAudioSamplesInInput(SAIadapter_TypeDef*)	1
+AudioSys.cpp:18:6:void AudioSys::setAudioSamplesToOutput(SAIadapter_TypeDef*)	1
+AudioSys.cpp:25:6:void AudioSys::update()	6
+AudioSys.cpp:71:6:void AudioSys::parseChorusFx(GUIadapter_TypeDef*)	3
+AudioSys.cpp:57:6:void AudioSys::parseRequestParamMsg(GUIadapter_TypeDef*)	2
+AudioSys.cpp:46:6:void AudioSys::parseGUImsg(GUIadapter_TypeDef*)	2
+AudioSys.cpp:40:6:void AudioSys::updateParams()	2

@@ -1,0 +1,4 @@
+../Drivers/HW/GUIadapter.c:12:6:guiAdapter_Init	8	static
+../Drivers/HW/GUIadapter.c:28:6:HAL_UART_RxCpltCallback	0	static
+../Drivers/HW/GUIadapter.c:46:9:guiAdapterCheckUpdate	0	static
+../Drivers/HW/GUIadapter.c:73:6:transmitGUImsg	8	static

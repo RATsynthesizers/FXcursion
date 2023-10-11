@@ -1,0 +1,29 @@
+write pow function in c language for fractional power values using only int or float types for STM32
+ChatGPT
+To implement a pow function in C language for fractional power values using only int or float types, you can utilize the standard math.h library functions. However, note that the pow function in the standard library typically expects the exponent to be a double type. If you need to restrict the usage to int or float types, you can approximate the fractional power using logarithmic and exponential functions. Here's an example implementation:
+
+c
+Copy code
+#include <math.h>
+
+float powFractional(float base, float exponent) {
+    if (exponent == 0.0f) {
+        return 1.0f;
+    }
+    
+    float logarithm = logf(fabsf(base));
+    float result = expf(exponent * logarithm);
+
+    if (base < 0.0f && fmodf(exponent, 2.0f) == 1.0f) {
+        result *= -1.0f;
+    }
+
+    return result;
+}
+In this implementation, we use the logf function to calculate the natural logarithm of the absolute value of the base. Then, we use the expf function to raise the logarithm to the power of the exponent. If the base is negative and the exponent is an odd number, we multiply the result by -1 to account for the sign.
+
+You can use the powFractional function to compute fractional powers for both int and float types. However, keep in mind that using fractional exponents with integer types may result in loss of precision.
+
+
+
+

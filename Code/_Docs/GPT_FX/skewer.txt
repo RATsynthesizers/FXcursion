@@ -1,0 +1,43 @@
+given input audio cyclic waveform, write wave skewer audio effect
+ChatGPT
+To create a wave skewer audio effect, you can manipulate the phase of the input audio cyclic waveform. Here's an example implementation in C++:
+
+cpp
+Copy code
+#include <cmath>
+
+// Wave Skewer class
+class WaveSkewer {
+private:
+    float skewAmount; // Amount of skewing
+    float phaseOffset; // Phase offset
+
+public:
+    // Constructor
+    WaveSkewer(float skewAmount, float phaseOffset) : skewAmount(skewAmount), phaseOffset(phaseOffset) {}
+
+    // Process a single sample
+    float processSample(float input) {
+        float phase = fmod(input + phaseOffset, 1.0f); // Wrap phase within [0, 1]
+        float skew = pow(phase, skewAmount); // Apply skewing
+        return skew;
+    }
+
+    // Process stereo samples
+    void processStereo(float* left, float* right, int numSamples) {
+        for (int i = 0; i < numSamples; i++) {
+            float inputL = left[i];
+            float inputR = right[i];
+
+            left[i] = processSample(inputL);
+            right[i] = processSample(inputR);
+        }
+    }
+};
+In this example, we define a WaveSkewer class that takes the skew amount and phase offset as parameters in the constructor. The processSample function applies the skewing effect to a single input sample by manipulating its phase. The phase is wrapped within the range [0, 1], and then the skewing is applied using the pow function.
+
+The processStereo function processes stereo samples by applying the skewing effect to both the left and right channels independently.
+
+To use the WaveSkewer class, you can create an instance with the desired skew amount and phase offset, and then call the processStereo function, passing in the stereo sample arrays (L and R) and the number of samples.
+
+Note that this is a basic implementation, and you can further modify it to incorporate additional parameters or add more complex skewing algorithms to achieve different variations of the wave skewer effect.

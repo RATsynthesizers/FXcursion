@@ -1,0 +1,8 @@
+Font.hpp:169:13:touchgfx::Font::~Font()	1
+Font.hpp:169:13:virtual touchgfx::Font::~Font()	1
+ConstFont.hpp:35:7:touchgfx::ConstFont::~ConstFont()	1
+ConstFont.hpp:35:7:virtual touchgfx::ConstFont::~ConstFont()	1
+GeneratedFont.hpp:11:7:touchgfx::GeneratedFont::~GeneratedFont()	1
+GeneratedFont.hpp:11:7:virtual touchgfx::GeneratedFont::~GeneratedFont()	1
+Table_verdana_20_4bpp.cpp:39:168:void __tcf_0()	1
+Table_verdana_20_4bpp.cpp:37:26:touchgfx::GeneratedFont& getFont_verdana_20_4bpp()	3

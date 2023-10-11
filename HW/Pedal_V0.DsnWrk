@@ -1,0 +1,14 @@
+[ProjectGroup]
+Version=1.0
+[Project1]
+ProjectPath=ProtoStack_H750VBT\ProtoStack_H750VBT.PrjPcb
+[Project2]
+ProjectPath=3D_design_approx\Pedal_MB.PrjPcb
+[Project3]
+ProjectPath=SOM_MCU\Pedal_SOM_MCU.PrjPcb
+[Project4]
+ProjectPath=SOM_Codec_WM8731\Pedal_Codec_4x4.PrjPcb
+[Project5]
+ProjectPath=FootSW\Pedal_FootSW.PrjPcb
+[Project6]
+ProjectPath=Jacks\Pedal_Jacks.PrjPcb

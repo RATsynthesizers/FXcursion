@@ -1,0 +1,37 @@
+For Audio: //////////////////////////
+UART speed 2000000
+Uart Circular DmaRx
+no need to Rx again in callback
+
+For GUI: ////////////////////////////
+UART speed 2000000
+buffer placed in special section 
+
+For All MCUs: ///////////////////////
+MPU: region 0x24000000
+size 8KB
+all access permitted
+Inst access: DISABLE
+Shar Permis: ENABLE
+Cach Permis: DISABLE
+Buff Permis: ENABLE
+
+https://stackoverflow.com/questions/61659316/stm32h7-mpu-shareable-memory-attribute-and-strongly-ordered-memory-type
+ 
+In FLASH.ld linkerscript: ///////////////////////////////////
+  RAM_D1_DMA (xrw)   	: ORIGIN = 0x24000000, LENGTH = 8K
+  RAM_D1 (xrw)   	: ORIGIN = 0x24002000, LENGTH = 504K
+
+...
+      /* MODIFICATION STARTS HERE */
+    .ramd1dma(NOLOAD) :
+  {
+    . = ALIGN (1);
+    *(.ramd1dma)
+        
+  } > RAM_D1_DMA
+
+In MemRegions.h define: /////////////////////////////////////
+#define IN_RAM_D1_DMA 	__attribute__ ((section(".ramd1dma"), used))
+Then place IN_RAM_D1_DMA uint8_t myDmaBufOrAdapter[];
+

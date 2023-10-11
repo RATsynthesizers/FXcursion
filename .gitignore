@@ -1,3 +1,6 @@
-Debug/
-.settings/
-.codetogether.ignore
+**/History
+**/Project Logs*
+**/__Previews
+*m3d.bak
+*.zip
+

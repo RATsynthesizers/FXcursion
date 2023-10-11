@@ -1,0 +1,36 @@
+Font.hpp:169:13:touchgfx::Font::~Font()	1
+Font.hpp:169:13:virtual touchgfx::Font::~Font()	1
+TypedText.hpp:65:13:touchgfx::TypedText::~TypedText()	1
+TypedText.hpp:65:13:virtual touchgfx::TypedText::~TypedText()	1
+ConstFont.hpp:35:7:touchgfx::ConstFont::~ConstFont()	1
+ConstFont.hpp:35:7:virtual touchgfx::ConstFont::~ConstFont()	1
+GeneratedFont.hpp:11:7:touchgfx::GeneratedFont::~GeneratedFont()	1
+GeneratedFont.hpp:11:7:virtual touchgfx::GeneratedFont::~GeneratedFont()	1
+CachedFont.hpp:15:5:touchgfx::CachedFont::CachedFont(const touchgfx::BinaryFontData*, touchgfx::FontId, touchgfx::FontCache*, const touchgfx::GeneratedFont*)	1
+FontCache.cpp:13:1:touchgfx::FontCache::FontCache()	1
+FontCache.cpp:18:6:void touchgfx::FontCache::clear(bool)	2
+FontCache.cpp:35:6:void touchgfx::FontCache::setMemory(uint8_t*, uint32_t)	1
+FontCache.cpp:43:6:void touchgfx::FontCache::setReader(touchgfx::FontDataReader*)	1
+FontCache.cpp:48:18:const touchgfx::GlyphNode* touchgfx::FontCache::getGlyph(touchgfx::Unicode::UnicodeChar, touchgfx::FontId) const	3
+FontCache.cpp:63:6:void touchgfx::FontCache::open()	2
+FontCache.cpp:71:6:void touchgfx::FontCache::close()	2
+Font.hpp:165:7:constexpr touchgfx::Font& touchgfx::Font::operator=(const touchgfx::Font&)	1
+ConstFont.hpp:35:7:constexpr touchgfx::ConstFont& touchgfx::ConstFont::operator=(touchgfx::ConstFont&&)	1
+GeneratedFont.hpp:11:7:constexpr touchgfx::GeneratedFont& touchgfx::GeneratedFont::operator=(touchgfx::GeneratedFont&&)	1
+CachedFont.hpp:12:7:constexpr touchgfx::CachedFont& touchgfx::CachedFont::operator=(touchgfx::CachedFont&&)	1
+FontCache.cpp:79:6:void touchgfx::FontCache::initializeCachedFont(touchgfx::TypedText, touchgfx::CachedFont*, bool)	8
+TypedText.hpp:41:7:constexpr touchgfx::TypedText::TypedText(const touchgfx::TypedText&)	1
+FontCache.cpp:158:6:bool touchgfx::FontCache::cacheString(touchgfx::TypedText, const UnicodeChar*)	2
+FontCache.cpp:171:6:bool touchgfx::FontCache::cacheLigatures(touchgfx::CachedFont*, touchgfx::TypedText, const UnicodeChar*)	2
+FontCache.cpp:184:6:bool touchgfx::FontCache::cacheSortedString(touchgfx::TypedText)	6
+FontCache.cpp:233:6:bool touchgfx::FontCache::contains(touchgfx::Unicode::UnicodeChar, touchgfx::FontId) const	3
+FontCache.cpp:248:6:void touchgfx::FontCache::insert(touchgfx::Unicode::UnicodeChar, touchgfx::FontId, uint32_t, bool&)	3
+FontCache.cpp:276:10:uint8_t* touchgfx::FontCache::copyGlyph(uint8_t*, touchgfx::Unicode::UnicodeChar, touchgfx::FontId, uint32_t, bool&)	5
+FontCache.cpp:310:6:void touchgfx::FontCache::cacheData(uint32_t, touchgfx::GlyphNode*)	3
+FontCache.cpp:336:6:bool touchgfx::FontCache::createSortedString(const UnicodeChar*)	3
+FontCache.cpp:357:6:)	4
+FontCache.cpp:384:6:bool touchgfx::FontCache::sortSortedString(int)	5
+FontCache.cpp:410:6:void touchgfx::FontCache::setPosition(uint32_t)	2
+FontCache.cpp:418:6:void touchgfx::FontCache::readData(void*, uint32_t)	2
+CachedFont.hpp:12:7:touchgfx::CachedFont::~CachedFont()	1
+CachedFont.hpp:12:7:virtual touchgfx::CachedFont::~CachedFont()	1
