@@ -1,4 +1,0 @@
-../Core/Src/main.cpp:157:6:void SystemClock_Config()	128	static,ignoring_inline_asm
-../Core/Src/main.cpp:230:6:void PeriphCommonClock_Config()	200	static,ignoring_inline_asm
-../Core/Src/main.cpp:290:6:void Error_Handler()	0	static,ignoring_inline_asm
-../Core/Src/main.cpp:81:5:int main()	24	static,ignoring_inline_asm

@@ -1,2 +1,0 @@
-SVGDatabase.cpp:10:27:const touchgfx::VGObject* SVGDatabase::getInstance()	1
-SVGDatabase.cpp:15:10:uint16_t SVGDatabase::getInstanceSize()	1

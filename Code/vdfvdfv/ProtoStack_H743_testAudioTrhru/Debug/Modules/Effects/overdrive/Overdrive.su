@@ -1,3 +1,0 @@
-../Modules/Effects/overdrive/Overdrive.cpp:3:6:virtual void Overdrive::process()	24	static
-../Modules/Effects/overdrive/Overdrive.cpp:25:9:virtual uint8_t Overdrive::getPublicParameter(uint8_t)	8	static
-../Modules/Effects/overdrive/Overdrive.cpp:29:6:virtual void Overdrive::setPublicParameter(uint8_t, uint8_t)	0	static

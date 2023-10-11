@@ -1,4 +1,0 @@
-sai.c:38:6:MX_SAI1_Init	3
-sai.c:87:6:MX_SAI2_Init	3
-sai.c:136:6:HAL_SAI_MspInit	13
-sai.c:333:6:HAL_SAI_MspDeInit	9

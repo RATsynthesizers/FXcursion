@@ -1,7 +1,0 @@
-UARTadapter.c:5:6:UARTadapter_Init	3
-UARTadapter.c:16:9:UARTadapterCheckUpdate	1
-UARTadapter.c:20:6:transmitUARTmsg	1
-UARTadapter.c:24:6:getUARTMsgRx	2
-UARTadapter.c:30:6:prepareUARTMsgTx	1
-UARTadapter.c:41:6:HAL_UART_RxCpltCallback	2
-UARTadapter.c:47:6:HAL_UART_ErrorCallback	1

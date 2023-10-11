@@ -1,9 +1,0 @@
-Screen.hpp:115:18:virtual void touchgfx::Screen::tearDownScreen()	1
-Screen.hpp:144:18:virtual void touchgfx::Screen::handleTickEvent()	1
-Screen.hpp:154:18:virtual void touchgfx::Screen::handleKeyEvent(uint8_t)	1
-LogoStartupViewBase.hpp:26:18:virtual void LogoStartupViewBase::action1()	1
-LogoStartupView.hpp:11:13:LogoStartupView::~LogoStartupView()	1
-LogoStartupView.hpp:11:13:virtual LogoStartupView::~LogoStartupView()	1
-LogoStartupView.cpp:3:1:LogoStartupView::LogoStartupView()	1
-LogoStartupView.cpp:8:6:virtual void LogoStartupView::setupScreen()	1
-LogoStartupView.cpp:13:6:virtual void LogoStartupView::tearDownScreen()	1

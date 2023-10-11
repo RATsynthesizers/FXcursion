@@ -1,9 +1,0 @@
-../Middlewares/ST/touchgfx/framework/include/touchgfx/Screen.hpp:115:18:virtual void touchgfx::Screen::tearDownScreen()	16	static
-../Middlewares/ST/touchgfx/framework/include/touchgfx/Screen.hpp:144:18:virtual void touchgfx::Screen::handleTickEvent()	16	static
-../Middlewares/ST/touchgfx/framework/include/touchgfx/Screen.hpp:154:18:virtual void touchgfx::Screen::handleKeyEvent(uint8_t)	16	static
-../TouchGFX/generated/gui_generated/include/gui_generated/logostartup_screen/LogoStartupViewBase.hpp:26:18:virtual void LogoStartupViewBase::action1()	16	static
-../TouchGFX/gui/include/gui/logostartup_screen/LogoStartupView.hpp:11:13:LogoStartupView::~LogoStartupView()	16	static
-../TouchGFX/gui/include/gui/logostartup_screen/LogoStartupView.hpp:11:13:virtual LogoStartupView::~LogoStartupView()	16	static
-../TouchGFX/gui/src/logostartup_screen/LogoStartupView.cpp:3:1:LogoStartupView::LogoStartupView()	16	static
-../TouchGFX/gui/src/logostartup_screen/LogoStartupView.cpp:8:6:virtual void LogoStartupView::setupScreen()	16	static
-../TouchGFX/gui/src/logostartup_screen/LogoStartupView.cpp:13:6:virtual void LogoStartupView::tearDownScreen()	16	static

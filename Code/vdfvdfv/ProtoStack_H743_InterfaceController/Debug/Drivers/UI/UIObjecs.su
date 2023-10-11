@@ -1,5 +1,0 @@
-../Drivers/UI/Encoder.hpp:19:2:Encoder::Encoder(UIadapter_reg_TypeDef*, uint8_t, uint8_t, uint8_t, uint8_t, UI_Polarity_Types)	24	static
-../Drivers/UI/Button.hpp:19:2:Button::Button(UIadapter_reg_TypeDef*, uint8_t, UI_Polarity_Types)	24	static
-../Drivers/UI/Led.hpp:20:2:Led::Led(UIadapter_reg_TypeDef*, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, UI_Polarity_Types)	24	static
-../Drivers/UI/UIObjecs.cpp:42:62:void __static_initialization_and_destruction_0(int, int)	40	static
-../Drivers/UI/UIObjecs.cpp:42:62:cpp)	8	static

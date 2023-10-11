@@ -1,7 +1,0 @@
-../Drivers/HW/UARTadapter.c:5:6:UARTadapter_Init	8	static
-../Drivers/HW/UARTadapter.c:16:9:UARTadapterCheckUpdate	0	static
-../Drivers/HW/UARTadapter.c:20:6:transmitUARTmsg	8	static
-../Drivers/HW/UARTadapter.c:24:6:getUARTMsgRx	0	static
-../Drivers/HW/UARTadapter.c:33:6:prepareUARTMsgTx	0	static
-../Drivers/HW/UARTadapter.c:41:6:HAL_UART_RxCpltCallback	8	static
-../Drivers/HW/UARTadapter.c:47:6:HAL_UART_ErrorCallback	8	static

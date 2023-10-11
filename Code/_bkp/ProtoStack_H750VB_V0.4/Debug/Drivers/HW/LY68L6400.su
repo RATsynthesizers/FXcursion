@@ -1,2 +1,0 @@
-../Drivers/HW/LY68L6400.c:14:6:PsramWrite	32	static
-../Drivers/HW/LY68L6400.c:25:6:PsramRead	32	static

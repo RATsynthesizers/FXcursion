@@ -1,3 +1,0 @@
-../Core/Src/spi.c:32:6:MX_SPI1_Init	8	static
-../Core/Src/spi.c:74:6:HAL_SPI_MspInit	232	static
-../Core/Src/spi.c:172:6:HAL_SPI_MspDeInit	16	static

@@ -1,9 +1,0 @@
-../Middlewares/ST/touchgfx/framework/include/platform/driver/button/ButtonController.hpp:30:13:touchgfx::ButtonController::~ButtonController()	16	static
-../Middlewares/ST/touchgfx/framework/include/platform/driver/button/ButtonController.hpp:30:13:virtual touchgfx::ButtonController::~ButtonController()	16	static
-../Middlewares/ST/touchgfx/framework/include/platform/driver/button/ButtonController.hpp:48:18:virtual void touchgfx::ButtonController::reset()	16	static
-../Drivers/MyTouchGFXadapter/../UI/Button.hpp:27:16:Button_States Button::getState()	16	static
-../Drivers/MyTouchGFXadapter/../UI/Encoder.hpp:33:17:Encoder_States Encoder::getState()	16	static
-../Drivers/MyTouchGFXadapter/MyButtonController.cpp:7:6:virtual void MyButtonController::init()	16	static
-../Drivers/MyTouchGFXadapter/MyButtonController.cpp:11:6:virtual bool MyButtonController::sample(uint8_t&)	24	static
-../Drivers/MyTouchGFXadapter/MyButtonController.hpp:6:7:MyButtonController::~MyButtonController()	16	static
-../Drivers/MyTouchGFXadapter/MyButtonController.hpp:6:7:virtual MyButtonController::~MyButtonController()	16	static

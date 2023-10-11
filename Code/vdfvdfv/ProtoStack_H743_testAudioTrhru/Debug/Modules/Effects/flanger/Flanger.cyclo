@@ -1,3 +1,0 @@
-Flanger.cpp:3:6:virtual void Flanger::process()	1
-Flanger.cpp:9:9:virtual uint8_t Flanger::getPublicParameter(uint8_t)	1
-Flanger.cpp:13:6:virtual void Flanger::setPublicParameter(uint8_t, uint8_t)	1

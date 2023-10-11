@@ -1,6 +1,0 @@
-MySAIadapter.c:13:6:saiAdapter_Init	4
-MySAIadapter.c:43:9:saiAdapter_getNextSample	2
-MySAIadapter.c:52:6:saiAdapter_setNextSample	2
-MySAIadapter.c:60:21:saiAdapterCheckUpdate	3
-MySAIadapter.c:76:6:HAL_SAI_RxHalfCpltCallback	3
-MySAIadapter.c:85:6:HAL_SAI_RxCpltCallback	3

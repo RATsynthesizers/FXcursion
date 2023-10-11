@@ -1,7 +1,0 @@
-usbd_storage_if.c:186:8:STORAGE_Init_FS	1
-usbd_storage_if.c:202:8:STORAGE_GetCapacity_FS	1
-usbd_storage_if.c:228:8:STORAGE_IsReady_FS	1
-usbd_storage_if.c:242:8:STORAGE_IsWriteProtected_FS	1
-usbd_storage_if.c:259:8:STORAGE_Read_FS	1
-usbd_storage_if.c:287:8:STORAGE_Write_FS	1
-usbd_storage_if.c:313:8:STORAGE_GetMaxLun_FS	1

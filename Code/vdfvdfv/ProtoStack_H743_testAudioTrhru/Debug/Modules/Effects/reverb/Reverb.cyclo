@@ -1,3 +1,0 @@
-Reverb.cpp:3:6:virtual void Reverb::process()	1
-Reverb.cpp:9:9:virtual uint8_t Reverb::getPublicParameter(uint8_t)	1
-Reverb.cpp:13:6:virtual void Reverb::setPublicParameter(uint8_t, uint8_t)	1

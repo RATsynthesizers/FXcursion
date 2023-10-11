@@ -1,3 +1,0 @@
-../Modules/Effects/delay/Delayy.cpp:3:6:virtual void Delayy::process()	0	static
-../Modules/Effects/delay/Delayy.cpp:9:9:virtual uint8_t Delayy::getPublicParameter(uint8_t)	8	static
-../Modules/Effects/delay/Delayy.cpp:13:6:virtual void Delayy::setPublicParameter(uint8_t, uint8_t)	0	static

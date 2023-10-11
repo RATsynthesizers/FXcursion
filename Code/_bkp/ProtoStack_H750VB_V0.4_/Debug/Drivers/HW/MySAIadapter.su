@@ -1,6 +1,0 @@
-../Drivers/HW/MySAIadapter.c:14:6:saiAdapter_Init	16	static,ignoring_inline_asm
-../Drivers/HW/MySAIadapter.c:49:9:saiAdapter_getNextSample	0	static
-../Drivers/HW/MySAIadapter.c:58:6:saiAdapter_setNextSample	0	static
-../Drivers/HW/MySAIadapter.c:66:21:saiAdapterCheckUpdate	0	static
-../Drivers/HW/MySAIadapter.c:82:6:HAL_SAI_RxHalfCpltCallback	0	static
-../Drivers/HW/MySAIadapter.c:91:6:HAL_SAI_RxCpltCallback	0	static

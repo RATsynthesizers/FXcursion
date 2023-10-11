@@ -1,3 +1,0 @@
-sdmmc.c:31:6:MX_SDMMC1_SD_Init	1
-sdmmc.c:53:6:HAL_SD_MspInit	3
-sdmmc.c:106:6:HAL_SD_MspDeInit	2

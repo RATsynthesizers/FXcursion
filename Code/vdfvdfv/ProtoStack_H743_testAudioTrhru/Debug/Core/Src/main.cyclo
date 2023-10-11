@@ -1,4 +1,0 @@
-main.cpp:157:6:void SystemClock_Config()	5
-main.cpp:230:6:void PeriphCommonClock_Config()	2
-main.cpp:290:6:void Error_Handler()	1
-main.cpp:81:5:int main()	5

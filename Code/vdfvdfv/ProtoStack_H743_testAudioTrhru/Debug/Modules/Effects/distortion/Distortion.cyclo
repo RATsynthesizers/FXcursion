@@ -1,3 +1,0 @@
-Distortion.cpp:3:6:virtual void Distortion::process()	1
-Distortion.cpp:9:9:virtual uint8_t Distortion::getPublicParameter(uint8_t)	1
-Distortion.cpp:13:6:virtual void Distortion::setPublicParameter(uint8_t, uint8_t)	1

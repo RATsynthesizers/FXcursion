@@ -1,4 +1,0 @@
-../Modules/AudioSys.cpp:13:6:void AudioSys::getAudioSamplesInInput(SAIadapter_TypeDef*)	24	static
-../Modules/AudioSys.cpp:19:6:void AudioSys::setAudioSamplesToOutput(SAIadapter_TypeDef*)	24	static
-../Modules/AudioSys.cpp:26:6:void AudioSys::updateGUI(UARTadapter_TypeDef*)	24	static
-../Modules/AudioSys.cpp:48:6:void AudioSys::update()	32	static

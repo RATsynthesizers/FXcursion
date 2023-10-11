@@ -1,8 +1,0 @@
-Font.hpp:169:13:touchgfx::Font::~Font()	1
-Font.hpp:169:13:virtual touchgfx::Font::~Font()	1
-ConstFont.hpp:35:7:touchgfx::ConstFont::~ConstFont()	1
-ConstFont.hpp:35:7:virtual touchgfx::ConstFont::~ConstFont()	1
-GeneratedFont.hpp:11:7:touchgfx::GeneratedFont::~GeneratedFont()	1
-GeneratedFont.hpp:11:7:virtual touchgfx::GeneratedFont::~GeneratedFont()	1
-Table_trebuc_16_4bpp.cpp:92:164:void __tcf_0()	1
-Table_trebuc_16_4bpp.cpp:90:26:touchgfx::GeneratedFont& getFont_trebuc_16_4bpp()	3

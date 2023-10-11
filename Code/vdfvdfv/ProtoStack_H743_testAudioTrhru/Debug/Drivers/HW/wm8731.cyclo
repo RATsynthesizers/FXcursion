@@ -1,5 +1,0 @@
-wm8731.c:10:6:CodecRegWrite	2
-wm8731.c:18:6:SetLineInGain	1
-wm8731.c:26:6:SetHPGain	2
-wm8731.c:37:6:CodecPowerUp	2
-wm8731.c:89:6:CodecPowerDown	1
