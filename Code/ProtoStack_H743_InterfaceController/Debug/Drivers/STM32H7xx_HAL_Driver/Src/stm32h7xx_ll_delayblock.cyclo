@@ -1,0 +1,3 @@
+stm32h7xx_ll_delayblock.c:95:19:DelayBlock_Enable	9
+stm32h7xx_ll_delayblock.c:165:19:DelayBlock_Disable	1
+stm32h7xx_ll_delayblock.c:179:19:DelayBlock_Configure	1

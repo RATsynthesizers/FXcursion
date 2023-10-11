@@ -1,0 +1,3 @@
+AudioSysObjects.cpp:23:7:virtual void AudioSys::includeModules()	1
+Amp.hpp:23:2:Amp::Amp(Parameter*)	2
+AudioSysObjects.cpp:27:2:cpp)	2

@@ -1,0 +1,5 @@
+FontManager.hpp:43:13:touchgfx::FontProvider::~FontProvider()	1
+FontManager.hpp:43:13:virtual touchgfx::FontProvider::~FontProvider()	1
+ApplicationFontProvider.cpp:8:17:virtual touchgfx::Font* ApplicationFontProvider::getFont(touchgfx::FontId)	5
+ApplicationFontProvider.hpp:31:7:ApplicationFontProvider::~ApplicationFontProvider()	1
+ApplicationFontProvider.hpp:31:7:virtual ApplicationFontProvider::~ApplicationFontProvider()	1

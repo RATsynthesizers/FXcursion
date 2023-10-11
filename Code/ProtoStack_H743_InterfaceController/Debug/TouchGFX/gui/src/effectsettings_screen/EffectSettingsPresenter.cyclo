@@ -1,0 +1,17 @@
+Presenter.hpp:37:18:virtual void touchgfx::Presenter::activate()	1
+Presenter.hpp:47:18:virtual void touchgfx::Presenter::deactivate()	1
+Presenter.hpp:52:13:touchgfx::Presenter::~Presenter()	1
+Presenter.hpp:52:13:virtual touchgfx::Presenter::~Presenter()	1
+Presenter.hpp:58:5:touchgfx::Presenter::Presenter()	1
+ModelListener.hpp:12:5:ModelListener::ModelListener()	1
+ModelListener.hpp:14:13:ModelListener::~ModelListener()	1
+ModelListener.hpp:14:13:virtual ModelListener::~ModelListener()	1
+EffectSettingsPresenter.hpp:27:10:EffectSettingsPresenter::~EffectSettingsPresenter()	1
+EffectSettingsPresenter.hpp:27:10:virtual EffectSettingsPresenter::~EffectSettingsPresenter()	1
+EffectSettingsPresenter.cpp:4:1:EffectSettingsPresenter::EffectSettingsPresenter(EffectSettingsView&)	1
+EffectSettingsPresenter.cpp:9:6:virtual void EffectSettingsPresenter::activate()	1
+EffectSettingsPresenter.cpp:13:6:virtual void EffectSettingsPresenter::deactivate()	1
+EffectSettingsPresenter.cpp:17:6:virtual void EffectSettingsPresenter::parameterChange(uint8_t, int8_t)	1
+EffectSettingsPresenter.cpp:21:6:virtual void EffectSettingsPresenter::encScroll_action(int8_t)	1
+EffectSettingsPresenter.cpp:25:6:virtual void EffectSettingsPresenter::btnYES_action()	1
+EffectSettingsPresenter.cpp:29:6:virtual void EffectSettingsPresenter::btnNO_action()	1

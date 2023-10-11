@@ -1,0 +1,17 @@
+Presenter.hpp:37:18:virtual void touchgfx::Presenter::activate()	1
+Presenter.hpp:47:18:virtual void touchgfx::Presenter::deactivate()	1
+Presenter.hpp:52:13:touchgfx::Presenter::~Presenter()	1
+Presenter.hpp:52:13:virtual touchgfx::Presenter::~Presenter()	1
+Presenter.hpp:58:5:touchgfx::Presenter::Presenter()	1
+ModelListener.hpp:12:5:ModelListener::ModelListener()	1
+ModelListener.hpp:14:13:ModelListener::~ModelListener()	1
+ModelListener.hpp:14:13:virtual ModelListener::~ModelListener()	1
+LogoStartupPresenter.hpp:28:13:LogoStartupPresenter::~LogoStartupPresenter()	1
+LogoStartupPresenter.hpp:28:13:virtual LogoStartupPresenter::~LogoStartupPresenter()	1
+LogoStartupPresenter.cpp:4:1:LogoStartupPresenter::LogoStartupPresenter(LogoStartupView&)	1
+LogoStartupPresenter.cpp:10:6:virtual void LogoStartupPresenter::activate()	1
+LogoStartupPresenter.cpp:15:6:virtual void LogoStartupPresenter::deactivate()	1
+LogoStartupPresenter.cpp:20:6:virtual void LogoStartupPresenter::parameterChange(uint8_t, int8_t)	1
+LogoStartupPresenter.cpp:24:6:virtual void LogoStartupPresenter::encScroll_action(int8_t)	1
+LogoStartupPresenter.cpp:28:6:virtual void LogoStartupPresenter::btnYES_action()	1
+LogoStartupPresenter.cpp:32:6:virtual void LogoStartupPresenter::btnNO_action()	1

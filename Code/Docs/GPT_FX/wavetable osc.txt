@@ -1,0 +1,76 @@
+given input stereo samples named L and R,  write simple wavetable audio oscillator in c++
+ChatGPT
+Here's an example implementation of a simple wavetable audio oscillator in C++ for generating stereo samples:
+
+c++
+Copy code
+#include <cmath>
+
+class WavetableOscillator {
+public:
+    WavetableOscillator(float frequency, float sampleRate) :
+        frequency_(frequency),
+        sampleRate_(sampleRate),
+        phase_(0.0f),
+        phaseIncrement_(frequency / sampleRate),
+        amplitude_(0.5f)
+    {
+    }
+
+    void setFrequency(float frequency) {
+        frequency_ = frequency;
+        phaseIncrement_ = frequency / sampleRate_;
+    }
+
+    void setAmplitude(float amplitude) {
+        amplitude_ = amplitude;
+    }
+
+    void generate(float* L, float* R, size_t numSamples) {
+        for (size_t i = 0; i < numSamples; ++i) {
+            float sample = waveTableLookup(phase_);
+
+            L[i] = sample * amplitude_;
+            R[i] = sample * amplitude_;
+
+            phase_ += phaseIncrement_;
+
+            // Wrap phase between 0 and 1
+            if (phase_ >= 1.0f)
+                phase_ -= 1.0f;
+        }
+    }
+
+private:
+    float waveTableLookup(float phase) {
+        // Example sine wave lookup table
+        const size_t tableSize = 1024;
+        static float sineWaveTable[tableSize];
+
+        // Generate sine wave lookup table if it's not initialized
+        if (sineWaveTable[0] == 0.0f) {
+            for (size_t i = 0; i < tableSize; ++i) {
+                sineWaveTable[i] = std::sin(2.0f * M_PI * i / tableSize);
+            }
+        }
+
+        // Lookup value in the table
+        size_t index = static_cast<size_t>(phase * tableSize) % tableSize;
+        return sineWaveTable[index];
+    }
+
+    float frequency_;
+    float sampleRate_;
+    float phase_;
+    float phaseIncrement_;
+    float amplitude_;
+};
+In this implementation, the WavetableOscillator class represents a wavetable-based audio oscillator. It takes a frequency and sample rate as parameters in the constructor. The oscillator generates stereo samples by looking up values from a wavetable based on the current phase. The phase is incremented based on the frequency and sample rate to produce the desired pitch.
+
+The setFrequency method allows you to dynamically change the frequency of the oscillator. The setAmplitude method sets the amplitude of the generated waveform.
+
+The generate method generates stereo samples by looping through the given number of samples. It performs a lookup in the wavetable based on the current phase and assigns the sample to both the left and right channels. The phase is incremented, and if it exceeds 1.0, it wraps back to 0.0 to ensure continuous looping.
+
+The wavetable itself is represented by the waveTableLookup method, which in this example uses a simple sine wave lookup table. The table is filled with precomputed sine values in the range [-1, 1] using std::sin function. The waveTableLookup method takes the current phase as input, maps it to the appropriate index in the table, and returns the corresponding value.
+
+You can use this WavetableOscillator class to generate stereo samples by calling the generate method and passing in the sample buffers and the number of samples you want to generate.

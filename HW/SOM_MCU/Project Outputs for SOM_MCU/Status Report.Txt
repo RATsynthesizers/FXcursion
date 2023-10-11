@@ -1,0 +1,23 @@
+Output: Gerber Files
+Type  : Gerber
+From  : Variant [[No Variations]] of Project [SOM_MCU.PrjPcb]
+   Generated File[SOM_MCU.GTO]
+   Generated File[SOM_MCU.GTP]
+   Generated File[SOM_MCU.GTS]
+   Generated File[SOM_MCU.GTL]
+   Generated File[SOM_MCU.G1]
+   Generated File[SOM_MCU.G2]
+   Generated File[SOM_MCU.GBL]
+   Generated File[SOM_MCU.GBS]
+   Generated File[SOM_MCU.GBP]
+   Generated File[SOM_MCU.GBO]
+   Generated File[SOM_MCU.GM3]
+   Generated File[SOM_MCU.RUL]
+   Generated File[SOM_MCU.EXTREP]
+   Generated File[SOM_MCU.REP]
+
+
+Files Generated   : 14
+Documents Printed : 0
+
+Finished Output Generation At 4:00:14 PM On 9/20/2023

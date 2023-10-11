@@ -1,0 +1,6 @@
+ui_adapter_reg.c:15:6:UIadapter_Init	3
+ui_adapter_reg.c:28:6:UIadapter_ReadWriteUI	3
+ui_adapter_reg.c:39:6:UIadapter_ReadUI_spi2_callback	8
+ui_adapter_reg.c:63:6:getBtnHWdata	1
+ui_adapter_reg.c:68:6:setLedHWdata	4
+ui_adapter_reg.c:90:6:getEncHWdata	1

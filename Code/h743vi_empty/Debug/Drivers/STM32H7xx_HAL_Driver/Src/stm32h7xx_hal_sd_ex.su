@@ -1,0 +1,4 @@
+../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sd_ex.c:83:19:HAL_SDEx_ConfigDMAMultiBuffer	24	static
+../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sd_ex.c:109:19:HAL_SDEx_ReadBlocksDMAMultiBuffer	64	static
+../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sd_ex.c:195:19:HAL_SDEx_WriteBlocksDMAMultiBuffer	64	static
+../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sd_ex.c:279:19:HAL_SDEx_ChangeDMABuffer	24	static

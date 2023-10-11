@@ -1,0 +1,29 @@
+Types.hpp:91:5:touchgfx::colortype::colortype(uint32_t)	1
+Drawable.hpp:515:10:void touchgfx::Drawable::setVisible(bool)	1
+Drawable.hpp:537:10:bool touchgfx::Drawable::isVisible() const	1
+Screen.hpp:104:18:virtual void touchgfx::Screen::afterTransition()	1
+Screen.hpp:115:18:virtual void touchgfx::Screen::tearDownScreen()	1
+Screen.hpp:144:18:virtual void touchgfx::Screen::handleTickEvent()	1
+Screen.hpp:154:18:virtual void touchgfx::Screen::handleKeyEvent(uint8_t)	1
+Model.hpp:61:7:void Model::saveSettingsPosition(uint8_t)	1
+Model.hpp:64:10:uint8_t Model::getSettingsPosition()	1
+Model.hpp:72:17:const uint8_t* Model::getProjectName()	1
+Model.hpp:77:7:void Model::saveChannelNum(uint8_t)	1
+Model.hpp:111:7:void Model::saveWire(uint8_t, bool)	1
+Model.hpp:114:7:bool Model::getWire(uint8_t)	1
+ProjectSettingsPresenter.hpp:36:7:void ProjectSettingsPresenter::saveChannelNum(uint8_t)	1
+ProjectSettingsPresenter.hpp:40:7:void ProjectSettingsPresenter::saveSettingsPosition(uint8_t)	1
+ProjectSettingsPresenter.hpp:44:10:uint8_t ProjectSettingsPresenter::getSettingsPosition()	1
+ProjectSettingsPresenter.hpp:52:17:const uint8_t* ProjectSettingsPresenter::getProjectName()	1
+ProjectSettingsPresenter.hpp:56:7:void ProjectSettingsPresenter::saveWire(uint8_t, bool)	1
+ProjectSettingsPresenter.hpp:59:7:bool ProjectSettingsPresenter::getWire(uint8_t)	1
+ProjectSettingsViewBase.hpp:29:26:FrontendApplication& ProjectSettingsViewBase::application()	1
+ProjectSettingsView.hpp:16:10:ProjectSettingsView::~ProjectSettingsView()	1
+ProjectSettingsView.hpp:16:10:virtual ProjectSettingsView::~ProjectSettingsView()	1
+ProjectSettingsView.cpp:5:1:ProjectSettingsView::ProjectSettingsView()	1
+ProjectSettingsView.cpp:9:6:virtual void ProjectSettingsView::setupScreen()	4
+ProjectSettingsView.cpp:42:6:virtual void ProjectSettingsView::tearDownScreen()	1
+ProjectSettingsView.cpp:46:6:void ProjectSettingsView::parameterChange(uint8_t, int8_t)	1
+ProjectSettingsView.cpp:50:6:void ProjectSettingsView::encScroll_action(int8_t)	8
+ProjectSettingsView.cpp:103:6:void ProjectSettingsView::btnYES_action()	28
+ProjectSettingsView.cpp:278:6:void ProjectSettingsView::btnNO_action()	4

@@ -1,0 +1,85 @@
+given input stereo samples named L and R, write advanced shimmer space reverb effect based on allpass filters  in c++. Assume that allpass filter class is already implemented and use arrays to define groups of parameters, such as delay times and amounts of shimmer
+ChatGPT
+Here's an implementation of an advanced shimmer space reverb effect based on allpass filters using arrays to define groups of parameters, such as delay times and amounts of shimmer in C++:
+
+c++
+Copy code
+#include <cmath>
+#include <vector>
+
+// Allpass filter class
+class AllpassFilter {
+public:
+    AllpassFilter(float delayTime, float feedback) : m_delayTime(delayTime), m_feedback(feedback) {
+        m_buffer.resize(static_cast<size_t>(std::ceil(delayTime * SampleRate)));
+    }
+
+    float Process(float input) {
+        float delayOutput = m_buffer[m_readIndex];
+        float output = -input + delayOutput;
+        m_buffer[m_writeIndex] = input + delayOutput * m_feedback;
+        m_readIndex = (m_readIndex + 1) % m_buffer.size();
+        m_writeIndex = (m_writeIndex + 1) % m_buffer.size();
+        return output;
+    }
+
+private:
+    static constexpr int SampleRate = 44100;
+    std::vector<float> m_buffer;
+    int m_readIndex = 0;
+    int m_writeIndex = 0;
+    float m_delayTime;
+    float m_feedback;
+};
+
+// Shimmer space reverb effect class
+class ShimmerSpaceReverb {
+public:
+    ShimmerSpaceReverb(float decayTime, float roomSize, float dryLevel, float wetLevel,
+                       const std::vector<float>& delayTimes, const std::vector<float>& shimmerAmounts)
+            : m_decayTime(decayTime), m_roomSize(roomSize), m_dryLevel(dryLevel), m_wetLevel(wetLevel) {
+        m_allpassFilters.reserve(delayTimes.size());
+        for (int i = 0; i < delayTimes.size(); ++i) {
+            m_allpassFilters.emplace_back(delayTimes[i], shimmerAmounts[i]);
+        }
+    }
+
+    void Process(float& leftSample, float& rightSample) {
+        float input = (leftSample + rightSample) / 2.0f;
+
+        float dry = input * m_dryLevel;
+        float wet = 0.0f;
+
+        for (auto& allpassFilter : m_allpassFilters) {
+            wet += allpassFilter.Process(input);
+        }
+        wet *= m_roomSize;
+
+        leftSample = dry + wet * m_wetLevel + leftSample * (1.0f - m_wetLevel);
+        rightSample = dry + wet * m_wetLevel + rightSample * (1.0f - m_wetLevel);
+
+        m_decayTime *= 0.999f;
+        m_roomSize *= 0.999f;
+    }
+
+private:
+    std::vector<AllpassFilter> m_allpassFilters;
+    float m_decayTime;
+    float m_roomSize;
+    float m_dryLevel;
+    float m_wetLevel;
+};
+
+// Usage example
+int main() {
+    constexpr int NumAllpassFilters = 8;
+    std::vector<float> delayTimes = {0.011, 0.013, 0.017, 0.023, 0.031, 0.041, 0.053, 0.067};
+    std::vector<float> shimmerAmounts = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0};
+
+    ShimmerSpaceReverb reverb(2.0f, 0.8f, 0.7f, 0.3f, delayTimes, shimmerAmounts);
+
+    float leftSample = 0.0f;
+    float rightSample = 0.
+
+
+

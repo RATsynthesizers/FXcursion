@@ -1,0 +1,3 @@
+Tremolo.cpp:3:6:virtual void Tremolo::process()	1
+Tremolo.cpp:9:9:virtual uint8_t Tremolo::getPublicParameter(uint8_t)	1
+Tremolo.cpp:13:6:virtual void Tremolo::setPublicParameter(uint8_t, uint8_t)	1

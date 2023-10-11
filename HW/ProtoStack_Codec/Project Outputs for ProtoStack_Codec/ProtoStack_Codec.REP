@@ -1,0 +1,210 @@
+*************************************************************
+FileName = ProtoStack_Codec.GBR
+AutoAperture = True
+*************************************************************
+Generating : Top Layer
+      File : ProtoStack_Codec.GTL
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D23
+    D24
+    D25
+    D26
+    D27
+    D28
+    D29
+    D30
+    D31
+    D32
+    D33
+    D34
+    D35
+    D36
+    D37
+    D38
+    D39
+    D40
+    D41
+    D65
+    D66
+    D67
+    D68
+    D69
+*************************************************************
+
+*************************************************************
+Generating : Bottom Solder
+      File : ProtoStack_Codec.GBS
+
+    Adding Layer      : Bottom Solder
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D48
+    D61
+    D62
+    D63
+    D72
+    D73
+*************************************************************
+
+*************************************************************
+Generating : Top Solder
+      File : ProtoStack_Codec.GTS
+
+    Adding Layer      : Top Solder
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D42
+    D43
+    D44
+    D45
+    D46
+    D47
+    D48
+    D49
+    D50
+    D51
+    D52
+    D53
+    D54
+    D55
+    D56
+    D57
+    D58
+    D59
+    D60
+    D61
+    D62
+    D63
+    D64
+*************************************************************
+
+*************************************************************
+Generating : OUTLINE
+      File : ProtoStack_Codec.GM3
+
+    Adding Layer      : OUTLINE
+
+
+Used DCodes :
+    D74
+*************************************************************
+
+*************************************************************
+Generating : Bottom Overlay
+      File : ProtoStack_Codec.GBO
+
+    Adding Layer      : Bottom Overlay
+
+
+Used DCodes :
+    D15
+*************************************************************
+
+*************************************************************
+Generating : Top Paste
+      File : ProtoStack_Codec.GTP
+
+    Adding Layer      : Top Paste
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D23
+    D24
+    D25
+    D26
+    D27
+    D28
+    D29
+    D30
+    D31
+    D32
+    D33
+    D34
+    D35
+    D36
+    D37
+    D38
+    D39
+    D40
+    D41
+*************************************************************
+
+*************************************************************
+Generating : Top Overlay
+      File : ProtoStack_Codec.GTO
+
+    Adding Layer      : Top Overlay
+
+
+Used DCodes :
+    D10
+    D11
+    D12
+    D13
+    D14
+    D15
+    D16
+    D17
+    D18
+    D19
+    D20
+    D21
+    D22
+*************************************************************
+
+*************************************************************
+Generating : Bottom Layer
+      File : ProtoStack_Codec.GBL
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D29
+    D65
+    D66
+    D67
+    D69
+    D70
+    D71
+*************************************************************
+
+*************************************************************
+Generating : Bottom Paste
+      File : ProtoStack_Codec.GBP
+
+    Adding Layer      : Bottom Paste
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D29
+    D70
+    D71
+*************************************************************
+

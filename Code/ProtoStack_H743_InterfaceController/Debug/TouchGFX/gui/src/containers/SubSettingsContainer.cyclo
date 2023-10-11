@@ -1,0 +1,22 @@
+Drawable.hpp:121:18:virtual void touchgfx::Drawable::invalidateContent() const	2
+Drawable.hpp:315:18:virtual void touchgfx::Drawable::setX(int16_t)	1
+Drawable.hpp:327:18:virtual void touchgfx::Drawable::setY(int16_t)	1
+Drawable.hpp:356:18:virtual void touchgfx::Drawable::setWidth(int16_t)	1
+Drawable.hpp:368:18:virtual void touchgfx::Drawable::setHeight(int16_t)	1
+Drawable.hpp:378:18:virtual void touchgfx::Drawable::childGeometryChanged()	1
+Drawable.hpp:389:18:virtual void touchgfx::Drawable::handleClickEvent(const touchgfx::ClickEvent&)	1
+Drawable.hpp:401:18:virtual void touchgfx::Drawable::handleGestureEvent(const touchgfx::GestureEvent&)	1
+Drawable.hpp:490:18:virtual void touchgfx::Drawable::handleDragEvent(const touchgfx::DragEvent&)	1
+Drawable.hpp:501:18:virtual void touchgfx::Drawable::handleTickEvent()	1
+Drawable.hpp:588:18:virtual void touchgfx::Drawable::moveTo(int16_t, int16_t)	1
+Container.hpp:165:23:virtual touchgfx::Drawable* touchgfx::Container::getFirstChild()	1
+TypedText.hpp:59:5:touchgfx::TypedText::TypedText(touchgfx::TypedTextId)	1
+TypedText.hpp:65:13:touchgfx::TypedText::~TypedText()	1
+TypedText.hpp:65:13:virtual touchgfx::TypedText::~TypedText()	1
+SubSettingsContainer.hpp:10:13:SubSettingsContainer::~SubSettingsContainer()	1
+SubSettingsContainer.hpp:10:13:virtual SubSettingsContainer::~SubSettingsContainer()	1
+SubSettingsContainer.cpp:3:1:SubSettingsContainer::SubSettingsContainer()	1
+SubSettingsContainer.cpp:7:6:virtual void SubSettingsContainer::initialize()	1
+SubSettingsContainer.cpp:11:6:virtual void SubSettingsContainer::scrollContents(int8_t)	6
+SubSettingsContainer.cpp:23:6:virtual void SubSettingsContainer::resetSubMenu(uint8_t, bool, bool)	4
+SubSettingsContainer.cpp:62:9:virtual uint8_t SubSettingsContainer::getCurrentPos()	1

@@ -1,0 +1,3 @@
+../Modules/Effects/reverb/Reverb.cpp:3:6:virtual void Reverb::process()	0	static
+../Modules/Effects/reverb/Reverb.cpp:9:9:virtual uint8_t Reverb::getPublicParameter(uint8_t)	8	static
+../Modules/Effects/reverb/Reverb.cpp:13:6:virtual void Reverb::setPublicParameter(uint8_t, uint8_t)	0	static

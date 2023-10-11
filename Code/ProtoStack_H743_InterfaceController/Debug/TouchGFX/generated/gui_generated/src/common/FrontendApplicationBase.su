@@ -1,0 +1,85 @@
+c:\st\stm32cubeide_1.7.0\stm32cubeide\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127\tools\arm-none-eabi\include\c++\10.3.1\new:174:33:void* operator new(std::size_t, void*)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/hal/Types.hpp:140:5:touchgfx::Rect::Rect(int16_t, int16_t, int16_t, int16_t)	24	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/UIEventListener.hpp:44:18:virtual void touchgfx::UIEventListener::handleClickEvent(const touchgfx::ClickEvent&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/UIEventListener.hpp:54:18:virtual void touchgfx::UIEventListener::handleDragEvent(const touchgfx::DragEvent&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/UIEventListener.hpp:64:18:virtual void touchgfx::UIEventListener::handleGestureEvent(const touchgfx::GestureEvent&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/UIEventListener.hpp:74:18:virtual void touchgfx::UIEventListener::handleKeyEvent(uint8_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/UIEventListener.hpp:83:18:virtual void touchgfx::UIEventListener::handleTickEvent()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/UIEventListener.hpp:88:18:virtual void touchgfx::UIEventListener::handlePendingScreenTransition()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/UIEventListener.hpp:93:13:touchgfx::UIEventListener::~UIEventListener()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/UIEventListener.hpp:93:13:virtual touchgfx::UIEventListener::~UIEventListener()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Application.hpp:72:18:virtual void touchgfx::Application::changeToStartScreen()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Application.hpp:91:18:virtual void touchgfx::Application::appSwitchScreen(uint8_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Application.hpp:104:18:virtual void touchgfx::Application::requestRedraw(touchgfx::Rect&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Application.hpp:194:10:void touchgfx::Application::clearAllTimerWidgets()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Callback.hpp:179:13:touchgfx::GenericCallback<void>::~GenericCallback()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Callback.hpp:179:13:virtual touchgfx::GenericCallback<void>::~GenericCallback()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/hal/HAL.hpp:110:17:static touchgfx::HAL* touchgfx::HAL::getInstance()	4	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/hal/HAL.hpp:268:17:static touchgfx::LCD& touchgfx::HAL::lcd()	4	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/Transition.hpp:41:5:touchgfx::Transition::Transition()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/Transition.hpp:47:13:touchgfx::Transition::~Transition()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/Transition.hpp:47:13:virtual touchgfx::Transition::~Transition()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/Transition.hpp:52:18:virtual void touchgfx::Transition::handleTickEvent()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/Transition.hpp:72:18:virtual void touchgfx::Transition::tearDown()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/Transition.hpp:80:18:virtual void touchgfx::Transition::init()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/Transition.hpp:89:18:virtual void touchgfx::Transition::invalidate()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/Transition.hpp:100:18:virtual void touchgfx::Transition::setScreenContainer(touchgfx::Container&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Application.hpp:41:7:touchgfx::Application::~Application()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Application.hpp:41:7:virtual touchgfx::Application::~Application()	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/MVPApplication.hpp:47:5:touchgfx::MVPApplication::MVPApplication()	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/MVPApplication.hpp:59:18:virtual void touchgfx::MVPApplication::handlePendingScreenTransition()	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/MVPApplication.hpp:73:10:void touchgfx::MVPApplication::evaluatePendingScreenTransition()	16	static
+../TouchGFX/gui/include/gui/model/Model.hpp:51:7:void Model::bind(ModelListener*)	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/MVPApplication.hpp:43:7:touchgfx::MVPApplication::~MVPApplication()	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/MVPApplication.hpp:43:7:virtual touchgfx::MVPApplication::~MVPApplication()	16	static
+../TouchGFX/generated/gui_generated/include/gui_generated/common/FrontendApplicationBase.hpp:16:13:FrontendApplicationBase::~FrontendApplicationBase()	16	static
+../TouchGFX/generated/gui_generated/include/gui_generated/common/FrontendApplicationBase.hpp:16:13:virtual FrontendApplicationBase::~FrontendApplicationBase()	16	static
+../TouchGFX/generated/gui_generated/include/gui_generated/common/FrontendApplicationBase.hpp:18:18:virtual void FrontendApplicationBase::changeToStartScreen()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/NoTransition.hpp:35:18:virtual void touchgfx::NoTransition::handleTickEvent()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/BlockTransition.hpp:40:5:touchgfx::BlockTransition::BlockTransition()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/BlockTransition.hpp:64:18:virtual void touchgfx::BlockTransition::handleTickEvent()	248	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/BlockTransition.hpp:103:18:virtual void touchgfx::BlockTransition::tearDown()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/BlockTransition.hpp:107:18:virtual void touchgfx::BlockTransition::init()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/BlockTransition.hpp:116:18:virtual void touchgfx::BlockTransition::invalidate()	16	static
+../TouchGFX/gui/include/gui/model/ModelListener.hpp:16:10:void ModelListener::bind(Model*)	16	static
+../TouchGFX/generated/gui_generated/src/common/FrontendApplicationBase.cpp:23:1:FrontendApplicationBase::FrontendApplicationBase(Model&, FrontendHeap&)	24	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Callback.hpp:175:7:constexpr touchgfx::GenericCallback<void>& touchgfx::GenericCallback<void>::operator=(const touchgfx::GenericCallback<void>&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Callback.hpp:424:8:constexpr touchgfx::Callback<FrontendApplicationBase>& touchgfx::Callback<FrontendApplicationBase>::operator=(touchgfx::Callback<FrontendApplicationBase>&&)	16	static
+../TouchGFX/generated/gui_generated/src/common/FrontendApplicationBase.cpp:40:6:void FrontendApplicationBase::gotoLogoStartupScreenNoTransition()	48	static
+../TouchGFX/generated/gui_generated/src/common/FrontendApplicationBase.cpp:46:6:void FrontendApplicationBase::gotoLogoStartupScreenNoTransitionImpl()	24	static
+../TouchGFX/generated/gui_generated/src/common/FrontendApplicationBase.cpp:53:6:void FrontendApplicationBase::gotoProjectSettingsScreenBlockTransition()	48	static
+../TouchGFX/generated/gui_generated/src/common/FrontendApplicationBase.cpp:59:6:void FrontendApplicationBase::gotoProjectSettingsScreenBlockTransitionImpl()	24	static
+../TouchGFX/generated/gui_generated/src/common/FrontendApplicationBase.cpp:66:6:void FrontendApplicationBase::gotoFXchainScreenBlockTransition()	48	static
+../TouchGFX/generated/gui_generated/src/common/FrontendApplicationBase.cpp:72:6:void FrontendApplicationBase::gotoFXchainScreenBlockTransitionImpl()	24	static
+../TouchGFX/generated/gui_generated/src/common/FrontendApplicationBase.cpp:79:6:void FrontendApplicationBase::gotoEffectSettingsScreenBlockTransition()	48	static
+../TouchGFX/generated/gui_generated/src/common/FrontendApplicationBase.cpp:85:6:void FrontendApplicationBase::gotoEffectSettingsScreenBlockTransitionImpl()	24	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Callback.hpp:175:7:constexpr touchgfx::GenericCallback<void>::GenericCallback()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Callback.hpp:427:5:touchgfx::Callback<dest_type, void, void, void>::Callback() [with dest_type = FrontendApplicationBase]	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Callback.hpp:440:5:touchgfx::Callback<dest_type, void, void, void>::Callback(dest_type*, void (dest_type::*)()) [with dest_type = FrontendApplicationBase]	24	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/NoTransition.hpp:31:7:touchgfx::NoTransition::NoTransition()	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/MVPApplication.hpp:161:16:PresenterType* touchgfx::makeTransition(touchgfx::Screen**, touchgfx::Presenter**, touchgfx::MVPHeap&, touchgfx::Transition**, ModelType*) [with ScreenType = LogoStartupView; PresenterType = LogoStartupPresenter; TransType = touchgfx::NoTransition; ModelType = Model]	72	static
+../Middlewares/ST/touchgfx/framework/include/mvp/MVPApplication.hpp:161:16:PresenterType* touchgfx::makeTransition(touchgfx::Screen**, touchgfx::Presenter**, touchgfx::MVPHeap&, touchgfx::Transition**, ModelType*) [with ScreenType = ProjectSettingsView; PresenterType = ProjectSettingsPresenter; TransType = touchgfx::BlockTransition; ModelType = Model]	72	static
+../Middlewares/ST/touchgfx/framework/include/mvp/MVPApplication.hpp:161:16:PresenterType* touchgfx::makeTransition(touchgfx::Screen**, touchgfx::Presenter**, touchgfx::MVPHeap&, touchgfx::Transition**, ModelType*) [with ScreenType = FXchainView; PresenterType = FXchainPresenter; TransType = touchgfx::BlockTransition; ModelType = Model]	72	static
+../Middlewares/ST/touchgfx/framework/include/mvp/MVPApplication.hpp:161:16:PresenterType* touchgfx::makeTransition(touchgfx::Screen**, touchgfx::Presenter**, touchgfx::MVPHeap&, touchgfx::Transition**, ModelType*) [with ScreenType = EffectSettingsView; PresenterType = EffectSettingsPresenter; TransType = touchgfx::BlockTransition; ModelType = Model]	72	static
+../Middlewares/ST/touchgfx/framework/include/common/AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = touchgfx::NoTransition]	16	static
+../Middlewares/ST/touchgfx/framework/include/common/AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = LogoStartupView]	16	static
+../Middlewares/ST/touchgfx/framework/include/common/AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = LogoStartupPresenter]	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/View.hpp:50:10:void touchgfx::View<T>::bind(T&) [with T = LogoStartupPresenter]	16	static
+../Middlewares/ST/touchgfx/framework/include/common/AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = touchgfx::BlockTransition]	16	static
+../Middlewares/ST/touchgfx/framework/include/common/AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = ProjectSettingsView]	16	static
+../Middlewares/ST/touchgfx/framework/include/common/AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = ProjectSettingsPresenter]	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/View.hpp:50:10:void touchgfx::View<T>::bind(T&) [with T = ProjectSettingsPresenter]	16	static
+../Middlewares/ST/touchgfx/framework/include/common/AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = FXchainView]	16	static
+../Middlewares/ST/touchgfx/framework/include/common/AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = FXchainPresenter]	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/View.hpp:50:10:void touchgfx::View<T>::bind(T&) [with T = FXchainPresenter]	16	static
+../Middlewares/ST/touchgfx/framework/include/common/AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = EffectSettingsView]	16	static
+../Middlewares/ST/touchgfx/framework/include/common/AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = EffectSettingsPresenter]	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/View.hpp:50:10:void touchgfx::View<T>::bind(T&) [with T = EffectSettingsPresenter]	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/BlockTransition.hpp:32:7:touchgfx::BlockTransition::~BlockTransition()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/BlockTransition.hpp:32:7:virtual touchgfx::BlockTransition::~BlockTransition()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/NoTransition.hpp:31:7:touchgfx::NoTransition::~NoTransition()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/transitions/NoTransition.hpp:31:7:virtual touchgfx::NoTransition::~NoTransition()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Callback.hpp:424:8:touchgfx::Callback<FrontendApplicationBase>::~Callback()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Callback.hpp:424:8:virtual touchgfx::Callback<FrontendApplicationBase>::~Callback()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Callback.hpp:449:18:void touchgfx::Callback<dest_type, void, void, void>::execute() [with dest_type = FrontendApplicationBase]	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Callback.hpp:459:18:bool touchgfx::Callback<dest_type, void, void, void>::isValid() const [with dest_type = FrontendApplicationBase]	16	static

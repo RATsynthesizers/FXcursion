@@ -1,0 +1,3 @@
+Amp.cpp:3:6:virtual void Amp::process()	1
+Amp.cpp:10:9:virtual uint8_t Amp::getPublicParameter(uint8_t)	1
+Amp.cpp:14:6:virtual void Amp::setPublicParameter(uint8_t, uint8_t)	1

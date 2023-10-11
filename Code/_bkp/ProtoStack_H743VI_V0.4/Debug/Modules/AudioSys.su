@@ -1,0 +1,3 @@
+../Modules/AudioSys.cpp:19:6:void AudioSys::getAudioSamplesInInput(SAIadapter_TypeDef*)	16	static
+../Modules/AudioSys.cpp:25:6:void AudioSys::setAudioSamplesToOutput(SAIadapter_TypeDef*)	16	static
+../Modules/AudioSys.cpp:33:6:void AudioSys::update()	48	static

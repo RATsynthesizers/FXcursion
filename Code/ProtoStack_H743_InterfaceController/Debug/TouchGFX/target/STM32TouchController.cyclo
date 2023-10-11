@@ -1,0 +1,6 @@
+TouchController.hpp:30:13:touchgfx::TouchController::~TouchController()	1
+TouchController.hpp:30:13:virtual touchgfx::TouchController::~TouchController()	1
+STM32TouchController.cpp:27:6:virtual void STM32TouchController::init()	1
+STM32TouchController.cpp:35:6:virtual bool STM32TouchController::sampleTouch(int32_t&, int32_t&)	1
+STM32TouchController.hpp:38:7:STM32TouchController::~STM32TouchController()	1
+STM32TouchController.hpp:38:7:virtual STM32TouchController::~STM32TouchController()	1

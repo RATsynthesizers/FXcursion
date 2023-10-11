@@ -1,0 +1,669 @@
+(pcb ProtoStack_H750VBT.PcbDoc
+    (resolution MIL 10000)
+    (structure
+        (boundary
+            (rect pcb
+                3247.7500 1247.7500 4512.5920 5701.9806
+            )
+        )
+        (boundary
+            (path signal 0.0
+                3250.2500 1250.2500
+                3250.2500 5659.6988
+                4510.0926 5659.6988
+                4510.0926 1250.2500
+                3250.2500 1250.2500
+            )
+        )
+        (via
+            Via0_TB_RoutingVias
+        )
+        (rule
+            (length_amplitude 200 20)
+            (width 8.0000)
+            (clearance 10.0000)
+            (reorder starburst)
+        )
+        (layer TopLayer 
+            (type signal) (direction horizontal)
+        )
+        (layer MidLayer2 
+            (type signal) (direction vertical)
+        )
+        (layer BottomLayer 
+            (type signal) (direction horizontal)
+        )
+        (grid wire 20.0000)
+        (grid via 20.0000)
+    )
+    (placement
+        (component QFP50P1600X1600X160-100N_IC1
+            (place IC1 3880.1713 3454.9744 front 0))
+        (component HeaderDtack_43_H2
+            (place H2 4325.0000 5550.0000 front 0))
+        (component HeaderDtack_43_H1
+            (place H1 3425.0000 5550.0000 front 0))
+    )
+    (library
+        (image QFP50P1600X1600X160-100N_IC1
+            (pin Pad1 1 -304.6453 236.2196 )
+            (pin Pad1 2 -304.6453 216.5356 )
+            (pin Pad1 3 -304.6453 196.8496 )
+            (pin Pad1 4 -304.6453 177.1656 )
+            (pin Pad1 5 -304.6453 157.4796 )
+            (pin Pad1 6 -304.6453 137.7956 )
+            (pin Pad1 7 -304.6453 118.1096 )
+            (pin Pad1 8 -304.6453 98.4256 )
+            (pin Pad1 9 -304.6453 78.7396 )
+            (pin Pad1 10 -304.6453 59.0556 )
+            (pin Pad1 11 -304.6453 39.3696 )
+            (pin Pad1 12 -304.6453 19.6856 )
+            (pin Pad1 13 -304.6453 -0.0004 )
+            (pin Pad1 14 -304.6453 -19.6844 )
+            (pin Pad1 15 -304.6453 -39.3704 )
+            (pin Pad1 16 -304.6453 -59.0544 )
+            (pin Pad1 17 -304.6453 -78.7404 )
+            (pin Pad1 18 -304.6453 -98.4244 )
+            (pin Pad1 19 -304.6453 -118.1104 )
+            (pin Pad1 20 -304.6453 -137.7944 )
+            (pin Pad1 21 -304.6453 -157.4804 )
+            (pin Pad1 22 -304.6453 -177.1644 )
+            (pin Pad1 23 -304.6453 -196.8504 )
+            (pin Pad1 24 -304.6453 -216.5344 )
+            (pin Pad1 25 -304.6453 -236.2204 )
+            (pin Pad2 26 -236.2213 -304.6464  (rotate 90))
+            (pin Pad2 27 -216.5353 -304.6464  (rotate 90))
+            (pin Pad2 28 -196.8513 -304.6464  (rotate 90))
+            (pin Pad2 29 -177.1653 -304.6464  (rotate 90))
+            (pin Pad2 30 -157.4793 -304.6464  (rotate 90))
+            (pin Pad2 31 -137.7953 -304.6464  (rotate 90))
+            (pin Pad2 32 -118.1093 -304.6464  (rotate 90))
+            (pin Pad2 33 -98.4253 -304.6464  (rotate 90))
+            (pin Pad2 34 -78.7393 -304.6464  (rotate 90))
+            (pin Pad2 35 -59.0553 -304.6464  (rotate 90))
+            (pin Pad2 36 -39.3693 -304.6464  (rotate 90))
+            (pin Pad2 37 -19.6853 -304.6464  (rotate 90))
+            (pin Pad2 38 0.0007 -304.6464  (rotate 90))
+            (pin Pad2 39 19.6847 -304.6464  (rotate 90))
+            (pin Pad2 40 39.3707 -304.6464  (rotate 90))
+            (pin Pad2 41 59.0547 -304.6464  (rotate 90))
+            (pin Pad2 42 78.7407 -304.6464  (rotate 90))
+            (pin Pad2 43 98.4247 -304.6464  (rotate 90))
+            (pin Pad2 44 118.1107 -304.6464  (rotate 90))
+            (pin Pad2 45 137.7947 -304.6464  (rotate 90))
+            (pin Pad2 46 157.4807 -304.6464  (rotate 90))
+            (pin Pad2 47 177.1647 -304.6464  (rotate 90))
+            (pin Pad2 48 196.8507 -304.6464  (rotate 90))
+            (pin Pad2 49 216.5347 -304.6464  (rotate 90))
+            (pin Pad2 50 236.2207 -304.6464  (rotate 90))
+            (pin Pad1 51 304.6467 -236.2204 )
+            (pin Pad1 52 304.6467 -216.5344 )
+            (pin Pad1 53 304.6467 -196.8504 )
+            (pin Pad1 54 304.6467 -177.1644 )
+            (pin Pad1 55 304.6467 -157.4804 )
+            (pin Pad1 56 304.6467 -137.7944 )
+            (pin Pad1 57 304.6467 -118.1104 )
+            (pin Pad1 58 304.6467 -98.4244 )
+            (pin Pad1 59 304.6467 -78.7404 )
+            (pin Pad1 60 304.6467 -59.0544 )
+            (pin Pad1 61 304.6467 -39.3704 )
+            (pin Pad1 62 304.6467 -19.6844 )
+            (pin Pad1 63 304.6467 -0.0004 )
+            (pin Pad1 64 304.6467 19.6856 )
+            (pin Pad1 65 304.6467 39.3696 )
+            (pin Pad1 66 304.6467 59.0556 )
+            (pin Pad1 67 304.6467 78.7396 )
+            (pin Pad1 68 304.6467 98.4256 )
+            (pin Pad1 69 304.6467 118.1096 )
+            (pin Pad1 70 304.6467 137.7956 )
+            (pin Pad1 71 304.6467 157.4796 )
+            (pin Pad1 72 304.6467 177.1656 )
+            (pin Pad1 73 304.6467 196.8496 )
+            (pin Pad1 74 304.6467 216.5356 )
+            (pin Pad1 75 304.6467 236.2196 )
+            (pin Pad2 76 236.2207 304.6456  (rotate 90))
+            (pin Pad2 77 216.5347 304.6456  (rotate 90))
+            (pin Pad2 78 196.8507 304.6456  (rotate 90))
+            (pin Pad2 79 177.1647 304.6456  (rotate 90))
+            (pin Pad2 80 157.4807 304.6456  (rotate 90))
+            (pin Pad2 81 137.7947 304.6456  (rotate 90))
+            (pin Pad2 82 118.1107 304.6456  (rotate 90))
+            (pin Pad2 83 98.4247 304.6456  (rotate 90))
+            (pin Pad2 84 78.7407 304.6456  (rotate 90))
+            (pin Pad2 85 59.0547 304.6456  (rotate 90))
+            (pin Pad2 86 39.3707 304.6456  (rotate 90))
+            (pin Pad2 87 19.6847 304.6456  (rotate 90))
+            (pin Pad2 88 0.0007 304.6456  (rotate 90))
+            (pin Pad2 89 -19.6853 304.6456  (rotate 90))
+            (pin Pad2 90 -39.3693 304.6456  (rotate 90))
+            (pin Pad2 91 -59.0553 304.6456  (rotate 90))
+            (pin Pad2 92 -78.7393 304.6456  (rotate 90))
+            (pin Pad2 93 -98.4253 304.6456  (rotate 90))
+            (pin Pad2 94 -118.1093 304.6456  (rotate 90))
+            (pin Pad2 95 -137.7953 304.6456  (rotate 90))
+            (pin Pad2 96 -157.4793 304.6456  (rotate 90))
+            (pin Pad2 97 -177.1653 304.6456  (rotate 90))
+            (pin Pad2 98 -196.8513 304.6456  (rotate 90))
+            (pin Pad2 99 -216.5353 304.6456  (rotate 90))
+            (pin Pad2 100 -236.2213 304.6456  (rotate 90))
+        )
+        (image HeaderDtack_43_H2
+            (pin Pad3 43 0.0000 -4200.0000  (rotate 270))
+            (pin Pad3 41 0.0000 -4000.0000  (rotate 270))
+            (pin Pad3 42 0.0000 -4100.0000  (rotate 270))
+            (pin Pad3 39 0.0000 -3800.0000  (rotate 270))
+            (pin Pad3 40 0.0000 -3900.0000  (rotate 270))
+            (pin Pad3 37 0.0000 -3600.0000  (rotate 270))
+            (pin Pad3 38 0.0000 -3700.0000  (rotate 270))
+            (pin Pad3 35 0.0000 -3400.0000  (rotate 270))
+            (pin Pad3 36 0.0000 -3500.0000  (rotate 270))
+            (pin Pad3 33 0.0000 -3200.0000  (rotate 270))
+            (pin Pad3 34 0.0000 -3300.0000  (rotate 270))
+            (pin Pad3 31 0.0000 -3000.0000  (rotate 270))
+            (pin Pad3 32 0.0000 -3100.0000  (rotate 270))
+            (pin Pad3 29 0.0000 -2800.0000  (rotate 270))
+            (pin Pad3 30 0.0000 -2900.0000  (rotate 270))
+            (pin Pad3 27 0.0000 -2600.0000  (rotate 270))
+            (pin Pad3 28 0.0000 -2700.0000  (rotate 270))
+            (pin Pad3 25 0.0000 -2400.0000  (rotate 270))
+            (pin Pad3 26 0.0000 -2500.0000  (rotate 270))
+            (pin Pad3 23 0.0000 -2200.0000  (rotate 270))
+            (pin Pad3 24 0.0000 -2300.0000  (rotate 270))
+            (pin Pad3 21 0.0000 -2000.0000  (rotate 270))
+            (pin Pad3 22 0.0000 -2100.0000  (rotate 270))
+            (pin Pad3 19 0.0000 -1800.0000  (rotate 270))
+            (pin Pad3 20 0.0000 -1900.0000  (rotate 270))
+            (pin Pad3 17 0.0000 -1600.0000  (rotate 270))
+            (pin Pad3 18 0.0000 -1700.0000  (rotate 270))
+            (pin Pad3 15 0.0000 -1400.0000  (rotate 270))
+            (pin Pad3 16 0.0000 -1500.0000  (rotate 270))
+            (pin Pad3 13 0.0000 -1200.0000  (rotate 270))
+            (pin Pad3 14 0.0000 -1300.0000  (rotate 270))
+            (pin Pad3 11 0.0000 -1000.0000  (rotate 270))
+            (pin Pad3 12 0.0000 -1100.0000  (rotate 270))
+            (pin Pad3 9 0.0000 -800.0000  (rotate 270))
+            (pin Pad3 10 0.0000 -900.0000  (rotate 270))
+            (pin Pad3 7 0.0000 -600.0000  (rotate 270))
+            (pin Pad3 8 0.0000 -700.0000  (rotate 270))
+            (pin Pad3 5 0.0000 -400.0000  (rotate 270))
+            (pin Pad3 6 0.0000 -500.0000  (rotate 270))
+            (pin Pad3 3 0.0000 -200.0000  (rotate 270))
+            (pin Pad3 4 0.0000 -300.0000  (rotate 270))
+            (pin Pad3 1 0.0000 0.0000  (rotate 270))
+            (pin Pad3 2 0.0000 -100.0000  (rotate 270))
+        )
+        (image HeaderDtack_43_H1
+            (pin Pad3 43 0.0000 -4200.0000  (rotate 270))
+            (pin Pad3 41 0.0000 -4000.0000  (rotate 270))
+            (pin Pad3 42 0.0000 -4100.0000  (rotate 270))
+            (pin Pad3 39 0.0000 -3800.0000  (rotate 270))
+            (pin Pad3 40 0.0000 -3900.0000  (rotate 270))
+            (pin Pad3 37 0.0000 -3600.0000  (rotate 270))
+            (pin Pad3 38 0.0000 -3700.0000  (rotate 270))
+            (pin Pad3 35 0.0000 -3400.0000  (rotate 270))
+            (pin Pad3 36 0.0000 -3500.0000  (rotate 270))
+            (pin Pad3 33 0.0000 -3200.0000  (rotate 270))
+            (pin Pad3 34 0.0000 -3300.0000  (rotate 270))
+            (pin Pad3 31 0.0000 -3000.0000  (rotate 270))
+            (pin Pad3 32 0.0000 -3100.0000  (rotate 270))
+            (pin Pad3 29 0.0000 -2800.0000  (rotate 270))
+            (pin Pad3 30 0.0000 -2900.0000  (rotate 270))
+            (pin Pad3 27 0.0000 -2600.0000  (rotate 270))
+            (pin Pad3 28 0.0000 -2700.0000  (rotate 270))
+            (pin Pad3 25 0.0000 -2400.0000  (rotate 270))
+            (pin Pad3 26 0.0000 -2500.0000  (rotate 270))
+            (pin Pad3 23 0.0000 -2200.0000  (rotate 270))
+            (pin Pad3 24 0.0000 -2300.0000  (rotate 270))
+            (pin Pad3 21 0.0000 -2000.0000  (rotate 270))
+            (pin Pad3 22 0.0000 -2100.0000  (rotate 270))
+            (pin Pad3 19 0.0000 -1800.0000  (rotate 270))
+            (pin Pad3 20 0.0000 -1900.0000  (rotate 270))
+            (pin Pad3 17 0.0000 -1600.0000  (rotate 270))
+            (pin Pad3 18 0.0000 -1700.0000  (rotate 270))
+            (pin Pad3 15 0.0000 -1400.0000  (rotate 270))
+            (pin Pad3 16 0.0000 -1500.0000  (rotate 270))
+            (pin Pad3 13 0.0000 -1200.0000  (rotate 270))
+            (pin Pad3 14 0.0000 -1300.0000  (rotate 270))
+            (pin Pad3 11 0.0000 -1000.0000  (rotate 270))
+            (pin Pad3 12 0.0000 -1100.0000  (rotate 270))
+            (pin Pad3 9 0.0000 -800.0000  (rotate 270))
+            (pin Pad3 10 0.0000 -900.0000  (rotate 270))
+            (pin Pad3 7 0.0000 -600.0000  (rotate 270))
+            (pin Pad3 8 0.0000 -700.0000  (rotate 270))
+            (pin Pad3 5 0.0000 -400.0000  (rotate 270))
+            (pin Pad3 6 0.0000 -500.0000  (rotate 270))
+            (pin Pad3 3 0.0000 -200.0000  (rotate 270))
+            (pin Pad3 4 0.0000 -300.0000  (rotate 270))
+            (pin Pad3 1 0.0000 0.0000  (rotate 270))
+            (pin Pad3 2 0.0000 -100.0000  (rotate 270))
+        )
+        (padstack Via0_TB_RoutingVias
+            (shape (circle signal 23.6220))
+        )
+        (padstack Pad1
+            (shape (rect TopLayer -29.0354 -5.9055 29.0354 5.9055))
+        )
+        (padstack Pad2
+            (shape (rect TopLayer -29.0354 -5.9055 29.0354 5.9055))
+        )
+        (padstack Pad3
+            (shape (rect signal -35.4330 -3.9371 35.4330 3.9371))
+            (shape (circle signal 70.8660 0.0000 -3.9371))
+            (shape (circle signal 70.8660 0.0000 3.9371))
+        )
+    )
+    (network
+        (net NetH2_43
+            (pins
+                IC1-37 H2-43 
+            )
+        )
+        (net NetH2_42
+            (pins
+                IC1-38 H2-42 
+            )
+        )
+        (net NetH2_41
+            (pins
+                IC1-39 H2-41 
+            )
+        )
+        (net NetH2_40
+            (pins
+                IC1-40 H2-40 
+            )
+        )
+        (net NetH2_39
+            (pins
+                IC1-41 H2-39 
+            )
+        )
+        (net NetH2_38
+            (pins
+                IC1-42 H2-38 
+            )
+        )
+        (net NetH2_37
+            (pins
+                IC1-43 H2-37 
+            )
+        )
+        (net NetH2_36
+            (pins
+                IC1-44 H2-36 
+            )
+        )
+        (net NetH2_35
+            (pins
+                IC1-45 H2-35 
+            )
+        )
+        (net NetH2_34
+            (pins
+                IC1-46 H2-34 
+            )
+        )
+        (net NetH2_33
+            (pins
+                IC1-47 H2-33 
+            )
+        )
+        (net NetH2_32
+            (pins
+                IC1-51 H2-32 
+            )
+        )
+        (net NetH2_31
+            (pins
+                IC1-52 H2-31 
+            )
+        )
+        (net NetH2_30
+            (pins
+                IC1-53 H2-30 
+            )
+        )
+        (net NetH2_29
+            (pins
+                IC1-54 H2-29 
+            )
+        )
+        (net NetH2_28
+            (pins
+                IC1-55 H2-28 
+            )
+        )
+        (net NetH2_27
+            (pins
+                IC1-56 H2-27 
+            )
+        )
+        (net NetH2_26
+            (pins
+                IC1-57 H2-26 
+            )
+        )
+        (net NetH2_25
+            (pins
+                IC1-58 H2-25 
+            )
+        )
+        (net NetH2_24
+            (pins
+                IC1-59 H2-24 
+            )
+        )
+        (net NetH2_23
+            (pins
+                IC1-60 H2-23 
+            )
+        )
+        (net NetH2_22
+            (pins
+                IC1-61 H2-22 
+            )
+        )
+        (net NetH2_21
+            (pins
+                IC1-62 H2-21 
+            )
+        )
+        (net NetH2_20
+            (pins
+                IC1-63 H2-20 
+            )
+        )
+        (net NetH2_19
+            (pins
+                IC1-64 H2-19 
+            )
+        )
+        (net NetH2_18
+            (pins
+                IC1-65 H2-18 
+            )
+        )
+        (net NetH2_17
+            (pins
+                IC1-66 H2-17 
+            )
+        )
+        (net NetH2_16
+            (pins
+                IC1-67 H2-16 
+            )
+        )
+        (net NetH2_15
+            (pins
+                IC1-68 H2-15 
+            )
+        )
+        (net NetH2_14
+            (pins
+                IC1-69 H2-14 
+            )
+        )
+        (net NetH2_13
+            (pins
+                IC1-70 H2-13 
+            )
+        )
+        (net NetH2_12
+            (pins
+                IC1-71 H2-12 
+            )
+        )
+        (net NetH2_11
+            (pins
+                IC1-72 H2-11 
+            )
+        )
+        (net NetH2_10
+            (pins
+                IC1-76 H2-10 
+            )
+        )
+        (net NetH2_9
+            (pins
+                IC1-77 H2-9 
+            )
+        )
+        (net NetH2_8
+            (pins
+                IC1-78 H2-8 
+            )
+        )
+        (net NetH2_7
+            (pins
+                IC1-79 H2-7 
+            )
+        )
+        (net NetH2_6
+            (pins
+                IC1-80 H2-6 
+            )
+        )
+        (net NetH2_5
+            (pins
+                IC1-81 H2-5 
+            )
+        )
+        (net NetH2_4
+            (pins
+                IC1-82 H2-4 
+            )
+        )
+        (net NetH2_3
+            (pins
+                IC1-83 H2-3 
+            )
+        )
+        (net NetH2_2
+            (pins
+                IC1-84 H2-2 
+            )
+        )
+        (net NetH2_1
+            (pins
+                IC1-85 H2-1 
+            )
+        )
+        (net NetH1_43
+            (pins
+                H1-43 IC1-36 
+            )
+        )
+        (net NetH1_42
+            (pins
+                H1-42 IC1-35 
+            )
+        )
+        (net NetH1_41
+            (pins
+                H1-41 IC1-34 
+            )
+        )
+        (net NetH1_40
+            (pins
+                H1-40 IC1-33 
+            )
+        )
+        (net NetH1_39
+            (pins
+                H1-39 IC1-32 
+            )
+        )
+        (net NetH1_38
+            (pins
+                H1-38 IC1-31 
+            )
+        )
+        (net NetH1_37
+            (pins
+                H1-37 IC1-30 
+            )
+        )
+        (net NetH1_36
+            (pins
+                H1-36 IC1-29 
+            )
+        )
+        (net NetH1_35
+            (pins
+                H1-35 IC1-28 
+            )
+        )
+        (net NetH1_34
+            (pins
+                H1-34 IC1-25 
+            )
+        )
+        (net NetH1_33
+            (pins
+                H1-33 IC1-24 
+            )
+        )
+        (net NetH1_32
+            (pins
+                H1-32 IC1-23 
+            )
+        )
+        (net NetH1_31
+            (pins
+                H1-31 IC1-22 
+            )
+        )
+        (net NetH1_30
+            (pins
+                H1-30 IC1-21 
+            )
+        )
+        (net NetH1_29
+            (pins
+                H1-29 IC1-20 
+            )
+        )
+        (net NetH1_28
+            (pins
+                H1-28 IC1-19 
+            )
+        )
+        (net NetH1_27
+            (pins
+                H1-27 IC1-18 
+            )
+        )
+        (net NetH1_26
+            (pins
+                H1-26 IC1-17 
+            )
+        )
+        (net NetH1_25
+            (pins
+                H1-25 IC1-16 
+            )
+        )
+        (net NetH1_24
+            (pins
+                H1-24 IC1-15 
+            )
+        )
+        (net NetH1_23
+            (pins
+                H1-23 IC1-14 
+            )
+        )
+        (net NetH1_18
+            (pins
+                H1-18 IC1-9 
+            )
+        )
+        (net NetH1_17
+            (pins
+                H1-17 IC1-8 
+            )
+        )
+        (net NetH1_16
+            (pins
+                H1-16 IC1-7 
+            )
+        )
+        (net NetH1_15
+            (pins
+                H1-15 IC1-6 
+            )
+        )
+        (net NetH1_14
+            (pins
+                H1-14 IC1-5 
+            )
+        )
+        (net NetH1_13
+            (pins
+                H1-13 IC1-4 
+            )
+        )
+        (net NetH1_12
+            (pins
+                H1-12 IC1-3 
+            )
+        )
+        (net NetH1_11
+            (pins
+                H1-11 IC1-2 
+            )
+        )
+        (net NetH1_10
+            (pins
+                H1-10 IC1-1 
+            )
+        )
+        (net NetH1_9
+            (pins
+                H1-9 IC1-98 
+            )
+        )
+        (net NetH1_8
+            (pins
+                H1-8 IC1-97 
+            )
+        )
+        (net NetH1_7
+            (pins
+                H1-7 IC1-96 
+            )
+        )
+        (net NetH1_6
+            (pins
+                H1-6 IC1-95 
+            )
+        )
+        (net NetH1_5
+            (pins
+                H1-5 IC1-93 
+            )
+        )
+        (net NetH1_4
+            (pins
+                H1-4 IC1-92 
+            )
+        )
+        (net NetH1_3
+            (pins
+                H1-3 IC1-91 
+            )
+        )
+        (net NetH1_2
+            (pins
+                H1-2 IC1-90 
+            )
+        )
+        (net NetH1_1
+            (pins
+                H1-1 IC1-89 
+            )
+        )
+    )
+    (wiring
+    )
+)

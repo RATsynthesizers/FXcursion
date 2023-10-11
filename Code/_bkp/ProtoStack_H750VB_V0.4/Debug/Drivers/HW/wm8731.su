@@ -1,0 +1,5 @@
+../Drivers/HW/wm8731.c:10:6:CodecRegWrite	40	static
+../Drivers/HW/wm8731.c:18:6:SetLineInGain	16	static
+../Drivers/HW/wm8731.c:26:6:SetHPGain	16	static
+../Drivers/HW/wm8731.c:37:6:CodecPowerUp	16	static
+../Drivers/HW/wm8731.c:89:6:CodecPowerDown	16	static

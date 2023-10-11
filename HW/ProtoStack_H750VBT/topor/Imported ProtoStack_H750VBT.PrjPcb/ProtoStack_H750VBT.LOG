@@ -1,0 +1,13 @@
+PCAD Importer Log
+Project : ProtoStack_H750VBT.PrjPcb
+
+Section : D:\YandexDisk\Stud\Prog\Synth\_Altium\_ProtoStack\ProtoStack_H750VBT\topor\ProtoStack_H750VBT.pcb
+    Section : Load Messages
+        Warning - 1 : Skipping Token drillSymSettings On Line 2073
+    EndSection
+
+    Section : Import Messages
+        Warning - 0 : PCAD Pattern Graphics [HeaderDtack_43_H2][Primary] associated with PCAD Component [H2] has been renamed to PCB FootPrint [HeaderDtack_43_H2_H2(Primary)].
+        Warning - 0 : PCAD Pattern Graphics [HeaderDtack_43_H1][Primary] associated with PCAD Component [H1] has been renamed to PCB FootPrint [HeaderDtack_43_H1_H1(Primary)].
+    EndSection
+EndSection

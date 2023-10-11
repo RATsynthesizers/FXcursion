@@ -1,0 +1,108 @@
+given input stereo samples named L and R,  write simple granular audio oscillator in c++
+ChatGPT
+Here's an example implementation of a simple granular audio oscillator in C++ for generating stereo samples:
+
+c++
+Copy code
+#include <vector>
+#include <random>
+
+class GranularOscillator {
+public:
+    GranularOscillator(float frequency, float sampleRate, float grainSize, float overlap) :
+        frequency_(frequency),
+        sampleRate_(sampleRate),
+        grainSize_(grainSize),
+        overlap_(overlap),
+        phase_(0.0f),
+        phaseIncrement_(frequency / sampleRate),
+        amplitude_(0.5f),
+        randomEngine_(std::random_device()()),
+        distribution_(-overlap * grainSize, overlap * grainSize)
+    {
+        generateGrainTable();
+    }
+
+    void setFrequency(float frequency) {
+        frequency_ = frequency;
+        phaseIncrement_ = frequency / sampleRate_;
+    }
+
+    void setAmplitude(float amplitude) {
+        amplitude_ = amplitude;
+    }
+
+    void generate(float* L, float* R, size_t numSamples) {
+        for (size_t i = 0; i < numSamples; ++i) {
+            float sample = 0.0f;
+
+            // Generate a new grain when phase wraps around
+            if (phase_ < phaseIncrement_) {
+                generateGrain();
+            }
+
+            // Read the current grain sample at the phase position
+            size_t index = static_cast<size_t>(phase_ * grainSize_);
+            float grainSample = grain_[index];
+
+            sample = grainSample * amplitude_;
+
+            L[i] = sample;
+            R[i] = sample;
+
+            phase_ += phaseIncrement_;
+
+            // Wrap phase between 0 and 1
+            if (phase_ >= 1.0f)
+                phase_ -= 1.0f;
+        }
+    }
+
+private:
+    float frequency_;
+    float sampleRate_;
+    float grainSize_;
+    float overlap_;
+    float phase_;
+    float phaseIncrement_;
+    float amplitude_;
+    std::vector<float> grain_;
+    std::default_random_engine randomEngine_;
+    std::uniform_real_distribution<float> distribution_;
+
+    void generateGrainTable() {
+        grain_.resize(grainSize_);
+
+        for (size_t i = 0; i < grainSize_; ++i) {
+            grain_[i] = generateSample();
+        }
+    }
+
+    void generateGrain() {
+        float offset = distribution_(randomEngine_);
+
+        for (size_t i = 0; i < grainSize_; ++i) {
+            float phase = static_cast<float>(i) / grainSize_;
+            float index = phase * grainSize_ + offset;
+            size_t index0 = static_cast<size_t>(index);
+            size_t index1 = (index0 + 1) % grainSize_;
+            float frac = index - index0;
+
+            grain_[i] = (1.0f - frac) * grain_[index0] + frac * grain_[index1];
+        }
+    }
+
+    float generateSample() {
+        // TODO: Implement your own sample generation logic here
+        return 0.0f;
+    }
+};
+In this implementation, the GranularOscillator class represents a granular audio oscillator. It takes a frequency, sample rate, grain size, and overlap as parameters in the constructor. The oscillator generates stereo samples by reading from a grain table based on the current phase.
+
+The setFrequency method allows you to dynamically change the frequency of the oscillator. The setAmplitude method sets the amplitude of the generated waveform.
+
+The generate method generates stereo samples by looping through the given number of samples. It checks if the phase has wrapped around and generates a new grain if needed. It then reads the current grain sample at the phase
+
+
+
+

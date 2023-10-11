@@ -1,0 +1,13 @@
+Output: NC Drill Files
+Type  : NC Drill
+From  : Project [3D_design_approx.PrjPcb]
+   Generated File[3d_design_approx-RoundHoles.TXT]
+   Generated File[3d_design_approx-SlotHoles.TXT]
+   Generated File[3d_design_approx.LDP]
+   Generated File[3d_design_approx.DRR]
+
+
+Files Generated   : 4
+Documents Printed : 0
+
+Finished Output Generation At 12:41:37 AM On 9/20/2023

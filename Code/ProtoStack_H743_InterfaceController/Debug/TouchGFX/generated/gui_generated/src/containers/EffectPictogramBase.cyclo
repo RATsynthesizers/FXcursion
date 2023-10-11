@@ -1,0 +1,93 @@
+Types.hpp:78:5:touchgfx::colortype::colortype()	1
+Types.hpp:91:5:touchgfx::colortype::colortype(uint32_t)	1
+Types.hpp:114:5:touchgfx::colortype::operator uint32_t() const	1
+Types.hpp:127:5:touchgfx::Rect::Rect()	1
+Bitmap.hpp:123:5:touchgfx::Bitmap::Bitmap(touchgfx::BitmapId)	1
+Drawable.hpp:48:5:touchgfx::Drawable::Drawable()	1
+Drawable.hpp:62:13:touchgfx::Drawable::~Drawable()	1
+Drawable.hpp:62:13:virtual touchgfx::Drawable::~Drawable()	1
+Drawable.hpp:121:18:virtual void touchgfx::Drawable::invalidateContent() const	2
+Drawable.hpp:147:23:virtual touchgfx::Drawable* touchgfx::Drawable::getFirstChild()	1
+Drawable.hpp:233:10:void touchgfx::Drawable::setPosition(int16_t, int16_t, int16_t, int16_t)	1
+Drawable.hpp:315:18:virtual void touchgfx::Drawable::setX(int16_t)	1
+Drawable.hpp:327:18:virtual void touchgfx::Drawable::setY(int16_t)	1
+Drawable.hpp:343:10:void touchgfx::Drawable::setXY(int16_t, int16_t)	1
+Drawable.hpp:356:18:virtual void touchgfx::Drawable::setWidth(int16_t)	1
+Drawable.hpp:368:18:virtual void touchgfx::Drawable::setHeight(int16_t)	1
+Drawable.hpp:378:18:virtual void touchgfx::Drawable::childGeometryChanged()	1
+Drawable.hpp:389:18:virtual void touchgfx::Drawable::handleClickEvent(const touchgfx::ClickEvent&)	1
+Drawable.hpp:401:18:virtual void touchgfx::Drawable::handleGestureEvent(const touchgfx::GestureEvent&)	1
+Drawable.hpp:413:10:void touchgfx::Drawable::setWidthHeight(int16_t, int16_t)	1
+Drawable.hpp:490:18:virtual void touchgfx::Drawable::handleDragEvent(const touchgfx::DragEvent&)	1
+Drawable.hpp:501:18:virtual void touchgfx::Drawable::handleTickEvent()	1
+Drawable.hpp:515:10:void touchgfx::Drawable::setVisible(bool)	1
+Drawable.hpp:537:10:bool touchgfx::Drawable::isVisible() const	1
+Drawable.hpp:549:10:bool touchgfx::Drawable::isTouchable() const	1
+Drawable.hpp:588:18:virtual void touchgfx::Drawable::moveTo(int16_t, int16_t)	1
+Drawable.hpp:625:10:void touchgfx::Drawable::resetDrawChainCache()	1
+Drawable.hpp:703:18:virtual void touchgfx::Drawable::setupDrawChain(const touchgfx::Rect&, touchgfx::Drawable**)	1
+Container.hpp:43:5:touchgfx::Container::Container()	1
+Container.hpp:165:23:virtual touchgfx::Drawable* touchgfx::Container::getFirstChild()	1
+HAL.hpp:110:17:static touchgfx::HAL* touchgfx::HAL::getInstance()	1
+HAL.hpp:268:17:static touchgfx::LCD& touchgfx::HAL::lcd()	3
+HAL.hpp:1101:10:touchgfx::LCD* touchgfx::HAL::getAuxiliaryLCD()	1
+Widget.hpp:45:18:virtual void touchgfx::Widget::getLastChild(int16_t, int16_t, touchgfx::Drawable**)	4
+Widget.hpp:36:7:touchgfx::Widget::Widget()	1
+Widget.hpp:36:7:touchgfx::Widget::~Widget()	1
+Widget.hpp:36:7:virtual touchgfx::Widget::~Widget()	1
+Box.hpp:33:5:touchgfx::Box::Box()	1
+Box.hpp:62:10:void touchgfx::Box::setColor(touchgfx::colortype)	1
+AbstractPainter.hpp:44:5:touchgfx::AbstractPainter::AbstractPainter()	1
+AbstractPainter.hpp:50:13:touchgfx::AbstractPainter::~AbstractPainter()	1
+AbstractPainter.hpp:50:13:virtual touchgfx::AbstractPainter::~AbstractPainter()	1
+AbstractPainter.hpp:61:34:virtual touchgfx::HAL::RenderingMethod touchgfx::AbstractPainter::getRenderingMethod() const	1
+AbstractPainter.hpp:78:18:virtual bool touchgfx::AbstractPainter::setup(const touchgfx::Rect&) const	1
+AbstractPainter.hpp:90:18:virtual void touchgfx::AbstractPainter::tearDown() const	1
+CWRUtil.hpp:59:9:touchgfx::CWRUtil::Q5::Q5()	1
+CWRUtil.hpp:70:18:touchgfx::CWRUtil::Q5::Q5(int)	1
+CWRUtil.hpp:93:9:touchgfx::CWRUtil::Q5::operator int() const	1
+CWRUtil.hpp:333:18:touchgfx::CWRUtil::Q10::Q10(int)	1
+CanvasWidget.hpp:48:10:void touchgfx::CanvasWidget::setPainter(const touchgfx::AbstractPainter&)	1
+CanvasWidget.hpp:66:18:virtual void touchgfx::CanvasWidget::setAlpha(uint8_t)	1
+CanvasWidget.hpp:72:21:virtual uint8_t touchgfx::CanvasWidget::getAlpha() const	1
+CanvasWidget.hpp:134:18:virtual touchgfx::Rect touchgfx::CanvasWidget::getSolidRect() const	1
+AbstractPainterColor.hpp:43:5:touchgfx::AbstractPainterColor::AbstractPainterColor(touchgfx::colortype)	1
+AbstractPainterColor.hpp:49:13:touchgfx::AbstractPainterColor::~AbstractPainterColor()	1
+AbstractPainterColor.hpp:49:13:virtual touchgfx::AbstractPainterColor::~AbstractPainterColor()	1
+AbstractPainterColor.hpp:58:18:virtual void touchgfx::AbstractPainterColor::setColor(touchgfx::colortype)	1
+AbstractPainterRGB565.hpp:41:5:touchgfx::AbstractPainterRGB565::AbstractPainterRGB565()	2
+AbstractPainterRGB565.hpp:34:7:touchgfx::AbstractPainterRGB565::~AbstractPainterRGB565()	1
+AbstractPainterRGB565.hpp:34:7:virtual touchgfx::AbstractPainterRGB565::~AbstractPainterRGB565()	1
+PainterRGB565.hpp:42:5:touchgfx::PainterRGB565::PainterRGB565(touchgfx::colortype)	1
+PainterRGB565.hpp:47:18:virtual void touchgfx::PainterRGB565::setColor(touchgfx::colortype)	1
+Image.hpp:50:5:touchgfx::Image::Image(const touchgfx::Bitmap&)	1
+Container.hpp:40:7:touchgfx::Container::~Container()	1
+Container.hpp:40:7:virtual touchgfx::Container::~Container()	1
+CanvasWidget.hpp:33:7:touchgfx::CanvasWidget::~CanvasWidget()	1
+CanvasWidget.hpp:33:7:virtual touchgfx::CanvasWidget::~CanvasWidget()	1
+AbstractShape.hpp:34:7:touchgfx::AbstractShape::~AbstractShape()	1
+AbstractShape.hpp:34:7:virtual touchgfx::AbstractShape::~AbstractShape()	1
+Shape.hpp:35:7:touchgfx::Shape<8>::Shape()	5
+EffectPictogramBase.cpp:8:1:EffectPictogramBase::EffectPictogramBase()	1
+EffectPictogramBase.cpp:38:1:EffectPictogramBase::~EffectPictogramBase()	1
+EffectPictogramBase.cpp:38:1:virtual EffectPictogramBase::~EffectPictogramBase()	1
+EffectPictogramBase.cpp:43:6:virtual void EffectPictogramBase::initialize()	1
+AbstractShape.hpp:151:10:void touchgfx::AbstractShape::setOrigin(T, T) [with T = float]	4
+AbstractShape.hpp:316:10:void touchgfx::AbstractShape::setScale(T, T) [with T = float]	1
+AbstractShape.hpp:233:10:void touchgfx::AbstractShape::setAngle(T) [with T = float]	2
+AbstractShape.hpp:126:10:void touchgfx::AbstractShape::setShape(const touchgfx::AbstractShape::ShapePoint<T>*) [with T = float]	2
+Shape.hpp:35:7:touchgfx::Shape<8>::~Shape()	1
+Shape.hpp:35:7:virtual touchgfx::Shape<8>::~Shape()	1
+Box.hpp:29:7:touchgfx::Box::~Box()	1
+Box.hpp:29:7:virtual touchgfx::Box::~Box()	1
+PainterRGB565.hpp:34:7:touchgfx::PainterRGB565::~PainterRGB565()	1
+PainterRGB565.hpp:34:7:virtual touchgfx::PainterRGB565::~PainterRGB565()	1
+Image.hpp:38:7:touchgfx::Image::~Image()	1
+Image.hpp:38:7:virtual touchgfx::Image::~Image()	1
+Shape.hpp:38:17:int touchgfx::Shape<POINTS>::getNumPoints() const [with short unsigned int POINTS = 8]	1
+Shape.hpp:43:18:void touchgfx::Shape<POINTS>::setCorner(int, touchgfx::CWRUtil::Q5, touchgfx::CWRUtil::Q5) [with short unsigned int POINTS = 8]	3
+Shape.hpp:51:25:touchgfx::CWRUtil::Q5 touchgfx::Shape<POINTS>::getCornerX(int) const [with short unsigned int POINTS = 8]	3
+Shape.hpp:60:25:touchgfx::CWRUtil::Q5 touchgfx::Shape<POINTS>::getCornerY(int) const [with short unsigned int POINTS = 8]	3
+Shape.hpp:70:18:void touchgfx::Shape<POINTS>::setCache(int, touchgfx::CWRUtil::Q5, touchgfx::CWRUtil::Q5) [with short unsigned int POINTS = 8]	3
+Shape.hpp:78:25:touchgfx::CWRUtil::Q5 touchgfx::Shape<POINTS>::getCacheX(int) const [with short unsigned int POINTS = 8]	3
+Shape.hpp:87:25:touchgfx::CWRUtil::Q5 touchgfx::Shape<POINTS>::getCacheY(int) const [with short unsigned int POINTS = 8]	3

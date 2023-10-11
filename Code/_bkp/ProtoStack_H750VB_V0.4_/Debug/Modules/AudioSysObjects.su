@@ -1,0 +1,9 @@
+../Modules/libModules/Parameter.hpp:20:2:Parameter::Parameter()	16	static
+../Modules/libModules/Module.hpp:26:2:Module::Module(Parameter*, u32)	32	static
+../Modules/libModules/Wire.hpp:27:2:Wire::Wire(Module*, Module*)	24	static
+../Modules/libModules/Wire.hpp:39:7:void Wire::Plug()	16	static
+../Modules/amp/Amp.hpp:20:2:Amp::Amp(Parameter*)	24	static
+../Modules/AudioSys.hpp:19:2:AudioSys::AudioSys()	16	static
+../Modules/AudioSysObjects.cpp:29:7:virtual void AudioSys::includeModules()	16	static
+../Modules/AudioSysObjects.cpp:34:2:void __static_initialization_and_destruction_0(int, int)	24	static
+../Modules/AudioSysObjects.cpp:34:2:cpp)	8	static

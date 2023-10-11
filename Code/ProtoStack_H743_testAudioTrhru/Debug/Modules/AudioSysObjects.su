@@ -1,0 +1,3 @@
+../Modules/AudioSysObjects.cpp:23:7:virtual void AudioSys::includeModules()	0	static
+../Modules/amp/Amp.hpp:23:2:Amp::Amp(Parameter*)	4	static
+../Modules/AudioSysObjects.cpp:27:2:cpp)	24	static

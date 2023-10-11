@@ -1,0 +1,90 @@
+Types.hpp:91:5:touchgfx::colortype::colortype(uint32_t)	1
+Types.hpp:127:5:touchgfx::Rect::Rect()	1
+Types.hpp:140:5:touchgfx::Rect::Rect(int16_t, int16_t, int16_t, int16_t)	1
+Drawable.hpp:48:5:touchgfx::Drawable::Drawable()	1
+Drawable.hpp:62:13:touchgfx::Drawable::~Drawable()	1
+Drawable.hpp:62:13:virtual touchgfx::Drawable::~Drawable()	1
+Drawable.hpp:121:18:virtual void touchgfx::Drawable::invalidateContent() const	2
+Drawable.hpp:147:23:virtual touchgfx::Drawable* touchgfx::Drawable::getFirstChild()	1
+Drawable.hpp:233:10:void touchgfx::Drawable::setPosition(int16_t, int16_t, int16_t, int16_t)	1
+Drawable.hpp:315:18:virtual void touchgfx::Drawable::setX(int16_t)	1
+Drawable.hpp:327:18:virtual void touchgfx::Drawable::setY(int16_t)	1
+Drawable.hpp:343:10:void touchgfx::Drawable::setXY(int16_t, int16_t)	1
+Drawable.hpp:356:18:virtual void touchgfx::Drawable::setWidth(int16_t)	1
+Drawable.hpp:368:18:virtual void touchgfx::Drawable::setHeight(int16_t)	1
+Drawable.hpp:378:18:virtual void touchgfx::Drawable::childGeometryChanged()	1
+Drawable.hpp:389:18:virtual void touchgfx::Drawable::handleClickEvent(const touchgfx::ClickEvent&)	1
+Drawable.hpp:401:18:virtual void touchgfx::Drawable::handleGestureEvent(const touchgfx::GestureEvent&)	1
+Drawable.hpp:413:10:void touchgfx::Drawable::setWidthHeight(int16_t, int16_t)	1
+Drawable.hpp:490:18:virtual void touchgfx::Drawable::handleDragEvent(const touchgfx::DragEvent&)	1
+Drawable.hpp:501:18:virtual void touchgfx::Drawable::handleTickEvent()	1
+Drawable.hpp:537:10:bool touchgfx::Drawable::isVisible() const	1
+Drawable.hpp:549:10:bool touchgfx::Drawable::isTouchable() const	1
+Drawable.hpp:588:18:virtual void touchgfx::Drawable::moveTo(int16_t, int16_t)	1
+Drawable.hpp:625:10:void touchgfx::Drawable::resetDrawChainCache()	1
+Drawable.hpp:703:18:virtual void touchgfx::Drawable::setupDrawChain(const touchgfx::Rect&, touchgfx::Drawable**)	1
+Container.hpp:43:5:touchgfx::Container::Container()	1
+Container.hpp:165:23:virtual touchgfx::Drawable* touchgfx::Container::getFirstChild()	1
+Widget.hpp:45:18:virtual void touchgfx::Widget::getLastChild(int16_t, int16_t, touchgfx::Drawable**)	4
+Widget.hpp:36:7:touchgfx::Widget::Widget()	1
+Widget.hpp:36:7:touchgfx::Widget::~Widget()	1
+Widget.hpp:36:7:virtual touchgfx::Widget::~Widget()	1
+Box.hpp:33:5:touchgfx::Box::Box()	1
+Box.hpp:62:10:void touchgfx::Box::setColor(touchgfx::colortype)	1
+Box.hpp:82:10:void touchgfx::Box::setAlpha(uint8_t)	1
+Box.hpp:29:7:touchgfx::Box::~Box()	1
+Box.hpp:29:7:virtual touchgfx::Box::~Box()	1
+BoxWithBorder.hpp:34:5:touchgfx::BoxWithBorder::BoxWithBorder()	1
+BoxWithBorder.hpp:61:10:void touchgfx::BoxWithBorder::setBorderColor(touchgfx::colortype)	1
+BoxWithBorder.hpp:85:10:void touchgfx::BoxWithBorder::setBorderSize(uint16_t)	1
+TypedText.hpp:59:5:touchgfx::TypedText::TypedText(touchgfx::TypedTextId)	1
+TypedText.hpp:65:13:touchgfx::TypedText::~TypedText()	1
+TypedText.hpp:65:13:virtual touchgfx::TypedText::~TypedText()	1
+TextArea.hpp:43:5:touchgfx::TextArea::TextArea()	1
+TextArea.hpp:429:9:touchgfx::TextArea::BoundingArea::BoundingArea()	1
+DrawableList.hpp:42:13:touchgfx::DrawableListItemsInterface::~DrawableListItemsInterface()	1
+DrawableList.hpp:42:13:virtual touchgfx::DrawableListItemsInterface::~DrawableListItemsInterface()	1
+ScrollBase.hpp:381:18:virtual void touchgfx::ScrollBase::initialize()	1
+ScrollWheelWithSelectionStyle.hpp:152:18:virtual void touchgfx::ScrollWheelWithSelectionStyle::initialize()	1
+TextArea.hpp:40:7:touchgfx::TextArea::~TextArea()	1
+TextArea.hpp:40:7:virtual touchgfx::TextArea::~TextArea()	1
+EffectsListContainerBase.hpp:23:18:virtual void EffectsListContainerBase::scrollEffectsUpdateItem(EffectListItem&, int16_t)	1
+EffectsListContainerBase.hpp:28:18:virtual void EffectsListContainerBase::scrollEffectsUpdateCenterItem(EffectListItemSelected&, int16_t)	1
+Container.hpp:40:7:touchgfx::Container::~Container()	1
+Container.hpp:40:7:virtual touchgfx::Container::~Container()	1
+DrawableList.hpp:38:7:constexpr touchgfx::DrawableListItemsInterface::DrawableListItemsInterface()	1
+DrawableList.hpp:79:7:touchgfx::DrawableListItems<EffectListItem, 6>::DrawableListItems()	2
+DrawableList.hpp:79:7:touchgfx::DrawableListItems<EffectListItemSelected, 2>::DrawableListItems()	2
+EffectsListContainerBase.cpp:8:1:EffectsListContainerBase::EffectsListContainerBase()	1
+EffectsListContainerBase.cpp:54:1:EffectsListContainerBase::~EffectsListContainerBase()	1
+EffectsListContainerBase.cpp:54:1:virtual EffectsListContainerBase::~EffectsListContainerBase()	1
+EffectsListContainerBase.cpp:59:6:virtual void EffectsListContainerBase::initialize()	3
+EffectsListContainerBase.cpp:72:6:void EffectsListContainerBase::updateItemCallbackHandler(touchgfx::DrawableListItemsInterface*, int16_t, int16_t)	3
+Callback.hpp:44:7:constexpr touchgfx::GenericCallback<touchgfx::DrawableListItemsInterface*, short int, short int>::GenericCallback()	1
+Callback.hpp:237:5:touchgfx::Callback<dest_type, T1, T2, T3>::Callback(dest_type*, void (dest_type::*)(T1, T2, T3)) [with dest_type = EffectsListContainerBase; T1 = touchgfx::DrawableListItemsInterface*; T2 = short int; T3 = short int]	1
+DrawableList.hpp:101:21:int16_t touchgfx::DrawableListItems<TYPE, SIZE>::getNumberOfDrawables() [with TYPE = EffectListItem; int SIZE = 6]	1
+DrawableList.hpp:95:11:TYPE& touchgfx::DrawableListItems<TYPE, SIZE>::operator[](int) [with TYPE = EffectListItem; int SIZE = 6]	2
+DrawableList.hpp:101:21:int16_t touchgfx::DrawableListItems<TYPE, SIZE>::getNumberOfDrawables() [with TYPE = EffectListItemSelected; int SIZE = 2]	1
+DrawableList.hpp:95:11:TYPE& touchgfx::DrawableListItems<TYPE, SIZE>::operator[](int) [with TYPE = EffectListItemSelected; int SIZE = 2]	2
+Callback.hpp:48:13:touchgfx::GenericCallback<T1, T2, T3>::~GenericCallback() [with T1 = touchgfx::DrawableListItemsInterface*; T2 = short int; T3 = short int]	1
+Callback.hpp:48:13:touchgfx::GenericCallback<T1, T2, T3>::~GenericCallback() [with T1 = touchgfx::DrawableListItemsInterface*; T2 = short int; T3 = short int]	1
+Callback.hpp:218:8:touchgfx::Callback<EffectsListContainerBase, touchgfx::DrawableListItemsInterface*, short int, short int>::~Callback()	1
+Callback.hpp:218:8:virtual touchgfx::Callback<EffectsListContainerBase, touchgfx::DrawableListItemsInterface*, short int, short int>::~Callback()	1
+DrawableList.hpp:79:7:touchgfx::DrawableListItems<EffectListItemSelected, 2>::~DrawableListItems()	3
+DrawableList.hpp:79:7:virtual touchgfx::DrawableListItems<EffectListItemSelected, 2>::~DrawableListItems()	1
+DrawableList.hpp:79:7:touchgfx::DrawableListItems<EffectListItem, 6>::~DrawableListItems()	3
+DrawableList.hpp:79:7:virtual touchgfx::DrawableListItems<EffectListItem, 6>::~DrawableListItems()	1
+BoxWithBorder.hpp:31:7:touchgfx::BoxWithBorder::~BoxWithBorder()	1
+BoxWithBorder.hpp:31:7:virtual touchgfx::BoxWithBorder::~BoxWithBorder()	1
+DrawableList.hpp:117:7:touchgfx::DrawableList::~DrawableList()	1
+DrawableList.hpp:117:7:virtual touchgfx::DrawableList::~DrawableList()	1
+ScrollBase.hpp:43:7:touchgfx::ScrollBase::~ScrollBase()	1
+ScrollBase.hpp:43:7:virtual touchgfx::ScrollBase::~ScrollBase()	1
+ScrollWheelBase.hpp:41:7:touchgfx::ScrollWheelBase::~ScrollWheelBase()	1
+ScrollWheelBase.hpp:41:7:virtual touchgfx::ScrollWheelBase::~ScrollWheelBase()	1
+ScrollWheelWithSelectionStyle.hpp:37:7:touchgfx::ScrollWheelWithSelectionStyle::~ScrollWheelWithSelectionStyle()	1
+ScrollWheelWithSelectionStyle.hpp:37:7:virtual touchgfx::ScrollWheelWithSelectionStyle::~ScrollWheelWithSelectionStyle()	1
+Callback.hpp:250:18:void touchgfx::Callback<dest_type, T1, T2, T3>::execute(T1, T2, T3) [with dest_type = EffectsListContainerBase; T1 = touchgfx::DrawableListItemsInterface*; T2 = short int; T3 = short int]	2
+Callback.hpp:260:18:bool touchgfx::Callback<dest_type, T1, T2, T3>::isValid() const [with dest_type = EffectsListContainerBase; T1 = touchgfx::DrawableListItemsInterface*; T2 = short int; T3 = short int]	5
+DrawableList.hpp:82:23:touchgfx::Drawable* touchgfx::DrawableListItems<TYPE, SIZE>::getDrawable(int16_t) [with TYPE = EffectListItemSelected; int SIZE = 2]	2
+DrawableList.hpp:82:23:touchgfx::Drawable* touchgfx::DrawableListItems<TYPE, SIZE>::getDrawable(int16_t) [with TYPE = EffectListItem; int SIZE = 6]	2

@@ -1,0 +1,2 @@
+../Drivers/MyTouchGFXadapter/GFXadapter.c:16:5:touchgfxDisplayDriverTransmitActive	0	static
+../Drivers/MyTouchGFXadapter/GFXadapter.c:20:6:touchgfxDisplayDriverTransmitBlock	24	static

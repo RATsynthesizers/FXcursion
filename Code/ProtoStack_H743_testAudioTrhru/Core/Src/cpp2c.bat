@@ -1,0 +1,1 @@
+ren *main.cpp *main.c

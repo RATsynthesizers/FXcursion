@@ -1,0 +1,4 @@
+GUIadapter.c:12:6:guiAdapter_Init	4
+GUIadapter.c:28:6:HAL_UART_RxCpltCallback	6
+GUIadapter.c:46:9:guiAdapterCheckUpdate	1
+GUIadapter.c:73:6:transmitGUImsg	1

@@ -1,0 +1,3 @@
+Delay.cpp:3:6:virtual void Delayy::process()	1
+Delay.cpp:9:9:virtual uint8_t Delayy::getPublicParameter(uint8_t)	1
+Delay.cpp:13:6:virtual void Delayy::setPublicParameter(uint8_t, uint8_t)	1

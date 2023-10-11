@@ -1,0 +1,85 @@
+new:174:33:void* operator new(std::size_t, void*)	1
+Types.hpp:140:5:touchgfx::Rect::Rect(int16_t, int16_t, int16_t, int16_t)	1
+UIEventListener.hpp:44:18:virtual void touchgfx::UIEventListener::handleClickEvent(const touchgfx::ClickEvent&)	1
+UIEventListener.hpp:54:18:virtual void touchgfx::UIEventListener::handleDragEvent(const touchgfx::DragEvent&)	1
+UIEventListener.hpp:64:18:virtual void touchgfx::UIEventListener::handleGestureEvent(const touchgfx::GestureEvent&)	1
+UIEventListener.hpp:74:18:virtual void touchgfx::UIEventListener::handleKeyEvent(uint8_t)	1
+UIEventListener.hpp:83:18:virtual void touchgfx::UIEventListener::handleTickEvent()	1
+UIEventListener.hpp:88:18:virtual void touchgfx::UIEventListener::handlePendingScreenTransition()	1
+UIEventListener.hpp:93:13:touchgfx::UIEventListener::~UIEventListener()	1
+UIEventListener.hpp:93:13:virtual touchgfx::UIEventListener::~UIEventListener()	1
+Application.hpp:72:18:virtual void touchgfx::Application::changeToStartScreen()	1
+Application.hpp:91:18:virtual void touchgfx::Application::appSwitchScreen(uint8_t)	1
+Application.hpp:104:18:virtual void touchgfx::Application::requestRedraw(touchgfx::Rect&)	1
+Application.hpp:194:10:void touchgfx::Application::clearAllTimerWidgets()	1
+Callback.hpp:179:13:touchgfx::GenericCallback<void>::~GenericCallback()	1
+Callback.hpp:179:13:virtual touchgfx::GenericCallback<void>::~GenericCallback()	1
+HAL.hpp:110:17:static touchgfx::HAL* touchgfx::HAL::getInstance()	1
+HAL.hpp:268:17:static touchgfx::LCD& touchgfx::HAL::lcd()	3
+Transition.hpp:41:5:touchgfx::Transition::Transition()	1
+Transition.hpp:47:13:touchgfx::Transition::~Transition()	1
+Transition.hpp:47:13:virtual touchgfx::Transition::~Transition()	1
+Transition.hpp:52:18:virtual void touchgfx::Transition::handleTickEvent()	1
+Transition.hpp:72:18:virtual void touchgfx::Transition::tearDown()	1
+Transition.hpp:80:18:virtual void touchgfx::Transition::init()	1
+Transition.hpp:89:18:virtual void touchgfx::Transition::invalidate()	1
+Transition.hpp:100:18:virtual void touchgfx::Transition::setScreenContainer(touchgfx::Container&)	1
+Application.hpp:41:7:touchgfx::Application::~Application()	1
+Application.hpp:41:7:virtual touchgfx::Application::~Application()	1
+MVPApplication.hpp:47:5:touchgfx::MVPApplication::MVPApplication()	1
+MVPApplication.hpp:59:18:virtual void touchgfx::MVPApplication::handlePendingScreenTransition()	1
+MVPApplication.hpp:73:10:void touchgfx::MVPApplication::evaluatePendingScreenTransition()	4
+Model.hpp:52:7:void Model::bind(ModelListener*)	1
+MVPApplication.hpp:43:7:touchgfx::MVPApplication::~MVPApplication()	1
+MVPApplication.hpp:43:7:virtual touchgfx::MVPApplication::~MVPApplication()	1
+FrontendApplicationBase.hpp:16:13:FrontendApplicationBase::~FrontendApplicationBase()	1
+FrontendApplicationBase.hpp:16:13:virtual FrontendApplicationBase::~FrontendApplicationBase()	1
+FrontendApplicationBase.hpp:18:18:virtual void FrontendApplicationBase::changeToStartScreen()	1
+NoTransition.hpp:35:18:virtual void touchgfx::NoTransition::handleTickEvent()	1
+BlockTransition.hpp:40:5:touchgfx::BlockTransition::BlockTransition()	4
+BlockTransition.hpp:64:18:virtual void touchgfx::BlockTransition::handleTickEvent()	7
+BlockTransition.hpp:103:18:virtual void touchgfx::BlockTransition::tearDown()	1
+BlockTransition.hpp:107:18:virtual void touchgfx::BlockTransition::init()	1
+BlockTransition.hpp:116:18:virtual void touchgfx::BlockTransition::invalidate()	1
+ModelListener.hpp:16:10:void ModelListener::bind(Model*)	1
+FrontendApplicationBase.cpp:23:1:FrontendApplicationBase::FrontendApplicationBase(Model&, FrontendHeap&)	1
+Callback.hpp:175:7:constexpr touchgfx::GenericCallback<void>& touchgfx::GenericCallback<void>::operator=(const touchgfx::GenericCallback<void>&)	1
+Callback.hpp:424:8:constexpr touchgfx::Callback<FrontendApplicationBase>& touchgfx::Callback<FrontendApplicationBase>::operator=(touchgfx::Callback<FrontendApplicationBase>&&)	1
+FrontendApplicationBase.cpp:40:6:void FrontendApplicationBase::gotoLogoStartupScreenNoTransition()	1
+FrontendApplicationBase.cpp:46:6:void FrontendApplicationBase::gotoLogoStartupScreenNoTransitionImpl()	1
+FrontendApplicationBase.cpp:53:6:void FrontendApplicationBase::gotoProjectSettingsScreenBlockTransition()	1
+FrontendApplicationBase.cpp:59:6:void FrontendApplicationBase::gotoProjectSettingsScreenBlockTransitionImpl()	1
+FrontendApplicationBase.cpp:66:6:void FrontendApplicationBase::gotoFXchainScreenBlockTransition()	1
+FrontendApplicationBase.cpp:72:6:void FrontendApplicationBase::gotoFXchainScreenBlockTransitionImpl()	1
+FrontendApplicationBase.cpp:79:6:void FrontendApplicationBase::gotoEffectSettingsScreenBlockTransition()	1
+FrontendApplicationBase.cpp:85:6:void FrontendApplicationBase::gotoEffectSettingsScreenBlockTransitionImpl()	1
+Callback.hpp:175:7:constexpr touchgfx::GenericCallback<void>::GenericCallback()	1
+Callback.hpp:427:5:touchgfx::Callback<dest_type, void, void, void>::Callback() [with dest_type = FrontendApplicationBase]	1
+Callback.hpp:440:5:touchgfx::Callback<dest_type, void, void, void>::Callback(dest_type*, void (dest_type::*)()) [with dest_type = FrontendApplicationBase]	1
+NoTransition.hpp:31:7:touchgfx::NoTransition::NoTransition()	1
+MVPApplication.hpp:161:16:PresenterType* touchgfx::makeTransition(touchgfx::Screen**, touchgfx::Presenter**, touchgfx::MVPHeap&, touchgfx::Transition**, ModelType*) [with ScreenType = LogoStartupView; PresenterType = LogoStartupPresenter; TransType = touchgfx::NoTransition; ModelType = Model]	8
+MVPApplication.hpp:161:16:PresenterType* touchgfx::makeTransition(touchgfx::Screen**, touchgfx::Presenter**, touchgfx::MVPHeap&, touchgfx::Transition**, ModelType*) [with ScreenType = ProjectSettingsView; PresenterType = ProjectSettingsPresenter; TransType = touchgfx::BlockTransition; ModelType = Model]	8
+MVPApplication.hpp:161:16:PresenterType* touchgfx::makeTransition(touchgfx::Screen**, touchgfx::Presenter**, touchgfx::MVPHeap&, touchgfx::Transition**, ModelType*) [with ScreenType = FXchainView; PresenterType = FXchainPresenter; TransType = touchgfx::BlockTransition; ModelType = Model]	8
+MVPApplication.hpp:161:16:PresenterType* touchgfx::makeTransition(touchgfx::Screen**, touchgfx::Presenter**, touchgfx::MVPHeap&, touchgfx::Transition**, ModelType*) [with ScreenType = EffectSettingsView; PresenterType = EffectSettingsPresenter; TransType = touchgfx::BlockTransition; ModelType = Model]	8
+AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = touchgfx::NoTransition]	1
+AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = LogoStartupView]	1
+AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = LogoStartupPresenter]	1
+View.hpp:50:10:void touchgfx::View<T>::bind(T&) [with T = LogoStartupPresenter]	1
+AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = touchgfx::BlockTransition]	1
+AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = ProjectSettingsView]	1
+AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = ProjectSettingsPresenter]	1
+View.hpp:50:10:void touchgfx::View<T>::bind(T&) [with T = ProjectSettingsPresenter]	1
+AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = FXchainView]	1
+AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = FXchainPresenter]	1
+View.hpp:50:10:void touchgfx::View<T>::bind(T&) [with T = FXchainPresenter]	1
+AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = EffectSettingsView]	1
+AbstractPartition.hpp:135:8:T& touchgfx::AbstractPartition::at(uint16_t) [with T = EffectSettingsPresenter]	1
+View.hpp:50:10:void touchgfx::View<T>::bind(T&) [with T = EffectSettingsPresenter]	1
+BlockTransition.hpp:32:7:touchgfx::BlockTransition::~BlockTransition()	1
+BlockTransition.hpp:32:7:virtual touchgfx::BlockTransition::~BlockTransition()	1
+NoTransition.hpp:31:7:touchgfx::NoTransition::~NoTransition()	1
+NoTransition.hpp:31:7:virtual touchgfx::NoTransition::~NoTransition()	1
+Callback.hpp:424:8:touchgfx::Callback<FrontendApplicationBase>::~Callback()	1
+Callback.hpp:424:8:virtual touchgfx::Callback<FrontendApplicationBase>::~Callback()	1
+Callback.hpp:449:18:void touchgfx::Callback<dest_type, void, void, void>::execute() [with dest_type = FrontendApplicationBase]	2
+Callback.hpp:459:18:bool touchgfx::Callback<dest_type, void, void, void>::isValid() const [with dest_type = FrontendApplicationBase]	5

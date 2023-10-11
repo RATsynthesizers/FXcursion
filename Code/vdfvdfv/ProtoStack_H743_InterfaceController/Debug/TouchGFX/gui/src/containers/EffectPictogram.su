@@ -1,0 +1,22 @@
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Bitmap.hpp:123:5:touchgfx::Bitmap::Bitmap(touchgfx::BitmapId)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:121:18:virtual void touchgfx::Drawable::invalidateContent() const	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:315:18:virtual void touchgfx::Drawable::setX(int16_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:327:18:virtual void touchgfx::Drawable::setY(int16_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:356:18:virtual void touchgfx::Drawable::setWidth(int16_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:368:18:virtual void touchgfx::Drawable::setHeight(int16_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:378:18:virtual void touchgfx::Drawable::childGeometryChanged()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:389:18:virtual void touchgfx::Drawable::handleClickEvent(const touchgfx::ClickEvent&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:401:18:virtual void touchgfx::Drawable::handleGestureEvent(const touchgfx::GestureEvent&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:490:18:virtual void touchgfx::Drawable::handleDragEvent(const touchgfx::DragEvent&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:501:18:virtual void touchgfx::Drawable::handleTickEvent()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:515:10:void touchgfx::Drawable::setVisible(bool)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:588:18:virtual void touchgfx::Drawable::moveTo(int16_t, int16_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/containers/Container.hpp:165:23:virtual touchgfx::Drawable* touchgfx::Container::getFirstChild()	16	static
+../TouchGFX/gui/include/gui/containers/EffectPictogram.hpp:10:13:EffectPictogram::~EffectPictogram()	16	static
+../TouchGFX/gui/include/gui/containers/EffectPictogram.hpp:10:13:virtual EffectPictogram::~EffectPictogram()	16	static
+../TouchGFX/gui/src/containers/EffectPictogram.cpp:3:1:EffectPictogram::EffectPictogram()	16	static
+../TouchGFX/gui/src/containers/EffectPictogram.cpp:8:6:virtual void EffectPictogram::initialize()	16	static
+../TouchGFX/gui/src/containers/EffectPictogram.cpp:13:6:virtual void EffectPictogram::setEffect(MenuItemInfo)	40	static
+../TouchGFX/gui/src/containers/EffectPictogram.cpp:23:14:virtual MenuItemInfo EffectPictogram::getEffect()	16	static
+../TouchGFX/gui/src/containers/EffectPictogram.cpp:28:6:virtual void EffectPictogram::select(bool)	16	static
+../TouchGFX/gui/src/containers/EffectPictogram.cpp:34:6:virtual void EffectPictogram::edit(bool)	16	static

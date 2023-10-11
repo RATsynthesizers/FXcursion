@@ -1,0 +1,10 @@
+usbd_msc.c:214:9:USBD_MSC_Init	3
+usbd_msc.c:270:9:USBD_MSC_DeInit	2
+usbd_msc.c:308:9:USBD_MSC_Setup	21
+usbd_msc.c:441:9:USBD_MSC_DataIn	1
+usbd_msc.c:455:9:USBD_MSC_DataOut	1
+usbd_msc.c:468:10:USBD_MSC_GetHSCfgDesc	3
+usbd_msc.c:493:10:USBD_MSC_GetFSCfgDesc	3
+usbd_msc.c:518:10:USBD_MSC_GetOtherSpeedCfgDesc	3
+usbd_msc.c:542:10:USBD_MSC_GetDeviceQualifierDescriptor	1
+usbd_msc.c:554:9:USBD_MSC_RegisterStorage	2

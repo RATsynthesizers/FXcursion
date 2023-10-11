@@ -1,0 +1,23 @@
+../Middlewares/ST/touchgfx/framework/include/touchgfx/hal/Types.hpp:91:5:touchgfx::colortype::colortype(uint32_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:121:18:virtual void touchgfx::Drawable::invalidateContent() const	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:315:18:virtual void touchgfx::Drawable::setX(int16_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:327:18:virtual void touchgfx::Drawable::setY(int16_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:356:18:virtual void touchgfx::Drawable::setWidth(int16_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:368:18:virtual void touchgfx::Drawable::setHeight(int16_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:378:18:virtual void touchgfx::Drawable::childGeometryChanged()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:389:18:virtual void touchgfx::Drawable::handleClickEvent(const touchgfx::ClickEvent&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:401:18:virtual void touchgfx::Drawable::handleGestureEvent(const touchgfx::GestureEvent&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:490:18:virtual void touchgfx::Drawable::handleDragEvent(const touchgfx::DragEvent&)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:501:18:virtual void touchgfx::Drawable::handleTickEvent()	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:515:10:void touchgfx::Drawable::setVisible(bool)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/Drawable.hpp:588:18:virtual void touchgfx::Drawable::moveTo(int16_t, int16_t)	16	static
+../Middlewares/ST/touchgfx/framework/include/touchgfx/containers/Container.hpp:165:23:virtual touchgfx::Drawable* touchgfx::Container::getFirstChild()	16	static
+../TouchGFX/gui/include/gui/containers/SubMenuItem.hpp:10:13:SubMenuItem::~SubMenuItem()	16	static
+../TouchGFX/gui/include/gui/containers/SubMenuItem.hpp:10:13:virtual SubMenuItem::~SubMenuItem()	16	static
+../TouchGFX/gui/src/containers/SubMenuItem.cpp:5:1:SubMenuItem::SubMenuItem()	16	static
+../TouchGFX/gui/src/containers/SubMenuItem.cpp:9:6:virtual void SubMenuItem::initialize()	16	static
+../TouchGFX/gui/src/containers/SubMenuItem.cpp:13:6:virtual void SubMenuItem::select()	40	static
+../TouchGFX/gui/src/containers/SubMenuItem.cpp:21:6:virtual void SubMenuItem::deSelect()	40	static
+../TouchGFX/gui/src/containers/SubMenuItem.cpp:28:6:virtual void SubMenuItem::setGray()	16	static
+../TouchGFX/gui/src/containers/SubMenuItem.cpp:34:6:virtual void SubMenuItem::resetGray()	16	static
+../TouchGFX/gui/src/containers/SubMenuItem.cpp:40:6:virtual void SubMenuItem::setText(const uint8_t*)	16	static

@@ -1,0 +1,10 @@
+cs42448.c:54:10:CS42448_volumebyte	3
+cs42448.c:60:9:CS42448_inputlevelbyte	3
+cs42448.c:81:6:CS42448_write_byte	2
+cs42448.c:66:6:CS42448_filterFreeze	1
+cs42448.c:71:6:CS42448_invertDAC	1
+cs42448.c:76:6:CS42448_invertADC	1
+cs42448.c:86:6:CS42448_write	2
+cs42448.c:18:6:CS42448_enable	1
+cs42448.c:26:6:CS42448_volumeInteger	1
+cs42448.c:40:6:CS42448_inputLevelInteger	1

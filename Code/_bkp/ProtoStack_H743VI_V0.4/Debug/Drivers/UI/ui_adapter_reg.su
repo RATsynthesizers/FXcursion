@@ -1,0 +1,7 @@
+../Drivers/UI/ui_adapter_reg.c:14:6:UIadapter_Init	4	static
+../Drivers/UI/ui_adapter_reg.c:29:6:UIadapter_ReadWriteUI	8	static
+../Drivers/UI/ui_adapter_reg.c:38:6:UIadapter_ReadWriteUI_spi6_callback	40	static
+../Drivers/UI/ui_adapter_reg.c:58:6:UI_SPI_TransmitReceive	0	static
+../Drivers/UI/ui_adapter_reg.c:62:6:getBtnHWdata	0	static
+../Drivers/UI/ui_adapter_reg.c:66:6:setLedHWdata	0	static
+../Drivers/UI/ui_adapter_reg.c:84:6:getEncHWdata	0	static

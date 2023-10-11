@@ -1,0 +1,668 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html">
+<style type="text/css">
+		h1, h2, h3, h4, h5, h6 {
+			font-family : segoe ui;
+			color : black;
+			background-color : #EDE7D9;
+			padding: 0.3em;
+		}
+
+		h1 {
+			font-size: 1.2em;
+		}		
+
+		h2 {
+			font-size: 1.2em;
+		}
+
+		body {
+			font-family : segoe ui;
+		}
+
+		td, th {
+			padding: 0.5em;
+			text-align : left;
+			width: 10em;
+		}
+		th {
+			background-color : #EEEEEE;
+
+		}
+		th.column1, td.column1 {
+			text-align: left;
+			width : auto;
+		}
+		table {
+			width : 100%;
+			font-size: 0.9em;
+		}
+
+		.DRC_summary_header {
+			padding-bottom : 0.1em;
+			border : 0px solid black;
+			width: 100%;
+			align: left;
+		}
+
+		.DRC_summary_header_col1,
+		.DRC_summary_header_col2, 
+		.DRC_summary_header_col3 {
+			color : black;
+			font-size:100%;
+			padding : 0em;
+			padding-top : 0.2em;
+			padding-bottom 0.2em;
+			border : 0px solid black;
+			vertical-align: top;
+			text-align: left;
+		}
+
+		.DRC_summary_header_col1 {
+			font-weight: bold;
+			width: 8em;
+		}
+
+		.DRC_summary_header_col2 {
+			width: 0.1em;
+		
+		}
+
+		.DRC_summary_header_col3 {
+			width : auto;
+		}
+
+		.header_holder {
+		    Width = 100%;
+		    border = 0px solid green;
+		    padding = 0;
+		}
+
+
+		.front_matter, .front_matter_column1, .front_matter_column2, .front_matter_column3
+		{
+			left : 0;
+			top : 0;
+			padding: 0em;
+			padding-top : 0.1em;
+			border : 0px solid black;
+			width : 100%;
+			vertical-align: top;
+			text-align: left;
+		}
+
+		.front_matter_column1 {
+			width : 8em;
+			font-weight: bold;
+		}
+
+		.front_matter_column2 {
+			width: 0.1em;
+		}
+
+		.front_matter_column3 {
+			width : auto;
+		}
+
+		.total_column1, .total_column {
+			font-weight : bold;
+		}
+		.total_column1 {
+			text-align : left;
+		}
+		.warning, .error {
+			color : red;
+			font-weight : bold;
+		}
+		tr.onmouseout_odd {
+			background-color : #white;
+		}
+		tr.onmouseout_even { 
+			background-color : #FAFAFA;
+		}
+		tr.onmouseover_odd, tr.onmouseover_even { 
+			background-color : #EEEEEE;
+		} 
+		a:link, a:visited, .q a:link,.q a:active,.q {
+			color: #21489e; 
+		}
+		a:link.callback, a:visited.callback { 
+			color: #21489e;
+		}
+		a:link.customize, a:visited.customize {
+			color: #C0C0C0;
+			position: absolute; 
+			right: 10px;
+		}	
+		p.contents_level1 {
+			font-weight : bold;
+			font-size : 110%;
+			margin : 0.5em;
+		}
+		p.contents_level2 {
+			position : relative;
+			left : 20px;
+			margin : 0.5em;
+		}
+	</style><script type="text/javascript">
+		function coordToMils(coord) {
+			var number = coord / 10000;
+			
+			if (number != number.toFixed(3))
+				number = number.toFixed(3);
+
+			return number + 'mil'
+		}
+
+		function coordToMM(coord) {
+			var number = 0.0254 * coord / 10000;
+			
+			if (number != number.toFixed(4))
+				number = number.toFixed(4);
+			
+			return number + 'mm'
+		}
+	
+		function convertCoord(coordNode, units) {
+			for (var i = 0; i < coordNode.childNodes.length; i++) {
+				coordNode.removeChild(coordNode.childNodes[i]);
+			}
+
+			var coord = coordNode.getAttribute('value');
+			if (coord != null) {
+				if (units == 'mm') {
+					textNode = document.createTextNode(coordToMM(coord));
+					coordNode.appendChild(textNode);
+				} else if (units == 'mil') {
+					textNode = document.createTextNode(coordToMils(coord));		
+					coordNode.appendChild(textNode);	
+				}
+			}
+		}
+	
+		function convertUnits(unitNode, units) {
+			for (var i = 0; i < unitNode.childNodes.length; i++) {
+				unitNode.removeChild(unitNode.childNodes[i]);		
+			}
+		
+			textNode = document.createTextNode(units); 
+			unitNode.appendChild(textNode);
+		}
+	
+		function changeUnits(radio_input, units) {
+			if (radio_input.checked) {
+			
+				var elements = document.getElementsByName('coordinate');
+				if (elements) {
+					for (var i = 0; i < elements.length; i++) {
+						convertCoord(elements[i], units);
+					}
+				}
+	
+				var elements = document.getElementsByName('units');
+				if (elements) {
+					for (var i = 0; i < elements.length; i++) {
+						convertUnits(elements[i], units);
+					}
+				}
+			}
+		}
+	</script><title>Design Rule Verification Report</title>
+</head>
+<body onload=""><img ALT="Altium" src="
+			file://C:\Users\Public\Documents\Altium\AD21\Templates\AD_logo.png
+		"><h1>Design Rule Verification Report</h1>
+<table class="header_holder">
+<td class="column1">
+<table class="front_matter">
+<tr class="front_matter">
+<td class="front_matter_column1">Date:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3">9/19/2023</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Time:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3">10:44:41 PM</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Elapsed Time:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3">00:00:03</td>
+</tr>
+<tr class="front_matter">
+<td class="front_matter_column1">Filename:</td>
+<td class="front_matter_column2"></td>
+<td class="front_matter_column3"><a href="file:///D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc" class="file"><acronym title="D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc">D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc</acronym></a></td>
+</tr>
+</table>
+</td>
+<td class="column2">
+<table class="DRC_summary_header">
+<tr>
+<td class="DRC_summary_header_col1">Warnings:</td>
+<td class="DRC_summary_header_col2"></td>
+<td class="DRC_summary_header_col3" style="color : red">3</td></tr>
+<tr>
+<td class="DRC_summary_header_col1">Rule Violations:</td>
+<td class="DRC_summary_header_col2"></td>
+<td class="DRC_summary_header_col3" style="color : red">101</td></tr>
+</table>
+</td>
+</table><a name="IDT051RU3CZLREMO10VDM0WBQUSOE5QOMMGRDT2JG5LJPZBJDPRZ5E"><h2>Summary</h2></a><table>
+<tr>
+<th class="column1">Warnings</th>
+<th class="column2">Count</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#ID4EB1N1AWXNLFPLSRPYSVSJAKHD0I4J0BU2PFX3I2PKKM21YVUALM">Zero hole size multi-layer pad(s) detected</a></td>
+<td class="column2">2</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#ID0MTPGFN1U0D4LVWZ4KVXFS4BIIG2USU0PSNQWWNZT4H1FI2X4K4O">Multilayer Pads with 0 size Hole found</a></td>
+<td class="column2">1</td>
+</tr>
+<tr>
+<td style="font-weight : bold; text-align : right" class="column1">Total</td>
+<td style="font-weight : bold" class="column2">3</td>
+</tr>
+</table><br><table>
+<tr>
+<th class="column1">Rule Violations</th>
+<th class="column2">Count</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDQ3IC1ZC2IMZ2KCEWEDYBESZFLJGZ5H1GTAEYAMNRZM3SOIQYDIQK">Clearance Constraint (Gap=10mil) (All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDRR5WDZ1513ZROC2AJMZRIDFGTOX40EJD5ZQNMDIS4CI3UAFKEG5H">Short-Circuit Constraint (Allowed=No) (All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDF2QXBKY3RV1AJNK0FGD5KYK5EJUPS4XG10VBBRCKRWTIK5PGOLWD">Un-Routed Net Constraint ( (All) )</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDNTZYY5C5DXTPGJV0Q0HXG5NQHJZLXSJB4GIATPB34ACFRYGA2PYF">Modified Polygon (Allow modified: No), (Allow shelved: No)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDVRJA332OITMFNR0ZX4WYG30AXEMZJRKX2AZ45TPPNKJELMECTBZL">Width Constraint (Min=5mil) (Max=39.37mil) (Preferred=5mil) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDA3FVAF3XN0YE5XMCRA4ACLAYGOEAIMHIM4WKGNCUNKMDI0YSRCC">Routing Via (MinHoleWidth=7.874mil) (MaxHoleWidth=25mil) (PreferredHoleWidth=7.874mil) (MinWidth=15.748mil) (MaxWidth=23.622mil) (PreferedWidth=15.748mil) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDLVWTDPSIQI3LI25O1HPRVMMYRFTUR1GVRF5HHBAOY4GX3IB5JAK">Power Plane Connect Rule(Relief Connect )(Expansion=20mil) (Conductor Width=10mil) (Air Gap=10mil) (Entries=4) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDDLRAVXDBCFQONAEVQKXHPXTZOKMBKCJO0DRNKONTCBMNO50LT1PL">Hole Size Constraint (Min=1mil) (Max=100mil) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDHOFG2MJI0H4YHNN5XFDPH0O4BHXM5F5WGJ4LARH1KZSOBS1VGKD">Hole To Hole Clearance (Gap=10mil) (All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDA0R0JUL0SMKTIWL0CTLWPHJKPPDEA1PP4BDTXVFDEDQVRX2AEBRH">Minimum Solder Mask Sliver (Gap=4mil) (All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDMPASAJXBGS4ILMLPWHMGXJGU4I5IHVFVO0GAVAKX2UVRQZCM1R2">Silk To Solder Mask (Clearance=10mil) (Disabled)(IsPad),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDXLPK55QX1NULBPFGYEE5QLGXHCFTUIGBNBJ2L0JK2DQXH2CW5KUI">Silk to Silk (Clearance=10mil) (Disabled)(All),(All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDOHOYASBV5XZ3BM5EHKVRRTNFYFNI3I4XWOX2ZAD5H0ZEWAQXB1RG">Net Antennae (Tolerance=0mil) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDAKWPKOEM5SCPFFVALMR1O50GTIOCFGA0PCYCJCGZQ22BKDCEXX0J">Board Clearance Constraint (Gap=0mil) (All)</a></td>
+<td class="column2">101</td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="#IDJ34TYN2IRUGDFS33ZESCRCYH5OMKYLMYSKG2RSCGDIOHLUYJOYBO">Matched Lengths(Tolerance=393.701mil) (InNet(FLASH_D3,FLASH_D2,FLASH_D1,FLASH_D0,FLASH_CLK))</a></td>
+<td class="column2">0</td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="#IDDZRGN5SZUTEWKXXCJUD4SBODDE2DBBY4HWUCYZMZWK23ATJA4AQH">Height Constraint (Min=0mil) (Max=1000mil) (Prefered=500mil) (All)</a></td>
+<td class="column2">0</td>
+</tr>
+<tr>
+<td style="font-weight : bold; text-align : right" class="column1">Total</td>
+<td style="font-weight : bold" class="column2">101</td>
+</tr>
+</table><br><a name="IDSGREGEL5MMQBH05F5QMIJ21XFBJUTU4Z5STJGUFAQH55M2QO3ZBH"><h2>Warnings</h2></a><a name="ID4EB1N1AWXNLFPLSRPYSVSJAKHD0I4J0BU2PFX3I2PKKM21YVUALM"><table>
+<tr>
+<th style="text-align : left" colspan="1" class="warning">Zero hole size multi-layer pad(s) detected</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2490.315mil|Location2.X=2537.685mil|Location1.Y=3975.315mil|Location2.Y=4022.685mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2490.315mil|Location2.X=2537.685mil|Location1.Y=3975.315mil|Location2.Y=4022.685mil|Absolute=True">Pad TP2-1(2514mil,3999mil) on Multi-Layer</acronym></a> on <a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2142.122mil|Location2.X=2677mil|Location1.Y=3851.906mil|Location2.Y=4049mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2142.122mil|Location2.X=2677mil|Location1.Y=3851.906mil|Location2.Y=4049mil|Absolute=True">Net UART4_RX</acronym></a></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2389.315mil|Location2.X=2436.685mil|Location1.Y=3979.315mil|Location2.Y=4026.685mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2389.315mil|Location2.X=2436.685mil|Location1.Y=3979.315mil|Location2.Y=4026.685mil|Absolute=True">Pad TP1-1(2413mil,4003mil) on Multi-Layer</acronym></a> on <a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2142.122mil|Location2.X=2447mil|Location1.Y=3871.591mil|Location2.Y=4049mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2142.122mil|Location2.X=2447mil|Location1.Y=3871.591mil|Location2.Y=4049mil|Absolute=True">Net UART4_TX</acronym></a></td>
+</tr>
+</table></a><hr color="#EEEEEE"><a href="#top" style="font-size: 0.9em">Back to top</a><br><br><a name="ID0MTPGFN1U0D4LVWZ4KVXFS4BIIG2USU0PSNQWWNZT4H1FI2X4K4O"><table>
+<tr>
+<th style="text-align : left" colspan="1" class="warning">Multilayer Pads with 0 size Hole found</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2389.315mil|Location2.X=2436.685mil|Location1.Y=3979.315mil|Location2.Y=4026.685mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2389.315mil|Location2.X=2436.685mil|Location1.Y=3979.315mil|Location2.Y=4026.685mil|Absolute=True">Pad TP1-1(2413mil,4003mil) on Multi-Layer</acronym></a></td>
+</tr>
+</table></a><hr color="#EEEEEE"><a href="#top" style="font-size: 0.9em">Back to top</a><br><br><a name="IDAKWPKOEM5SCPFFVALMR1O50GTIOCFGA0PCYCJCGZQ22BKDCEXX0J"><table>
+<tr>
+<th style="text-align : left" colspan="1" class="rule">Board Clearance Constraint (Gap=0mil) (All)</th>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.973mil|Location2.X=1978.223mil|Location1.Y=4167.603mil|Location2.Y=4178.853mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.973mil|Location2.X=1978.223mil|Location1.Y=4167.603mil|Location2.Y=4178.853mil|Absolute=True">Board Outline Clearance(Outline Edge): (1.024mil &lt; 10mil) Between Arc (1977.047mil,4173.228mil) on Top Overlay And Board Edge </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=3910.556mil|Location2.Y=3921.806mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=3910.556mil|Location2.Y=3921.806mil|Absolute=True">Board Outline Clearance(Outline Edge): (0.946mil &lt; 10mil) Between Board Edge And Track (1975.984mil,3916.181mil)(1975.984mil,3931.929mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=3910.556mil|Location2.Y=3921.806mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=3910.556mil|Location2.Y=3921.806mil|Absolute=True">Board Outline Clearance(Outline Edge): (0.946mil &lt; 10mil) Between Board Edge And Track (1975.984mil,3916.181mil)(2109.843mil,3916.181mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=3965.674mil|Location2.Y=3976.924mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=3965.674mil|Location2.Y=3976.924mil|Absolute=True">Board Outline Clearance(Outline Edge): (0.946mil &lt; 10mil) Between Board Edge And Track (1975.984mil,3971.299mil)(1975.984mil,3987.047mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=3981.422mil|Location2.Y=3992.672mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=3981.422mil|Location2.Y=3992.672mil|Absolute=True">Board Outline Clearance(Outline Edge): (0.946mil &lt; 10mil) Between Board Edge And Track (1975.984mil,3987.047mil)(2109.843mil,3987.047mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=4180.556mil|Location2.Y=4191.806mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=4180.556mil|Location2.Y=4191.806mil|Absolute=True">Board Outline Clearance(Outline Edge): (0.945mil &lt; 10mil) Between Board Edge And Track (1975.984mil,4186.181mil)(1975.984mil,4201.929mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=4180.556mil|Location2.Y=4191.806mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=4180.556mil|Location2.Y=4191.806mil|Absolute=True">Board Outline Clearance(Outline Edge): (0.945mil &lt; 10mil) Between Board Edge And Track (1975.984mil,4186.181mil)(2109.843mil,4186.181mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=4235.674mil|Location2.Y=4246.924mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=4235.674mil|Location2.Y=4246.924mil|Absolute=True">Board Outline Clearance(Outline Edge): (0.945mil &lt; 10mil) Between Board Edge And Track (1975.984mil,4241.299mil)(1975.984mil,4257.047mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=4251.422mil|Location2.Y=4262.672mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1966.934mil|Location2.X=1978.184mil|Location1.Y=4251.422mil|Location2.Y=4262.672mil|Absolute=True">Board Outline Clearance(Outline Edge): (0.945mil &lt; 10mil) Between Board Edge And Track (1975.984mil,4257.047mil)(2109.843mil,4257.047mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.861mil|Location2.X=1979.111mil|Location1.Y=4419.583mil|Location2.Y=4430.833mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.861mil|Location2.X=1979.111mil|Location1.Y=4419.583mil|Location2.Y=4430.833mil|Absolute=True">Board Outline Clearance(Outline Edge): (2.799mil &lt; 10mil) Between Board Edge And Track (1977.838mil,4425.208mil)(1977.838mil,4559.067mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.861mil|Location2.X=1979.111mil|Location1.Y=4419.583mil|Location2.Y=4430.833mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.861mil|Location2.X=1979.111mil|Location1.Y=4419.583mil|Location2.Y=4430.833mil|Absolute=True">Board Outline Clearance(Outline Edge): (2.799mil &lt; 10mil) Between Board Edge And Track (1977.838mil,4425.208mil)(1993.586mil,4425.208mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.861mil|Location2.X=1979.111mil|Location1.Y=4486.513mil|Location2.Y=4497.763mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.861mil|Location2.X=1979.111mil|Location1.Y=4486.513mil|Location2.Y=4497.763mil|Absolute=True">Board Outline Clearance(Outline Edge): (2.799mil &lt; 10mil) Between Board Edge And Track (1977.838mil,4492.138mil)(2048.704mil,4492.138mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.861mil|Location2.X=1979.111mil|Location1.Y=4553.442mil|Location2.Y=4564.692mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.861mil|Location2.X=1979.111mil|Location1.Y=4553.442mil|Location2.Y=4564.692mil|Absolute=True">Board Outline Clearance(Outline Edge): (2.799mil &lt; 10mil) Between Board Edge And Track (1977.838mil,4559.067mil)(1993.586mil,4559.067mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.898mil|Location2.X=1979.148mil|Location1.Y=3848.43mil|Location2.Y=3859.68mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.898mil|Location2.X=1979.148mil|Location1.Y=3848.43mil|Location2.Y=3859.68mil|Absolute=True">Board Outline Clearance(Outline Edge): (2.875mil &lt; 10mil) Between Board Edge And Track (1977.914mil,3854.055mil)(1977.914mil,3861.614mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.898mil|Location2.X=1979.148mil|Location1.Y=3848.43mil|Location2.Y=3859.68mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.898mil|Location2.X=1979.148mil|Location1.Y=3848.43mil|Location2.Y=3859.68mil|Absolute=True">Board Outline Clearance(Outline Edge): (2.875mil &lt; 10mil) Between Board Edge And Track (1977.914mil,3854.055mil)(2077.914mil,3854.055mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.898mil|Location2.X=1979.148mil|Location1.Y=3903.548mil|Location2.Y=3914.798mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.898mil|Location2.X=1979.148mil|Location1.Y=3903.548mil|Location2.Y=3914.798mil|Absolute=True">Board Outline Clearance(Outline Edge): (2.875mil &lt; 10mil) Between Board Edge And Track (1977.914mil,3909.173mil)(1977.914mil,3901.614mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.898mil|Location2.X=1979.148mil|Location1.Y=3903.548mil|Location2.Y=3914.798mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1967.898mil|Location2.X=1979.148mil|Location1.Y=3903.548mil|Location2.Y=3914.798mil|Absolute=True">Board Outline Clearance(Outline Edge): (2.875mil &lt; 10mil) Between Board Edge And Track (1977.914mil,3909.173mil)(2077.913mil,3909.173mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1968.942mil|Location2.X=1980.192mil|Location1.Y=3998.312mil|Location2.Y=4009.562mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1968.942mil|Location2.X=1980.192mil|Location1.Y=3998.312mil|Location2.Y=4009.562mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.961mil &lt; 10mil) Between Board Edge And Track (1980.984mil,4003.937mil)(1980.984mil,4129.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1968.942mil|Location2.X=1980.192mil|Location1.Y=3998.312mil|Location2.Y=4009.562mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1968.942mil|Location2.X=1980.192mil|Location1.Y=3998.312mil|Location2.Y=4009.562mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.961mil &lt; 10mil) Between Board Edge And Track (1980.984mil,4003.937mil)(2114.842mil,4003.937mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1968.942mil|Location2.X=1980.192mil|Location1.Y=4124.296mil|Location2.Y=4135.546mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1968.942mil|Location2.X=1980.192mil|Location1.Y=4124.296mil|Location2.Y=4135.546mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.961mil &lt; 10mil) Between Board Edge And Track (1980.984mil,4129.921mil)(1980.984mil,4161.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1968.942mil|Location2.X=1980.192mil|Location1.Y=4155.792mil|Location2.Y=4167.042mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=1968.942mil|Location2.X=1980.192mil|Location1.Y=4155.792mil|Location2.Y=4167.042mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.961mil &lt; 10mil) Between Board Edge And Track (1980.984mil,4161.417mil)(1988.858mil,4169.291mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2152.603mil|Location2.X=2163.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2152.603mil|Location2.X=2163.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2158.228mil,2919.921mil)(2158.228mil,2998.662mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2152.603mil|Location2.X=2163.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2152.603mil|Location2.X=2163.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2158.228mil,2919.921mil)(2166.102mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2184.099mil|Location2.X=2195.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2184.099mil|Location2.X=2195.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2189.724mil,2919.921mil)(2197.598mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2191.973mil|Location2.X=2203.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2191.973mil|Location2.X=2203.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2197.598mil,2919.921mil)(2197.598mil,2998.662mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2342.879mil|Location2.X=2354.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2342.879mil|Location2.X=2354.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.489mil &lt; 10mil) Between Board Edge And Track (2348.504mil,4706.614mil)(2348.504mil,4714.173mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2342.879mil|Location2.X=2354.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2342.879mil|Location2.X=2354.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.489mil &lt; 10mil) Between Board Edge And Track (2348.504mil,4714.173mil)(2448.504mil,4714.173mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2392.879mil|Location2.X=2404.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2392.879mil|Location2.X=2404.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.489mil &lt; 10mil) Between Board Edge And Track (2398.504mil,4659.055mil)(2398.504mil,4714.173mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2442.879mil|Location2.X=2454.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2442.879mil|Location2.X=2454.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.489mil &lt; 10mil) Between Board Edge And Track (2448.504mil,4706.614mil)(2448.504mil,4714.173mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2582.603mil|Location2.X=2593.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2582.603mil|Location2.X=2593.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2588.228mil,2919.921mil)(2588.228mil,2998.662mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2582.603mil|Location2.X=2593.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2582.603mil|Location2.X=2593.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2588.228mil,2919.921mil)(2596.102mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2614.099mil|Location2.X=2625.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2614.099mil|Location2.X=2625.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2619.724mil,2919.921mil)(2627.598mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2621.973mil|Location2.X=2633.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2621.973mil|Location2.X=2633.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2627.598mil,2919.921mil)(2627.598mil,2998.662mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2642.603mil|Location2.X=2653.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2642.603mil|Location2.X=2653.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2648.228mil,2919.921mil)(2648.228mil,2998.661mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2642.603mil|Location2.X=2653.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2642.603mil|Location2.X=2653.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2648.228mil,2919.921mil)(2656.102mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2674.099mil|Location2.X=2685.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2674.099mil|Location2.X=2685.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2679.724mil,2919.921mil)(2687.598mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2681.973mil|Location2.X=2693.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2681.973mil|Location2.X=2693.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2687.598mil,2919.921mil)(2687.598mil,2998.661mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2722.603mil|Location2.X=2733.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2722.603mil|Location2.X=2733.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2728.228mil,2919.921mil)(2728.228mil,2998.662mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2722.603mil|Location2.X=2733.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2722.603mil|Location2.X=2733.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2728.228mil,2919.921mil)(2736.102mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2754.099mil|Location2.X=2765.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2754.099mil|Location2.X=2765.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2759.724mil,2919.921mil)(2767.598mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2761.973mil|Location2.X=2773.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2761.973mil|Location2.X=2773.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2767.598mil,2919.921mil)(2767.598mil,2998.662mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2817.603mil|Location2.X=2828.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2817.603mil|Location2.X=2828.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2823.228mil,2919.921mil)(2823.228mil,2998.661mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2817.603mil|Location2.X=2828.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2817.603mil|Location2.X=2828.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2823.228mil,2919.921mil)(2831.102mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2849.099mil|Location2.X=2860.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2849.099mil|Location2.X=2860.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2854.724mil,2919.921mil)(2862.598mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2856.973mil|Location2.X=2868.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2856.973mil|Location2.X=2868.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2862.598mil,2919.921mil)(2862.598mil,2998.661mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2912.603mil|Location2.X=2923.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2912.603mil|Location2.X=2923.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2918.228mil,2919.921mil)(2918.228mil,2998.662mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2912.603mil|Location2.X=2923.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2912.603mil|Location2.X=2923.853mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2918.228mil,2919.921mil)(2926.102mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2944.099mil|Location2.X=2955.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2944.099mil|Location2.X=2955.349mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2949.724mil,2919.921mil)(2957.598mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2951.973mil|Location2.X=2963.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2951.973mil|Location2.X=2963.223mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2957.598mil,2919.921mil)(2957.598mil,2998.662mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2977.997mil|Location2.X=2989.247mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2977.997mil|Location2.X=2989.247mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2983.622mil,2919.921mil)(2983.622mil,2998.662mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2977.997mil|Location2.X=2989.247mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=2977.997mil|Location2.X=2989.247mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (2983.622mil,2919.921mil)(2991.496mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3009.493mil|Location2.X=3020.743mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3009.493mil|Location2.X=3020.743mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (3015.118mil,2919.921mil)(3022.992mil,2919.921mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3017.367mil|Location2.X=3028.617mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3017.367mil|Location2.X=3028.617mil|Location1.Y=2908.154mil|Location2.Y=2919.404mil|Absolute=True">Board Outline Clearance(Outline Edge): (6.378mil &lt; 10mil) Between Board Edge And Track (3022.992mil,2919.921mil)(3022.992mil,2998.662mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3076.816mil|Location2.X=3088.066mil|Location1.Y=2908.489mil|Location2.Y=2919.739mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3076.816mil|Location2.X=3088.066mil|Location1.Y=2908.489mil|Location2.Y=2919.739mil|Absolute=True">Board Outline Clearance(Outline Edge): (7.048mil &lt; 10mil) Between Board Edge And Track (3082.441mil,2920.59mil)(3082.441mil,3020.59mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3076.816mil|Location2.X=3088.066mil|Location1.Y=2908.489mil|Location2.Y=2919.739mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3076.816mil|Location2.X=3088.066mil|Location1.Y=2908.489mil|Location2.Y=2919.739mil|Absolute=True">Board Outline Clearance(Outline Edge): (7.048mil &lt; 10mil) Between Board Edge And Track (3082.441mil,2920.59mil)(3090mil,2920.59mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3124.375mil|Location2.X=3135.625mil|Location1.Y=2908.489mil|Location2.Y=2919.739mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3124.375mil|Location2.X=3135.625mil|Location1.Y=2908.489mil|Location2.Y=2919.739mil|Absolute=True">Board Outline Clearance(Outline Edge): (7.048mil &lt; 10mil) Between Board Edge And Track (3130mil,2920.59mil)(3137.559mil,2920.59mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3131.934mil|Location2.X=3143.184mil|Location1.Y=2908.489mil|Location2.Y=2919.739mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3131.934mil|Location2.X=3143.184mil|Location1.Y=2908.489mil|Location2.Y=2919.739mil|Absolute=True">Board Outline Clearance(Outline Edge): (7.048mil &lt; 10mil) Between Board Edge And Track (3137.559mil,2920.59mil)(3137.559mil,3020.59mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3141.816mil|Location2.X=3153.066mil|Location1.Y=2909.099mil|Location2.Y=2920.349mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3141.816mil|Location2.X=3153.066mil|Location1.Y=2909.099mil|Location2.Y=2920.349mil|Absolute=True">Board Outline Clearance(Outline Edge): (8.268mil &lt; 10mil) Between Board Edge And Track (3147.441mil,2921.811mil)(3147.441mil,3021.811mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3141.816mil|Location2.X=3153.066mil|Location1.Y=2909.099mil|Location2.Y=2920.349mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3141.816mil|Location2.X=3153.066mil|Location1.Y=2909.099mil|Location2.Y=2920.349mil|Absolute=True">Board Outline Clearance(Outline Edge): (8.268mil &lt; 10mil) Between Board Edge And Track (3147.441mil,2921.811mil)(3155mil,2921.811mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3189.375mil|Location2.X=3200.625mil|Location1.Y=2909.099mil|Location2.Y=2920.349mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3189.375mil|Location2.X=3200.625mil|Location1.Y=2909.099mil|Location2.Y=2920.349mil|Absolute=True">Board Outline Clearance(Outline Edge): (8.268mil &lt; 10mil) Between Board Edge And Track (3195mil,2921.811mil)(3202.559mil,2921.811mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3196.934mil|Location2.X=3208.184mil|Location1.Y=2909.099mil|Location2.Y=2920.349mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3196.934mil|Location2.X=3208.184mil|Location1.Y=2909.099mil|Location2.Y=2920.349mil|Absolute=True">Board Outline Clearance(Outline Edge): (8.268mil &lt; 10mil) Between Board Edge And Track (3202.559mil,2921.811mil)(3202.559mil,3021.811mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3996.816mil|Location2.X=4008.066mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3996.816mil|Location2.X=4008.066mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True">Board Outline Clearance(Outline Edge): (5.867mil &lt; 10mil) Between Board Edge And Track (4002.441mil,2919.409mil)(4002.441mil,3019.409mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3996.816mil|Location2.X=4008.066mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=3996.816mil|Location2.X=4008.066mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True">Board Outline Clearance(Outline Edge): (5.867mil &lt; 10mil) Between Board Edge And Track (4002.441mil,2919.409mil)(4010mil,2919.409mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4044.375mil|Location2.X=4055.625mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4044.375mil|Location2.X=4055.625mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True">Board Outline Clearance(Outline Edge): (5.867mil &lt; 10mil) Between Board Edge And Track (4050mil,2919.409mil)(4057.559mil,2919.409mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4051.934mil|Location2.X=4063.184mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4051.934mil|Location2.X=4063.184mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True">Board Outline Clearance(Outline Edge): (5.867mil &lt; 10mil) Between Board Edge And Track (4057.559mil,2919.409mil)(4057.559mil,3019.409mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4061.816mil|Location2.X=4073.066mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4061.816mil|Location2.X=4073.066mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True">Board Outline Clearance(Outline Edge): (5.867mil &lt; 10mil) Between Board Edge And Track (4067.441mil,2919.409mil)(4067.441mil,3019.409mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4061.816mil|Location2.X=4073.066mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4061.816mil|Location2.X=4073.066mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True">Board Outline Clearance(Outline Edge): (5.867mil &lt; 10mil) Between Board Edge And Track (4067.441mil,2919.409mil)(4075mil,2919.409mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4109.375mil|Location2.X=4120.625mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4109.375mil|Location2.X=4120.625mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True">Board Outline Clearance(Outline Edge): (5.867mil &lt; 10mil) Between Board Edge And Track (4115mil,2919.409mil)(4122.559mil,2919.409mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4116.934mil|Location2.X=4128.184mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4116.934mil|Location2.X=4128.184mil|Location1.Y=2907.898mil|Location2.Y=2919.148mil|Absolute=True">Board Outline Clearance(Outline Edge): (5.867mil &lt; 10mil) Between Board Edge And Track (4122.559mil,2919.409mil)(4122.559mil,3019.409mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4308.537mil|Location2.X=4319.787mil|Location1.Y=2907.243mil|Location2.Y=2918.493mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4308.537mil|Location2.X=4319.787mil|Location1.Y=2907.243mil|Location2.Y=2918.493mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.556mil &lt; 10mil) Between Board Edge And Track (4314.162mil,2918.099mil)(4314.162mil,2996.839mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4308.537mil|Location2.X=4319.787mil|Location1.Y=2907.243mil|Location2.Y=2918.493mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4308.537mil|Location2.X=4319.787mil|Location1.Y=2907.243mil|Location2.Y=2918.493mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.556mil &lt; 10mil) Between Board Edge And Track (4314.162mil,2918.099mil)(4322.036mil,2918.099mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4340.033mil|Location2.X=4351.283mil|Location1.Y=2907.243mil|Location2.Y=2918.493mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4340.033mil|Location2.X=4351.283mil|Location1.Y=2907.243mil|Location2.Y=2918.493mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.556mil &lt; 10mil) Between Board Edge And Track (4345.658mil,2918.099mil)(4353.532mil,2918.099mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4347.907mil|Location2.X=4359.157mil|Location1.Y=2907.243mil|Location2.Y=2918.493mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4347.907mil|Location2.X=4359.157mil|Location1.Y=2907.243mil|Location2.Y=2918.493mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.556mil &lt; 10mil) Between Board Edge And Track (4353.532mil,2918.099mil)(4353.532mil,2996.839mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4497.879mil|Location2.X=4509.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4497.879mil|Location2.X=4509.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.489mil &lt; 10mil) Between Board Edge And Track (4503.504mil,4706.614mil)(4503.504mil,4714.173mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4497.879mil|Location2.X=4509.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4497.879mil|Location2.X=4509.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.489mil &lt; 10mil) Between Board Edge And Track (4503.504mil,4714.173mil)(4603.504mil,4714.173mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4547.879mil|Location2.X=4559.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4547.879mil|Location2.X=4559.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.489mil &lt; 10mil) Between Board Edge And Track (4553.504mil,4659.055mil)(4553.504mil,4714.173mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4597.879mil|Location2.X=4609.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4597.879mil|Location2.X=4609.129mil|Location1.Y=4713.745mil|Location2.Y=4724.995mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.489mil &lt; 10mil) Between Board Edge And Track (4603.504mil,4706.614mil)(4603.504mil,4714.173mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4738.115mil|Location2.X=4749.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4738.115mil|Location2.X=4749.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4743.74mil,2917.677mil)(4743.74mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4738.115mil|Location2.X=4749.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4738.115mil|Location2.X=4749.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4743.74mil,2917.677mil)(4751.614mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4769.611mil|Location2.X=4780.861mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4769.611mil|Location2.X=4780.861mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4775.236mil,2917.677mil)(4783.11mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4777.485mil|Location2.X=4788.735mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4777.485mil|Location2.X=4788.735mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4783.11mil,2917.677mil)(4783.11mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4798.115mil|Location2.X=4809.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4798.115mil|Location2.X=4809.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4803.74mil,2917.677mil)(4803.74mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4798.115mil|Location2.X=4809.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4798.115mil|Location2.X=4809.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4803.74mil,2917.677mil)(4811.614mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4829.611mil|Location2.X=4840.861mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4829.611mil|Location2.X=4840.861mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4835.236mil,2917.677mil)(4843.11mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4837.485mil|Location2.X=4848.735mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4837.485mil|Location2.X=4848.735mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4843.11mil,2917.677mil)(4843.11mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4878.115mil|Location2.X=4889.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4878.115mil|Location2.X=4889.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4883.74mil,2917.677mil)(4883.74mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4878.115mil|Location2.X=4889.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4878.115mil|Location2.X=4889.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4883.74mil,2917.677mil)(4891.614mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4909.611mil|Location2.X=4920.861mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4909.611mil|Location2.X=4920.861mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4915.236mil,2917.677mil)(4923.11mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4917.485mil|Location2.X=4928.735mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4917.485mil|Location2.X=4928.735mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4923.11mil,2917.677mil)(4923.11mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4973.115mil|Location2.X=4984.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4973.115mil|Location2.X=4984.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4978.74mil,2917.677mil)(4978.74mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4973.115mil|Location2.X=4984.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=4973.115mil|Location2.X=4984.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (4978.74mil,2917.677mil)(4986.614mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5004.611mil|Location2.X=5015.861mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5004.611mil|Location2.X=5015.861mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (5010.236mil,2917.677mil)(5018.11mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5012.485mil|Location2.X=5023.735mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5012.485mil|Location2.X=5023.735mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (5018.11mil,2917.677mil)(5018.11mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5068.115mil|Location2.X=5079.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5068.115mil|Location2.X=5079.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (5073.74mil,2917.677mil)(5073.74mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5068.115mil|Location2.X=5079.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5068.115mil|Location2.X=5079.365mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (5073.74mil,2917.677mil)(5081.614mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5099.611mil|Location2.X=5110.861mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5099.611mil|Location2.X=5110.861mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (5105.236mil,2917.677mil)(5113.11mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5107.485mil|Location2.X=5118.735mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5107.485mil|Location2.X=5118.735mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (5113.11mil,2917.677mil)(5113.11mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5133.509mil|Location2.X=5144.759mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5133.509mil|Location2.X=5144.759mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (5139.134mil,2917.677mil)(5139.134mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5133.509mil|Location2.X=5144.759mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5133.509mil|Location2.X=5144.759mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (5139.134mil,2917.677mil)(5147.008mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_even" onmouseover="className = 'onmouseover_even'" onmouseout="className = 'onmouseout_even'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5165.005mil|Location2.X=5176.255mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5165.005mil|Location2.X=5176.255mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (5170.63mil,2917.677mil)(5178.504mil,2917.677mil) on Top Overlay </acronym></a><br></td>
+</tr>
+<tr class="onmouseout_odd" onmouseover="className = 'onmouseover_odd'" onmouseout="className = 'onmouseout_odd'">
+<td class="column1"><a href="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5172.879mil|Location2.X=5184.129mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True" class="callback"><acronym title="dxpprocess://PCB:Zoom?document=D:\YandexDisk\_PEDAL_BreadBoard\HW\SOM_MCU\SOM_MCU.PcbDoc;viewname=PCBEditor;Action=AREA_DYNAMICZOOM|Location1.X=5172.879mil|Location2.X=5184.129mil|Location1.Y=2907.032mil|Location2.Y=2918.282mil|Absolute=True">Board Outline Clearance(Outline Edge): (4.134mil &lt; 10mil) Between Board Edge And Track (5178.504mil,2917.677mil)(5178.504mil,2996.417mil) on Top Overlay </acronym></a><br></td>
+</tr>
+</table></a><hr color="#EEEEEE"><a href="#top" style="font-size: 0.9em">Back to top</a><br><br></body>
+</html>

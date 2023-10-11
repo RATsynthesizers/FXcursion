@@ -1,0 +1,45 @@
+Types.hpp:91:5:touchgfx::colortype::colortype(uint32_t)	1
+Types.hpp:127:5:touchgfx::Rect::Rect()	1
+Drawable.hpp:48:5:touchgfx::Drawable::Drawable()	1
+Drawable.hpp:62:13:touchgfx::Drawable::~Drawable()	1
+Drawable.hpp:62:13:virtual touchgfx::Drawable::~Drawable()	1
+Drawable.hpp:121:18:virtual void touchgfx::Drawable::invalidateContent() const	2
+Drawable.hpp:147:23:virtual touchgfx::Drawable* touchgfx::Drawable::getFirstChild()	1
+Drawable.hpp:233:10:void touchgfx::Drawable::setPosition(int16_t, int16_t, int16_t, int16_t)	1
+Drawable.hpp:315:18:virtual void touchgfx::Drawable::setX(int16_t)	1
+Drawable.hpp:327:18:virtual void touchgfx::Drawable::setY(int16_t)	1
+Drawable.hpp:343:10:void touchgfx::Drawable::setXY(int16_t, int16_t)	1
+Drawable.hpp:356:18:virtual void touchgfx::Drawable::setWidth(int16_t)	1
+Drawable.hpp:368:18:virtual void touchgfx::Drawable::setHeight(int16_t)	1
+Drawable.hpp:378:18:virtual void touchgfx::Drawable::childGeometryChanged()	1
+Drawable.hpp:389:18:virtual void touchgfx::Drawable::handleClickEvent(const touchgfx::ClickEvent&)	1
+Drawable.hpp:401:18:virtual void touchgfx::Drawable::handleGestureEvent(const touchgfx::GestureEvent&)	1
+Drawable.hpp:413:10:void touchgfx::Drawable::setWidthHeight(int16_t, int16_t)	1
+Drawable.hpp:490:18:virtual void touchgfx::Drawable::handleDragEvent(const touchgfx::DragEvent&)	1
+Drawable.hpp:501:18:virtual void touchgfx::Drawable::handleTickEvent()	1
+Drawable.hpp:537:10:bool touchgfx::Drawable::isVisible() const	1
+Drawable.hpp:549:10:bool touchgfx::Drawable::isTouchable() const	1
+Drawable.hpp:588:18:virtual void touchgfx::Drawable::moveTo(int16_t, int16_t)	1
+Drawable.hpp:625:10:void touchgfx::Drawable::resetDrawChainCache()	1
+Drawable.hpp:703:18:virtual void touchgfx::Drawable::setupDrawChain(const touchgfx::Rect&, touchgfx::Drawable**)	1
+Container.hpp:43:5:touchgfx::Container::Container()	1
+Container.hpp:165:23:virtual touchgfx::Drawable* touchgfx::Container::getFirstChild()	1
+Widget.hpp:45:18:virtual void touchgfx::Widget::getLastChild(int16_t, int16_t, touchgfx::Drawable**)	4
+Widget.hpp:36:7:touchgfx::Widget::Widget()	1
+Widget.hpp:36:7:touchgfx::Widget::~Widget()	1
+Widget.hpp:36:7:virtual touchgfx::Widget::~Widget()	1
+Box.hpp:33:5:touchgfx::Box::Box()	1
+Box.hpp:62:10:void touchgfx::Box::setColor(touchgfx::colortype)	1
+Box.hpp:29:7:touchgfx::Box::~Box()	1
+Box.hpp:29:7:virtual touchgfx::Box::~Box()	1
+BoxWithBorder.hpp:34:5:touchgfx::BoxWithBorder::BoxWithBorder()	1
+BoxWithBorder.hpp:61:10:void touchgfx::BoxWithBorder::setBorderColor(touchgfx::colortype)	1
+BoxWithBorder.hpp:85:10:void touchgfx::BoxWithBorder::setBorderSize(uint16_t)	1
+Container.hpp:40:7:touchgfx::Container::~Container()	1
+Container.hpp:40:7:virtual touchgfx::Container::~Container()	1
+SelectedSubMenuItemBase.cpp:7:1:SelectedSubMenuItemBase::SelectedSubMenuItemBase()	1
+SelectedSubMenuItemBase.cpp:18:1:SelectedSubMenuItemBase::~SelectedSubMenuItemBase()	1
+SelectedSubMenuItemBase.cpp:18:1:virtual SelectedSubMenuItemBase::~SelectedSubMenuItemBase()	1
+SelectedSubMenuItemBase.cpp:23:6:virtual void SelectedSubMenuItemBase::initialize()	1
+BoxWithBorder.hpp:31:7:touchgfx::BoxWithBorder::~BoxWithBorder()	1
+BoxWithBorder.hpp:31:7:virtual touchgfx::BoxWithBorder::~BoxWithBorder()	1

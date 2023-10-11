@@ -1,0 +1,63 @@
+#include <iostream>
+#include <queue>
+
+// Task class
+class Task {
+public:
+    Task(const std::string& name, int time) : name(name), time(time) {}
+
+    // Overload the less-than operator for sorting tasks by time
+    bool operator<(const Task& other) const {
+        return time > other.time; // Sort in ascending order of time
+    }
+
+    void execute() {
+        std::cout << "Executing task: " << name << std::endl;
+    }
+
+private:
+    std::string name;
+    int time;
+};
+
+// TaskQueueManager class
+class TaskQueueManager {
+public:
+    // Add a task to the queue
+    void addTask(const Task& task) {
+        taskQueue.push(task);
+    }
+
+    // Remove the earliest task from the queue
+    void deleteTask() {
+        if (!taskQueue.empty()) {
+            taskQueue.pop();
+        }
+    }
+
+    // Process tasks in the queue
+    void processTasks() {
+        while (!taskQueue.empty()) {
+            Task task = taskQueue.top();
+            task.execute();
+            taskQueue.pop();
+        }
+    }
+
+private:
+    std::priority_queue<Task> taskQueue;
+};
+
+int main() {
+    TaskQueueManager manager;
+
+    // Add tasks to the queue
+    manager.addTask(Task("Task 1", 2));
+    manager.addTask(Task("Task 2", 1));
+    manager.addTask(Task("Task 3", 3));
+
+    // Process tasks
+    manager.processTasks();
+
+    return 0;
+}

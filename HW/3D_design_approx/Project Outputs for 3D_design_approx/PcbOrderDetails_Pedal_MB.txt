@@ -1,0 +1,15 @@
+- Size 172x85 mm
+- Quantity: 5
+- Layers: 2
+- Material: FR-4 (default)
+  - FR4-TG: TG 150-160 (default)
+- Thickness: 1.6mm
+- Min track/spacing: 8/8 mil
+- Min hole size: 0.3 mm
+- Solder mask color: Green
+- Silkscreen color: White
+- Edge connector: No
+- Surface finish: HASL with lead (default)
+- Finished copper: 1/2 oz (18 um)
+- Inner Copper: No
+- Remove product: No

@@ -1,0 +1,17 @@
+../Middlewares/ST/touchgfx/framework/include/mvp/Presenter.hpp:37:18:virtual void touchgfx::Presenter::activate()	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/Presenter.hpp:47:18:virtual void touchgfx::Presenter::deactivate()	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/Presenter.hpp:52:13:touchgfx::Presenter::~Presenter()	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/Presenter.hpp:52:13:virtual touchgfx::Presenter::~Presenter()	16	static
+../Middlewares/ST/touchgfx/framework/include/mvp/Presenter.hpp:58:5:touchgfx::Presenter::Presenter()	16	static
+../TouchGFX/gui/include/gui/model/ModelListener.hpp:12:5:ModelListener::ModelListener()	16	static
+../TouchGFX/gui/include/gui/model/ModelListener.hpp:14:13:ModelListener::~ModelListener()	16	static
+../TouchGFX/gui/include/gui/model/ModelListener.hpp:14:13:virtual ModelListener::~ModelListener()	16	static
+../TouchGFX/gui/include/gui/effectsettings_screen/EffectSettingsPresenter.hpp:27:10:EffectSettingsPresenter::~EffectSettingsPresenter()	16	static
+../TouchGFX/gui/include/gui/effectsettings_screen/EffectSettingsPresenter.hpp:27:10:virtual EffectSettingsPresenter::~EffectSettingsPresenter()	16	static
+../TouchGFX/gui/src/effectsettings_screen/EffectSettingsPresenter.cpp:4:1:EffectSettingsPresenter::EffectSettingsPresenter(EffectSettingsView&)	16	static
+../TouchGFX/gui/src/effectsettings_screen/EffectSettingsPresenter.cpp:9:6:virtual void EffectSettingsPresenter::activate()	16	static
+../TouchGFX/gui/src/effectsettings_screen/EffectSettingsPresenter.cpp:13:6:virtual void EffectSettingsPresenter::deactivate()	16	static
+../TouchGFX/gui/src/effectsettings_screen/EffectSettingsPresenter.cpp:17:6:virtual void EffectSettingsPresenter::parameterChange(uint8_t, int8_t)	16	static
+../TouchGFX/gui/src/effectsettings_screen/EffectSettingsPresenter.cpp:21:6:virtual void EffectSettingsPresenter::encScroll_action(int8_t)	16	static
+../TouchGFX/gui/src/effectsettings_screen/EffectSettingsPresenter.cpp:25:6:virtual void EffectSettingsPresenter::btnYES_action()	16	static
+../TouchGFX/gui/src/effectsettings_screen/EffectSettingsPresenter.cpp:29:6:virtual void EffectSettingsPresenter::btnNO_action()	16	static

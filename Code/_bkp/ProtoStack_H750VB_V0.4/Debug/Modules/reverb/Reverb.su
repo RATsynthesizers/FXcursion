@@ -1,0 +1,3 @@
+../Modules/reverb/../../DSP_MY/dsp.hpp:188:10:void AllPass_PSRAM::setLength(float)	16	static
+../Modules/reverb/../../DSP_MY/dsp.hpp:189:10:void AllPass_PSRAM::setFB(float)	16	static
+../Modules/reverb/Reverb.cpp:10:6:virtual void Reverb::process()	32	static

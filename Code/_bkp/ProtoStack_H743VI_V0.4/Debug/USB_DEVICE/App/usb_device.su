@@ -1,0 +1,2 @@
+../USB_DEVICE/App/usb_device.c:57:6:MX_USB_DEVICE_DeInit	8	static
+../USB_DEVICE/App/usb_device.c:81:6:MX_USB_DEVICE_Init	8	static
