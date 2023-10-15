@@ -1,0 +1,1464 @@
+{
+  "Application": {
+    "Screens": [
+      {
+        "Name": "LogoStartup",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Width": 320,
+            "Height": 240,
+            "LockPosition": true,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            }
+          },
+          {
+            "Type": "Image",
+            "Name": "rat_logo",
+            "X": 21,
+            "Y": 50,
+            "Width": 293,
+            "Height": 171,
+            "RelativeFilename": "rat_logo.png"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "LogoFadeInteraction",
+            "HasCompletedTrigger": true,
+            "Trigger": {
+              "Type": "TriggerScreenEntered"
+            },
+            "Action": {
+              "Type": "ActionFade",
+              "Alpha": 0,
+              "Easing": "Quint",
+              "EasingOption": "In",
+              "Duration": 7000,
+              "AnimationDelay": 2000,
+              "ActionComponent": "rat_logo"
+            }
+          },
+          {
+            "InteractionName": "SetupEnded",
+            "Trigger": {
+              "Type": "TriggerInteractionCompleted",
+              "InteractionToTriggerOn": "LogoFadeInteraction"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionBlock",
+              "ActionComponent": "ProjectSettings"
+            }
+          }
+        ],
+        "CustomActions": [
+          {
+            "Name": "action1"
+          }
+        ]
+      },
+      {
+        "Name": "ProjectSettings",
+        "CanvasBufferSize": 4800,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "background",
+            "Width": 320,
+            "Height": 240,
+            "LockPosition": true,
+            "Color": {
+              "Red": 120,
+              "Green": 230,
+              "Blue": 73
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "projectNameBox",
+            "Width": 320,
+            "Height": 50,
+            "LockPosition": true,
+            "Color": {
+              "Green": 60,
+              "Blue": 212
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "projectSettings_text",
+            "Y": 13,
+            "Width": 320,
+            "Height": 25,
+            "LockPosition": true,
+            "TextId": "__SingleUse_5EGQ",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "wiringChangeBox",
+            "Width": 320,
+            "Height": 50,
+            "Visible": false,
+            "CustomContainerDefinitionName": "WiringChangeBox"
+          },
+          {
+            "Type": "Container",
+            "Name": "linesContainer",
+            "Width": 320,
+            "Height": 240,
+            "Components": [
+              {
+                "Type": "Line",
+                "Name": "line1_1",
+                "X": 110,
+                "Y": 80,
+                "Width": 100,
+                "Height": 5,
+                "Visible": false,
+                "StartX": 2.5,
+                "StartY": 2.5,
+                "EndX": 97.5,
+                "EndY": 2.5,
+                "LineWidth": 5.0,
+                "LineEndingStyle": "Butt"
+              },
+              {
+                "Type": "Line",
+                "Name": "line1_2",
+                "X": 110,
+                "Y": 88,
+                "Width": 100,
+                "Height": 65,
+                "Visible": false,
+                "StartX": 97.5,
+                "StartY": 2.5,
+                "EndX": 2.5,
+                "EndY": 47.5,
+                "LineWidth": 5.0,
+                "LineEndingStyle": "Butt"
+              },
+              {
+                "Type": "Line",
+                "Name": "line1_3",
+                "X": 110,
+                "Y": 99,
+                "Width": 100,
+                "Height": 90,
+                "Visible": false,
+                "StartX": 97.5,
+                "StartY": 2.5,
+                "EndX": 2.5,
+                "EndY": 87.5,
+                "LineWidth": 5.0,
+                "LineEndingStyle": "Butt"
+              },
+              {
+                "Type": "Line",
+                "Name": "line2_1",
+                "X": 110,
+                "Y": 88,
+                "Width": 100,
+                "Height": 65,
+                "Visible": false,
+                "StartX": 2.5,
+                "StartY": 2.5,
+                "EndX": 97.5,
+                "EndY": 47.5,
+                "LineWidth": 5.0,
+                "LineEndingStyle": "Butt"
+              },
+              {
+                "Type": "Line",
+                "Name": "line2_2",
+                "X": 110,
+                "Y": 140,
+                "Width": 100,
+                "Height": 5,
+                "Visible": false,
+                "StartX": 2.5,
+                "StartY": 2.5,
+                "EndX": 97.5,
+                "EndY": 2.5,
+                "LineWidth": 5.0,
+                "LineEndingStyle": "Butt"
+              },
+              {
+                "Type": "Line",
+                "Name": "line2_3",
+                "X": 110,
+                "Y": 148,
+                "Width": 100,
+                "Height": 65,
+                "Visible": false,
+                "StartX": 97.5,
+                "StartY": 2.5,
+                "EndX": 2.5,
+                "EndY": 47.5,
+                "LineWidth": 5.0,
+                "LineEndingStyle": "Butt"
+              },
+              {
+                "Type": "Line",
+                "Name": "line3_1",
+                "X": 110,
+                "Y": 99,
+                "Width": 100,
+                "Height": 90,
+                "Visible": false,
+                "StartX": 2.5,
+                "StartY": 2.5,
+                "EndX": 97.5,
+                "EndY": 87.5,
+                "LineWidth": 5.0,
+                "LineEndingStyle": "Butt"
+              },
+              {
+                "Type": "Line",
+                "Name": "line3_2",
+                "X": 110,
+                "Y": 148,
+                "Width": 100,
+                "Height": 65,
+                "Visible": false,
+                "StartX": 2.5,
+                "StartY": 2.5,
+                "EndX": 97.5,
+                "EndY": 47.5,
+                "LineWidth": 5.0,
+                "LineEndingStyle": "Butt"
+              },
+              {
+                "Type": "Line",
+                "Name": "line3_3",
+                "X": 110,
+                "Y": 200,
+                "Width": 100,
+                "Height": 5,
+                "Visible": false,
+                "StartX": 2.5,
+                "StartY": 2.5,
+                "EndX": 97.5,
+                "EndY": 2.5,
+                "LineWidth": 5.0,
+                "LineEndingStyle": "Butt"
+              }
+            ]
+          },
+          {
+            "Type": "ListLayout",
+            "Name": "outputsList",
+            "X": 25,
+            "Y": 63,
+            "Width": 90,
+            "Height": 180,
+            "Direction": "South",
+            "Components": [
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "outputItem0",
+                "Width": 90,
+                "Height": 60,
+                "CustomContainerDefinitionName": "SettingsItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "outputItem1",
+                "Y": 60,
+                "Width": 90,
+                "Height": 60,
+                "CustomContainerDefinitionName": "SettingsItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "outputItem2",
+                "Y": 120,
+                "Width": 90,
+                "Height": 60,
+                "CustomContainerDefinitionName": "SettingsItem"
+              }
+            ]
+          },
+          {
+            "Type": "ListLayout",
+            "Name": "inputsList",
+            "X": 205,
+            "Y": 63,
+            "Width": 90,
+            "Height": 180,
+            "Direction": "South",
+            "Components": [
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "inputItem0",
+                "Width": 90,
+                "Height": 60,
+                "CustomContainerDefinitionName": "SettingsItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "inputItem1",
+                "Y": 60,
+                "Width": 90,
+                "Height": 60,
+                "CustomContainerDefinitionName": "SettingsItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "inputItem2",
+                "Y": 120,
+                "Width": 90,
+                "Height": 60,
+                "CustomContainerDefinitionName": "SettingsItem"
+              }
+            ]
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "subSettingsContainer",
+            "Width": 320,
+            "Height": 240,
+            "Visible": false,
+            "CustomContainerDefinitionName": "SubSettingsContainer"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "FXchainSelected",
+            "HasCompletedTrigger": true,
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionBlock",
+              "ActionComponent": "FXchain"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "FXchain",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Width": 320,
+            "Height": 240,
+            "LockPosition": true,
+            "Color": {
+              "Red": 237,
+              "Green": 201,
+              "Blue": 154
+            }
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "channelNameBox",
+            "Width": 320,
+            "Height": 50,
+            "LockPosition": true,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "channelNumFX_text",
+            "Y": 13,
+            "Width": 320,
+            "Height": 25,
+            "LockPosition": true,
+            "TextId": "ChannelFX",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          },
+          {
+            "Type": "ListLayout",
+            "Name": "listLayout",
+            "Y": 60,
+            "Width": 320,
+            "Height": 180,
+            "Direction": "South",
+            "Components": [
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "menuItem0",
+                "Width": 320,
+                "Height": 45,
+                "CustomContainerDefinitionName": "MenuItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "menuItem1",
+                "Y": 45,
+                "Width": 320,
+                "Height": 45,
+                "CustomContainerDefinitionName": "MenuItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "menuItem2",
+                "Y": 90,
+                "Width": 320,
+                "Height": 45,
+                "CustomContainerDefinitionName": "MenuItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "menuItem3",
+                "Y": 135,
+                "Width": 320,
+                "Height": 45,
+                "CustomContainerDefinitionName": "MenuItem"
+              }
+            ]
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "subMenu",
+            "Width": 320,
+            "Height": 240,
+            "Visible": false,
+            "CustomContainerDefinitionName": "SubMenuContainer"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "effectsList",
+            "Width": 320,
+            "Height": 240,
+            "Visible": false,
+            "CustomContainerDefinitionName": "EffectsListContainer"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "GoToEffectSettings",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionBlock",
+              "ActionComponent": "EffectSettings"
+            }
+          },
+          {
+            "InteractionName": "GoToProjectSettings",
+            "HasCompletedTrigger": true,
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionBlock",
+              "ActionComponent": "ProjectSettings"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "EffectSettings",
+        "CanvasBufferSize": 4800,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Width": 320,
+            "Height": 240,
+            "LockPosition": true,
+            "Color": {
+              "Red": 89,
+              "Green": 89,
+              "Blue": 89
+            }
+          },
+          {
+            "Type": "ScalableImage",
+            "Name": "nameBox",
+            "X": 75,
+            "Width": 245,
+            "Height": 48,
+            "Filename": "__generated\\alternate_theme_images_bars_480x272_bottom_action.png",
+            "ScalingAlgorithm": "Nearest-neighbor"
+          },
+          {
+            "Type": "TextArea",
+            "Name": "effectName",
+            "X": 73,
+            "Y": 12,
+            "Width": 246,
+            "Height": 25,
+            "TextId": "__SingleUse_JPYD",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "customGauge0",
+            "X": 74,
+            "Y": 67,
+            "Width": 123,
+            "Height": 70,
+            "LockPosition": true,
+            "CustomContainerDefinitionName": "CustomGauge"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "customGauge1",
+            "X": 196,
+            "Y": 67,
+            "Width": 123,
+            "Height": 70,
+            "LockPosition": true,
+            "CustomContainerDefinitionName": "CustomGauge"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "customGauge2",
+            "X": 74,
+            "Y": 156,
+            "Width": 123,
+            "Height": 70,
+            "LockPosition": true,
+            "CustomContainerDefinitionName": "CustomGauge"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "customGauge3",
+            "X": 196,
+            "Y": 156,
+            "Width": 123,
+            "Height": 70,
+            "CustomContainerDefinitionName": "CustomGauge"
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "slidingBox",
+            "X": -5,
+            "Y": -5,
+            "Width": 80,
+            "Height": 250,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "chNum_text",
+            "Y": 12,
+            "Width": 74,
+            "Height": 25,
+            "TextId": "ChNum",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "effectPictogram3",
+            "Y": 192,
+            "Width": 75,
+            "Height": 53,
+            "CustomContainerDefinitionName": "EffectPictogram"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "effectPictogram2",
+            "Y": 144,
+            "Width": 75,
+            "Height": 53,
+            "CustomContainerDefinitionName": "EffectPictogram"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "effectPictogram1",
+            "Y": 96,
+            "Width": 75,
+            "Height": 53,
+            "CustomContainerDefinitionName": "EffectPictogram"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "effectPictogram0",
+            "Y": 48,
+            "Width": 75,
+            "Height": 53,
+            "CustomContainerDefinitionName": "EffectPictogram"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "GoToFXchain",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionBlock",
+              "ActionComponent": "FXchain"
+            }
+          }
+        ]
+      }
+    ],
+    "CustomContainerDefinitions": [
+      {
+        "Name": "SettingsItem",
+        "Width": 90,
+        "Height": 60,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "blackBox",
+            "Width": 90,
+            "Height": 40,
+            "BorderColor": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "whiteBox",
+            "Width": 90,
+            "Height": 40,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "Box",
+            "Name": "orangeBox",
+            "X": 5,
+            "Y": 5,
+            "Width": 80,
+            "Height": 30,
+            "Visible": false,
+            "Color": {
+              "Red": 255,
+              "Green": 136
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "Text",
+            "Y": 7,
+            "Width": 90,
+            "Height": 26,
+            "TextId": "__SingleUse_M188",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 6
+            }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "MenuItem",
+        "Width": 320,
+        "Height": 45,
+        "Components": [
+          {
+            "Type": "ScalableImage",
+            "Name": "dashedImageSelected",
+            "X": 77,
+            "Width": 230,
+            "Height": 35,
+            "Filename": "empty_dashed_selected.png",
+            "ScalingAlgorithm": "Nearest-neighbor"
+          },
+          {
+            "Type": "ScalableImage",
+            "Name": "dashedImage",
+            "X": 77,
+            "Width": 230,
+            "Height": 35,
+            "Filename": "empty_dashed.png",
+            "ScalingAlgorithm": "Nearest-neighbor"
+          },
+          {
+            "Type": "ScalableImage",
+            "Name": "pictogramSelected",
+            "X": 20,
+            "Width": 35,
+            "Height": 35,
+            "Filename": "emptySelectedPict.png",
+            "ScalingAlgorithm": "Nearest-neighbor"
+          },
+          {
+            "Type": "ScalableImage",
+            "Name": "pictogramRegular",
+            "X": 20,
+            "Width": 35,
+            "Height": 35,
+            "Filename": "emptyPict.png",
+            "ScalingAlgorithm": "Nearest-neighbor"
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "blackBox",
+            "X": 77,
+            "Width": 230,
+            "Height": 35,
+            "BorderColor": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "whiteBox",
+            "X": 77,
+            "Width": 230,
+            "Height": 35,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "Text",
+            "X": 78,
+            "Y": 4,
+            "Width": 229,
+            "Height": 23,
+            "TextId": "__SingleUse_O3YN",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "Wildcard1": {
+              "TextId": "EmptyEffect",
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "SubMenuItem",
+        "Width": 230,
+        "Height": 40,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "blackBox",
+            "Width": 230,
+            "Height": 35,
+            "BorderColor": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "whiteBox",
+            "Width": 230,
+            "Height": 35,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "grayBox",
+            "Width": 230,
+            "Height": 35,
+            "Visible": false,
+            "Color": {
+              "Red": 99,
+              "Green": 99,
+              "Blue": 99
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "Text",
+            "X": 4,
+            "Y": 5,
+            "Width": 223,
+            "Height": 24,
+            "TextId": "__SingleUse_MB1T",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 30
+            }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "SubSettingsContainer",
+        "Width": 320,
+        "Height": 240,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "darkeningBackground",
+            "Width": 320,
+            "Height": 240,
+            "Alpha": 149
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "subMenuWindow",
+            "X": 25,
+            "Y": 56,
+            "Width": 270,
+            "Height": 152,
+            "Color": {
+              "Red": 83,
+              "Green": 89,
+              "Blue": 201
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "ListLayout",
+            "Name": "listLayout",
+            "X": 45,
+            "Y": 75,
+            "Width": 230,
+            "Height": 120,
+            "Direction": "South",
+            "Components": [
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "subMenuItem0",
+                "Width": 230,
+                "Height": 40,
+                "CustomContainerDefinitionName": "SubMenuItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "subMenuItem1",
+                "Y": 40,
+                "Width": 230,
+                "Height": 40,
+                "CustomContainerDefinitionName": "SubMenuItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "subMenuItem2",
+                "Y": 80,
+                "Width": 230,
+                "Height": 40,
+                "CustomContainerDefinitionName": "SubMenuItem"
+              }
+            ]
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "SubMenuContainer",
+        "Width": 320,
+        "Height": 240,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "darkeningBackground",
+            "Width": 320,
+            "Height": 240,
+            "Alpha": 149
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "subMenuWindow",
+            "X": 25,
+            "Y": 24,
+            "Width": 270,
+            "Height": 192,
+            "Color": {
+              "Red": 83,
+              "Green": 89,
+              "Blue": 201
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "ListLayout",
+            "Name": "listLayout",
+            "X": 45,
+            "Y": 43,
+            "Width": 230,
+            "Height": 160,
+            "Direction": "South",
+            "Components": [
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "subMenuItem0",
+                "Width": 230,
+                "Height": 40,
+                "CustomContainerDefinitionName": "SubMenuItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "subMenuItem1",
+                "Y": 40,
+                "Width": 230,
+                "Height": 40,
+                "CustomContainerDefinitionName": "SubMenuItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "subMenuItem2",
+                "Y": 80,
+                "Width": 230,
+                "Height": 40,
+                "CustomContainerDefinitionName": "SubMenuItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "subMenuItem3",
+                "Y": 120,
+                "Width": 230,
+                "Height": 40,
+                "CustomContainerDefinitionName": "SubMenuItem"
+              }
+            ]
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "modalWindowDelete",
+            "Width": 320,
+            "Height": 240,
+            "Visible": false,
+            "CustomContainerDefinitionName": "ModalWindowDelete"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "EffectsListContainer",
+        "Width": 320,
+        "Height": 240,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "darkeningBackground",
+            "Width": 320,
+            "Height": 240,
+            "Alpha": 149
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "subMenuWindow",
+            "X": 25,
+            "Width": 270,
+            "Height": 240,
+            "Color": {
+              "Red": 36,
+              "Green": 117,
+              "Blue": 58
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "nameBox",
+            "X": 25,
+            "Width": 270,
+            "Height": 40,
+            "Color": {
+              "Red": 255,
+              "Green": 238,
+              "Blue": 140
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "selectEffectText",
+            "X": 25,
+            "Y": 7,
+            "Width": 270,
+            "Height": 25,
+            "TextId": "__SingleUse_2REO",
+            "TextRotation": "0"
+          },
+          {
+            "Type": "ScrollWheel",
+            "Name": "scrollEffects",
+            "X": 45,
+            "Y": 50,
+            "Width": 230,
+            "Height": 185,
+            "UseSelectedStyle": true,
+            "SelectedItemTemplateName": "EffectListItemSelected",
+            "ItemTemplateName": "EffectListItem",
+            "NumberofItems": 10,
+            "Easing": "Back",
+            "EasingOption": "Out",
+            "SwipeAcceleration": 1.0,
+            "DragAcceleration": 1.0
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "EffectListItem",
+        "Width": 230,
+        "Height": 40,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "boxWithBorder1",
+            "Width": 230,
+            "Height": 35,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "grayBox",
+            "Width": 230,
+            "Height": 35,
+            "Visible": false,
+            "Color": {
+              "Red": 99,
+              "Green": 99,
+              "Blue": 99
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "Text",
+            "X": 37,
+            "Y": 5,
+            "Width": 156,
+            "Height": 29,
+            "TextId": "__SingleUse_J5XR",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "EffectListItemSelected",
+        "Width": 230,
+        "Height": 40,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "boxWithBorder1",
+            "Width": 230,
+            "Height": 35,
+            "BorderColor": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "Text",
+            "X": 37,
+            "Y": 5,
+            "Width": 156,
+            "Height": 29,
+            "TextId": "__SingleUse_YHDD",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "ModalWindowDelete",
+        "Width": 320,
+        "Height": 240,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "boxWindow",
+            "X": 60,
+            "Y": 50,
+            "Width": 200,
+            "Height": 140,
+            "Color": {
+              "Red": 255,
+              "Green": 125,
+              "Blue": 125
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textModal",
+            "X": 69,
+            "Y": 57,
+            "Width": 182,
+            "Height": 75,
+            "TextId": "RemoveEffect",
+            "TextRotation": "0",
+            "AutoSize": true,
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "boxY",
+            "X": 82,
+            "Y": 140,
+            "Width": 65,
+            "Height": 35,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "boxN",
+            "X": 173,
+            "Y": 140,
+            "Width": 65,
+            "Height": 35,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textY",
+            "X": 108,
+            "Y": 145,
+            "Width": 13,
+            "Height": 25,
+            "TextId": "__SingleUse_VKL6",
+            "TextRotation": "0",
+            "AutoSize": true
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textN",
+            "X": 198,
+            "Y": 145,
+            "Width": 14,
+            "Height": 25,
+            "TextId": "__SingleUse_7UWB",
+            "TextRotation": "0",
+            "AutoSize": true
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "CustomGauge",
+        "Width": 123,
+        "Height": 70,
+        "Components": [
+          {
+            "Type": "TextArea",
+            "Name": "parameterName",
+            "Y": 49,
+            "Width": 123,
+            "Height": 21,
+            "TextId": "__SingleUse_HLN4",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          },
+          {
+            "Type": "Circle",
+            "Name": "backgroundCircle",
+            "X": 31,
+            "Width": 60,
+            "Height": 49,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "CenterX": 30.0,
+            "CenterY": 30.0,
+            "Radius": 30.0,
+            "StartAngle": -127.5,
+            "EndAngle": 127.5,
+            "CapPrecision": "Butt"
+          },
+          {
+            "Type": "Circle",
+            "Name": "activeCircle",
+            "X": 31,
+            "Width": 60,
+            "Height": 49,
+            "Color": {
+              "Red": 73,
+              "Green": 191,
+              "Blue": 71
+            },
+            "CenterX": 30.0,
+            "CenterY": 30.0,
+            "Radius": 30.0,
+            "StartAngle": -127.5,
+            "CapPrecision": "Butt"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "WiringChangeBox",
+        "Width": 320,
+        "Height": 50,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "boxWithBorder1",
+            "Width": 320,
+            "Height": 50,
+            "Color": {
+              "Red": 196,
+              "Green": 29,
+              "Blue": 29
+            },
+            "BorderColor": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "Text",
+            "Y": 13,
+            "Width": 320,
+            "Height": 25,
+            "TextId": "__SingleUse_4KK0",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            },
+            "Wildcard2": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "EffectPictogram",
+        "Width": 75,
+        "Height": 53,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "editingBox",
+            "Width": 75,
+            "Height": 49,
+            "Visible": false,
+            "Color": {
+              "Red": 89,
+              "Green": 89,
+              "Blue": 89
+            }
+          },
+          {
+            "Type": "Shape",
+            "Name": "selectingBox",
+            "Width": 75,
+            "Height": 54,
+            "Visible": false,
+            "Points": [
+              {},
+              {
+                "X": 75.0
+              },
+              {
+                "X": 75.0,
+                "Y": 5.0
+              },
+              {
+                "X": 5.0,
+                "Y": 5.0
+              },
+              {
+                "X": 5.0,
+                "Y": 48.0
+              },
+              {
+                "X": 75.0,
+                "Y": 48.0
+              },
+              {
+                "X": 75.0,
+                "Y": 53.0
+              },
+              {
+                "Y": 53.0
+              }
+            ],
+            "XScale": 1.0,
+            "YScale": 1.0
+          },
+          {
+            "Type": "Image",
+            "Name": "pictRegular",
+            "X": 20,
+            "Y": 8,
+            "Width": 35,
+            "Height": 35,
+            "RelativeFilename": "emptyPict.png"
+          },
+          {
+            "Type": "Image",
+            "Name": "pictEditing",
+            "X": 20,
+            "Y": 8,
+            "Width": 35,
+            "Height": 35,
+            "Visible": false,
+            "RelativeFilename": "emptySelectedPict.png"
+          }
+        ],
+        "Interactions": []
+      }
+    ],
+    "Name": "MyApplication",
+    "Resolution": {
+      "Width": 320,
+      "Height": 240
+    },
+    "SelectedColorDepth": 16,
+    "StartupScreenName": "LogoStartup",
+    "SelectedStartupLanguage": "GB",
+    "TouchGfxPath": "../Middlewares/ST/touchgfx",
+    "UIPath": ".",
+    "AvailableColorDepths": [
+      16
+    ],
+    "AvailableLCDs": {
+      "16": "LCD16bpp"
+    },
+    "AvailableSections": [
+      "ExtFlashSection",
+      "IntFlashSection"
+    ],
+    "AvailableResolutions": [
+      {
+        "Width": 320,
+        "Height": 240
+      }
+    ],
+    "PhysicalButtons": [],
+    "FrameworkFeatures": {
+      "LCD16bpp": {
+        "Id": "LCD16bpp",
+        "IsEnabled": true
+      }
+    },
+    "GenerateAssetsCommand": "make -f simulator/gcc/Makefile assets -j8",
+    "PostGenerateCommand": "touchgfx update_project --project-file=simulator/msvs/Application.vcxproj",
+    "PostGenerateTargetCommand": "touchgfx update_project",
+    "CompileSimulatorCommand": "make -f simulator/gcc/Makefile -j8",
+    "RunSimulatorCommand": "build\\bin\\simulator.exe",
+    "LandscapeSkinX": 0,
+    "LandscapeSkinY": 0,
+    "PortraitSkinX": 0,
+    "PortraitSkinY": 0,
+    "DisplayOrientation": "Landscape",
+    "Family": "STM32H7",
+    "SubFamily": "STM32H743/753",
+    "Toolchain": "STM32CubeIDE",
+    "Platform": "m7",
+    "ProjectFile": "../InterfaceController.ioc",
+    "OptionalComponentsRoot": "../Middlewares/ST/touchgfx_components",
+    "OptionalComponents": [],
+    "AdditionalFeatures": []
+  },
+  "Version": "4.21.3"
+}
