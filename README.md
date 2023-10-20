@@ -35,7 +35,9 @@ IDEs) might be possible, but we haven't tested this yet.
 
 [STM32CubeIDE]: https://www.st.com/en/development-tools/stm32cubeide.html
 
-Hardware designs are not published yet, stay tuned for updates.
+Hardware designs are availible at https://github.com/RATsynthesizers/FXcursion-HW
+
+♡ Stay tuned for updates! ♡
 
 
 ## Docs
