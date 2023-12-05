@@ -44,3 +44,12 @@ Hardware designs are availible at https://github.com/RATsynthesizers/FXcursion-H
 
 Documentation currently lives in the
 [wiki](https://github.com/Predtech4/ProtoStack_H743VI_V0.2/wiki).
+
+
+## Sponsors
+
+[PCBWay][pcbway] sponsored our project with free PCB prototyping services.
+You can read more about our experience working with them [on our Hackaday][pcbway-post].
+
+[pcbway]: https://pcbway.com/g/i4SuPL
+[pcbway-post]: https://hackaday.io/project/192448-fxcursion/log/225631-we-have-been-sponsored-by-pcbway
