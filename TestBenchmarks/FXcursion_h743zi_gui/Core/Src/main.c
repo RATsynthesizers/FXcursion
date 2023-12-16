@@ -34,6 +34,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "../../Drivers/W9812G6JH/w9812g6jh.h"
 #include "../../Drivers/ssd1305_i2c/ssd1305_i2c.h"
 #include "../../Drivers/ili9341/ili9341.h"
 /* USER CODE END Includes */
@@ -130,14 +131,15 @@ int main(void)
   MX_FATFS_Init();
  // MX_TouchGFX_Init();
   /* USER CODE BEGIN 2 */
-  ili9341_Init();
-  ili9341_FillScreen(MAGENTA);
-  ssd1305_Init();
+  W9812G6JH_Init(&hsdram1);
+  lcdInit();
+  lcdTest();
+//  ssd1305_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  0x600000000x  while (1)
+  while (1)
   {
     /* USER CODE END WHILE */
 
