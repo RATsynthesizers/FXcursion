@@ -18,7 +18,11 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "i2c.h"
+#include "sdmmc.h"
+#include "spi.h"
+#include "usart.h"
 #include "gpio.h"
 #include "fmc.h"
 
@@ -48,12 +52,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-char a[] = "soldering issues :(";
+char test_txt[] = "soldering issues :(";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MPU_Initialize(void);
 static void MPU_Config(void);
 /* USER CODE BEGIN PFP */
 #define min(a,b) (((a)<(b))?(a):(b))
@@ -88,6 +91,10 @@ int main(void)
 
   /* USER CODE END 1 */
 
+  /* MPU Configuration--------------------------------------------------------*/
+  MPU_Config();
+/* Enable the CPU Cache */
+
   /* Enable I-Cache---------------------------------------------------------*/
   SCB_EnableICache();
 
@@ -98,9 +105,6 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
-  /* MPU Configuration--------------------------------------------------------*/
-  MPU_Config();
 
   /* USER CODE BEGIN Init */
 
@@ -115,8 +119,12 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_I2C2_Init();
+  MX_DMA_Init();
   MX_FMC_Init();
+  MX_SDMMC1_SD_Init();
+  MX_SPI5_Init();
+  MX_I2C2_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   W9812G6JH_Init(&hsdram1);
@@ -133,17 +141,31 @@ int main(void)
   lcdTest();
   lcdSetCursor(50,100);
   lcdSetTextFont(&Font12);
-  lcdPrintf(a);
-int i = 0;
+  lcdPrintf(test_txt);
 
+//
+//	CodecPowerUp(CODEC_ADDRESS_1);
+//	SetHPGain(-8, CODEC_ADDRESS_1);
+//
+//	CodecPowerUp(CODEC_ADDRESS_0);
+//	SetHPGain(-8, CODEC_ADDRESS_0);
+//
+//	saiAdapter_Init(&sai2adapter, HW_SAI2);
+//	saiAdapter_Init(&sai1adapter, HW_SAI1);
+
+	//audioSystem.includeModules();
+	//guiAdapter_Init(&guiadapter);
+
+
+int i = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  demoLCD(i);
-	  	  i++;
+	  //demoLCD(i);
+	  //	  i++;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -186,8 +208,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLM = 10;
   RCC_OscInitStruct.PLL.PLLN = 150;
   RCC_OscInitStruct.PLL.PLLP = 2;
-  RCC_OscInitStruct.PLL.PLLQ = 2;
-  RCC_OscInitStruct.PLL.PLLR = 2;
+  RCC_OscInitStruct.PLL.PLLQ = 20;
+  RCC_OscInitStruct.PLL.PLLR = 20;
   RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
   RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
   RCC_OscInitStruct.PLL.PLLFRACN = 0;

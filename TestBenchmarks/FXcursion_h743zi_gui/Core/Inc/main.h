@@ -31,11 +31,58 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "MemRegions.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+
+typedef enum {
+	NO_OBJECT, BTN_YES_GUI, BTN_NO_GUI, ENC_GUI_SCROLL, ENC_GUI_PARAMETER
+} UIObject_Option;
+
+typedef enum {
+	MODULE_AMP, MODULE_REVERB
+} AudioModule_Option;
+
+typedef enum {
+	PARAM_DECAY, PARAM_REVMIX
+} ModuleParameter_option;
+
+struct LOOPERQUEUE_OBJ_t{
+	uint8_t half;
+	uint8_t recording;
+};
+
+struct RECORDQUEUE_OBJ_t{
+	uint8_t recordPressed;
+};
+
+struct UPDATEGUIQUEUE_OBJ_t{
+	UIObject_Option uiObject;
+	uint8_t id;
+	int8_t value;
+};
+
+struct UPDATEAUDIOPARAMS_OBJ_t{
+	AudioModule_Option audioModule;
+	ModuleParameter_option parameter;
+	float value;
+};
+
+struct READWRITEUIQUEUE_OBJ_t{
+	uint8_t reg;
+	uint8_t bit;
+};
+
+struct UPDATEGAUGEVALUES_OBJ_t{
+	uint8_t gaugeNum;
+	float value;
+};
+
+struct ALLGAUGEVALUES_OBJ_t{
+	float value[4];
+};
 
 /* USER CODE END ET */
 

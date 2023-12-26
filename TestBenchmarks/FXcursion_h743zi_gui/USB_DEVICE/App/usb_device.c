@@ -54,7 +54,19 @@ USBD_HandleTypeDef hUsbDeviceFS;
  * -- Insert your external function declaration here --
  */
 /* USER CODE BEGIN 1 */
+void MX_USB_DEVICE_DeInit(void)
+{
+  /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
 
+  /* USER CODE END USB_DEVICE_Init_PreTreatment */
+
+  /* Init Device Library, add supported class and start the library. */
+  if (USBD_DeInit(&hUsbDeviceFS) != USBD_OK)
+  {
+    Error_Handler();
+  }
+
+}
 /* USER CODE END 1 */
 
 /**

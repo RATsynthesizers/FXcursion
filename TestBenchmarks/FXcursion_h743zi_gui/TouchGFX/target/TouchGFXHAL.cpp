@@ -3,7 +3,7 @@
   ******************************************************************************
   * File Name          : TouchGFXHAL.cpp
   ******************************************************************************
-  * This file was created by TouchGFX Generator 4.21.3. This file is only
+  * This file was created by TouchGFX Generator 4.23.0. This file is only
   * generated once! Delete this file from your project and re-generate code
   * using STM32CubeMX or change this file manually to update it.
   ******************************************************************************
@@ -25,21 +25,6 @@
 /* USER CODE BEGIN TouchGFXHAL.cpp */
 
 using namespace touchgfx;
-
-/* ******************************************************
- * Functions required by Partial Frame Buffer Strategy
- * ******************************************************
- *
- *  int touchgfxDisplayDriverTransmitActive() must return whether or not data is currently being transmitted, over e.g. SPI.
- *  void touchgfxDisplayDriverTransmitBlock(const uint8_t* pixels, uint16_t x, uint16_t y, uint16_t w, uint16_t h) will be called
- *  when the framework wants to send a block. The user must then transfer the data represented by the arguments.
- *
- *  A user must call touchgfx::startNewTransfer(); once touchgfxDisplayDriverTransmitBlock() has successfully sent a block.
- *  E.g. if using DMA to transfer the block, this could be called in the "Transfer Completed" interrupt handler.
- *
- */
-#warning "A user must call touchgfx::startNewTransfer(); once touchgfxDisplayDriverTransmitBlock() has succesfully sent a block."
-#warning "A user must implement C-methods touchgfxDisplayDriverTransmitActive() and touchgfxDisplayDriverTransmitBlock() used by the Partial Framebuffer Strategy."
 
 void TouchGFXHAL::initialize()
 {

@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define USER_LCD_RESET_Pin GPIO_PIN_6
 #define USER_LCD_RESET_GPIO_Port GPIOC
+#define USER_SD_DETECT_Pin GPIO_PIN_10
+#define USER_SD_DETECT_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

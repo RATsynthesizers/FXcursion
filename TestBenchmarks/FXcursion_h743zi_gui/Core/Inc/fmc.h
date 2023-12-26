@@ -34,7 +34,6 @@
 extern SRAM_HandleTypeDef hsram1;
 extern SRAM_HandleTypeDef hsram2;
 extern SDRAM_HandleTypeDef hsdram1;
-extern SDRAM_HandleTypeDef hsdram2;
 
 /* USER CODE BEGIN Private defines */
 

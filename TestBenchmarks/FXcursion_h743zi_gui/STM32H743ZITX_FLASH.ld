@@ -43,12 +43,14 @@ _Min_Stack_Size = 0x800; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-  FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 2048K
-  DTCMRAM (xrw)  : ORIGIN = 0x20000000, LENGTH = 128K
-  RAM_D1 (xrw)   : ORIGIN = 0x24000000, LENGTH = 512K
-  RAM_D2 (xrw)   : ORIGIN = 0x30000000, LENGTH = 288K
-  RAM_D3 (xrw)   : ORIGIN = 0x38000000, LENGTH = 64K
-  ITCMRAM (xrw)  : ORIGIN = 0x00000000, LENGTH = 64K
+  FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 2048K
+  DTCMRAM_S (xrw) : ORIGIN = 0x20000000, LENGTH = 16K
+  DTCMRAM_V (xrw) : ORIGIN = 0x20004000, LENGTH = 112K
+  RAM_D1_DMA (xrw): ORIGIN = 0x24000000, LENGTH = 256K
+  RAM_D1 (xrw)    : ORIGIN = 0x24040000, LENGTH = 256K
+  RAM_D2 (xrw)    : ORIGIN = 0x30000000, LENGTH = 288K
+  RAM_D3 (xrw)    : ORIGIN = 0x38000000, LENGTH = 64K
+  ITCMRAM (xrw)   : ORIGIN = 0x00000000, LENGTH = 64K
 }
 
 /* Define output sections */
@@ -171,6 +173,57 @@ SECTIONS
   }
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
+  
+    
+      /* MODIFICATION STARTS HERE */
+    .ramd1dma(NOLOAD) :
+  {
+    . = ALIGN (1);
+    *(.ramd1dma)
+        
+  } > RAM_D1_DMA
+  
+     /* == */
+    .ramd1(NOLOAD) :
+  {
+    . = ALIGN (1);
+        
+  } > RAM_D1
+  
+   /* == */
+      .ramd2(NOLOAD) :
+  {
+    . = ALIGN (1);
+        
+  } > RAM_D2
+  
+     /* == */
+      .ramd3(NOLOAD) :
+  {
+    . = ALIGN (1);
+        
+  } > RAM_D3  
+   
+     /* == */
+      .dtcms(NOLOAD) :
+  {
+    . = ALIGN (1);
+        
+  } > DTCMRAM_S
+   
+     /* == */
+      .dtcmv(NOLOAD) :
+  {
+    . = ALIGN (1);
+        
+  } > DTCMRAM_V
+     /* == */
+        .itcm(NOLOAD) :
+  {
+    . = ALIGN (1);
+        
+  } > ITCMRAM
+     /* == */
 }
 
 

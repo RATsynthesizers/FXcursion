@@ -2,6 +2,10 @@
 #ifndef ILI9341_H_
 #define ILI9341_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "main.h"
 #include "colors.h"
 #include "registers.h"
@@ -111,6 +115,10 @@ sFONT*					lcdGetTextFont(void);
 lcdPropertiesTypeDef   	lcdGetProperties(void);
 uint16_t				lcdReadPixel(uint16_t x, uint16_t y);
 uint16_t 				lcdColor565(uint8_t r, uint8_t g, uint8_t b);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ILI9341_H_ */
 

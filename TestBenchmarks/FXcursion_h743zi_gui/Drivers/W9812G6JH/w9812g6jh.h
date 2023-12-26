@@ -8,6 +8,9 @@
 #ifndef INC_W9812G6JH_H_
 #define INC_W9812G6JH_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /*
  * ======== SDRAM initialization ======================
 
@@ -92,5 +95,9 @@ timings) in the FMC_SDTR1 register.
 // http://main.lv/writeup/stm32f4_sdram_configuration.md
 
 void W9812G6JH_Init(SDRAM_HandleTypeDef *hsdram);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INC_W9812G6JH_H_ */

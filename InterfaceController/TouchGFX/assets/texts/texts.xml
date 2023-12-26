@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextDatabase xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="texts.xsd" Version="4.21.3">
+<TextDatabase xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="texts.xsd" Version="4.23.0">
   <Languages>
     <Language Id="GB" />
   </Languages>
@@ -150,16 +150,16 @@
         <Translation Language="GB">Select effect</Translation>
       </Text>
       <Text Id="__SingleUse_0Y56" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_RUGV" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_WLNC" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_2OQL" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_M0MG" Alignment="Center" TypographyId="Default">
         <Translation Language="GB">In &lt;channelNum&gt;</Translation>
@@ -198,31 +198,31 @@
         <Translation Language="GB">&lt;effectName&gt;</Translation>
       </Text>
       <Text Id="__SingleUse_DGDO" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_3HY9" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_U9D6" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_6LDK" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_2REO" Alignment="Center" TypographyId="Default">
         <Translation Language="GB">Select effect</Translation>
       </Text>
       <Text Id="__SingleUse_DBPG" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_E5O6" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_WV19" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_8XFE" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB" />
+        <Translation Language="GB"></Translation>
       </Text>
       <Text Id="__SingleUse_MB1T" Alignment="Center" TypographyId="Default">
         <Translation Language="GB">&lt;subMenu1&gt;</Translation>
@@ -230,9 +230,9 @@
     </TextGroup>
   </Texts>
   <Typographies>
-    <Typography Id="Default" Font="GOTHICB.TTF" Size="20" Bpp="4" Direction="LTR" FallbackCharacter="?" WildcardCharacters="-,+, ,/" WildcardCharacterRanges="0-9,a-z,A-Z" />
-    <Typography Id="Large" Font="verdana.ttf" Size="40" Bpp="4" Direction="LTR" FallbackCharacter="?" WildcardCharacters="-,+, ,/" WildcardCharacterRanges="0-9,a-z,A-Z" />
-    <Typography Id="Small" Font="verdana.ttf" Size="10" Bpp="4" Direction="LTR" FallbackCharacter="?" WildcardCharacters="-,+, ,/" WildcardCharacterRanges="0-9,a-z,A-Z" />
-    <Typography Id="Typography_00" Font="trebuc.ttf" Size="16" Bpp="4" Direction="LTR" FallbackCharacter="?" WildcardCharacters="-,+, ,/" WildcardCharacterRanges="0-9,a-z,A-Z" />
+    <Typography Id="Default" Font="GOTHICB.TTF" Size="20" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="-,+, ,/" WildcardCharacterRanges="0-9,a-z,A-Z" />
+    <Typography Id="Large" Font="verdana.ttf" Size="40" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="-,+, ,/" WildcardCharacterRanges="0-9,a-z,A-Z" />
+    <Typography Id="Small" Font="verdana.ttf" Size="10" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="-,+, ,/" WildcardCharacterRanges="0-9,a-z,A-Z" />
+    <Typography Id="Typography_00" Font="trebuc.ttf" Size="16" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="-,+, ,/" WildcardCharacterRanges="0-9,a-z,A-Z" />
   </Typographies>
 </TextDatabase>
