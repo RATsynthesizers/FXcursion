@@ -158,6 +158,7 @@ void TouchGFXHAL::endFrame()
     TouchGFXGeneratedHAL::endFrame();
 }
 
+
 /* USER CODE END TouchGFXHAL.cpp */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

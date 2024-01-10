@@ -22,7 +22,6 @@
 #include "adc.h"
 #include "crc.h"
 #include "dma.h"
-#include "dma2d.h"
 #include "fatfs.h"
 #include "i2c.h"
 #include "quadspi.h"
@@ -39,6 +38,7 @@
 #include "../../Drivers/W9812G6JH/w9812g6jh.h"
 #include "../../Drivers/ssd1305_i2c/ssd1305_i2c.h"
 #include "../../Drivers/ili9341/ili9341.h"
+//#include "../../Drivers/MyTouchGFXadapter/GFXadapter.h"
 #include "../../Drivers/UI/ui_adapter_reg.h"
 /* USER CODE END Includes */
 
@@ -122,23 +122,31 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI5_Init();
   MX_I2C2_Init();
-  MX_QUADSPI_Init();
+//  MX_QUADSPI_Init();
   MX_UART4_Init();
-  MX_ADC1_Init();
+//  MX_ADC1_Init();
   MX_CRC_Init();
-  MX_DMA2D_Init();
   MX_TIM6_Init();
   MX_SPI1_Init();
-
+ // MX_TouchGFX_Init();
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
   /* USER CODE BEGIN 2 */
-  W9812G6JH_Init(&hsdram1);
-  lcdInit();
-  MX_TouchGFX_Init();
-//  ssd1305_Init();
+
 
   UIadapter_Init(&UIadapterReg);  // spi buttons
+//  W9812G6JH_Init(&hsdram1);
+//  HAL_Delay(1);
+//  uint32_t b = 0x01BFAFFF;
+//  _RAM_WRITE32(b, 0 );
+//  uint32_t a = _RAM_READ32(0);
+
+  lcdInit();
+  //  ssd1305_Init();
+  MX_TouchGFX_Init();
+
+
+
 
   /* USER CODE END 2 */
 
@@ -291,7 +299,6 @@ void MPU_Config(void)
   MPU_InitStruct.Size = MPU_REGION_SIZE_256MB;
   MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
   MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
-  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
   MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
 
   HAL_MPU_ConfigRegion(&MPU_InitStruct);

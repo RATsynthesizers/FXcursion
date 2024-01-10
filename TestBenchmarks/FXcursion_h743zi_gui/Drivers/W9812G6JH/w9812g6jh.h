@@ -78,7 +78,7 @@ timings) in the FMC_SDTR1 register.
 #define SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED ((uint16_t)0x0000)
 #define SDRAM_MODEREG_WRITEBURST_MODE_SINGLE     ((uint16_t)0x0200)
 
-#define SDRAM_BANK_ADDR                 ((uint32_t)0xC0000000)
+#define SDRAM_BANK1_ADDR                 ((uint32_t)0xC0000000)
 #define SDRAM_RFR_COUNT					3744 // clock cycles to refresh
 
 #define BUFFER_SIZE         ((uint32_t)0x1000000) // 16M bits
@@ -86,8 +86,8 @@ timings) in the FMC_SDTR1 register.
 
 
 // write and read single u32 macro
-#define _RAM_WRITE32(data, addr)   ( *(__IO uint32_t*) (SDRAM_BANK_ADDR + addr) = data )
-#define _RAM_READ32(addr)          ( *(__IO uint32_t*) (SDRAM_BANK_ADDR + addr)        )
+#define _RAM_WRITE32(data, addr)   ( *(__IO uint32_t*) (SDRAM_BANK1_ADDR + addr) = data )
+#define _RAM_READ32(addr)          ( *(__IO uint32_t*) (SDRAM_BANK1_ADDR + addr)        )
 // examples:
 // _RAM_WRITE32(u32 a = 0xFFFFFFFF, 0 )
 // u32 a = _RAM_READ(0);

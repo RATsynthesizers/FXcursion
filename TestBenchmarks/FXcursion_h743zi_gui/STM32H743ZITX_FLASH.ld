@@ -36,18 +36,19 @@ ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
 _estack = ORIGIN(RAM_D1) + LENGTH(RAM_D1);    /* end of RAM */
+/*_estack = ORIGIN(DTCMRAM_S) + LENGTH(DTCMRAM_S); */   /* Stack in separate DTCMRAM sector - Vector table problem, HAL_Delay() not working SysTick issue */
 /* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0x400;      /* required amount of heap  */
-_Min_Stack_Size = 0x800; /* required amount of stack */
+_Min_Heap_Size = 0x4000;      /* required amount of heap  */
+_Min_Stack_Size = 0x10000; /* required amount of stack */
 
 /* Specify the memory areas */
 MEMORY
 {
   FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 2048K
   DTCMRAM_S (xrw) : ORIGIN = 0x20000000, LENGTH = 16K
-  DTCMRAM_V (xrw) : ORIGIN = 0x20004000, LENGTH = 112K
-  RAM_D1_DMA (xrw): ORIGIN = 0x24000000, LENGTH = 256K
-  RAM_D1 (xrw)    : ORIGIN = 0x24040000, LENGTH = 256K
+  DTCMRAM_V (xrw) : ORIGIN = 0x20004000, LENGTH = 112K	
+  RAM_D1_DMA (xrw): ORIGIN = 0x24000000, LENGTH = 8K
+  RAM_D1 (xrw)    : ORIGIN = 0x24002000, LENGTH = 504K
   RAM_D2 (xrw)    : ORIGIN = 0x30000000, LENGTH = 288K
   RAM_D3 (xrw)    : ORIGIN = 0x38000000, LENGTH = 64K
   ITCMRAM (xrw)   : ORIGIN = 0x00000000, LENGTH = 64K

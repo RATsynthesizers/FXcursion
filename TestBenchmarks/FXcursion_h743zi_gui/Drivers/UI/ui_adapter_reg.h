@@ -18,7 +18,8 @@ extern "C" {
 #include "stdbool.h"
 #include "cmsis_os.h"
 
-#define UI_ADAPTER_SPI hspi5
+#define UI_ADAPTER_HSPI hspi5
+#define UI_ADAPTER_SPI  SPI5
 
 #define NUM_OF_UI_REGS 3
 #define DEBOUNCE_CNT 2
@@ -72,8 +73,9 @@ typedef struct {
 extern UIadapter_reg_TypeDef UIadapterReg;
 
 void UIadapter_Init(UIadapter_reg_TypeDef *UIadapter);
+void UIadapter_spi_dma_restart(UIadapter_reg_TypeDef *UIadapter, SPI_HandleTypeDef *hspi);
 //void UIadapter_ReadWriteUI(UIadapter_reg_TypeDef *UIadapter);// read pins 1-st part
-void UIadapter_ReadUI_spi2_callback(UIadapter_reg_TypeDef *UIadapter);	// read pins 2-nd part
+void UIadapter_ReadUI_spi_callback(UIadapter_reg_TypeDef *UIadapter);	// read pins 2-nd part
 
 void getBtnHWdata(UIadapter_reg_TypeDef *UIadapter, UiBtnData_TypeDef *btnData);
 void setLedHWdata(UIadapter_reg_TypeDef *UIadapter, UiRGBLedData_TypeDef *ledData);

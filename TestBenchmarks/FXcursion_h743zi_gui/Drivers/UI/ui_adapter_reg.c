@@ -35,7 +35,7 @@ void UIadapter_Init(UIadapter_reg_TypeDef *UIadapter) {
 //	// --then wait until spi6 rxtx cplt callback is called, and contnue
 //}
 
-void UIadapter_ReadUI_spi2_callback(UIadapter_reg_TypeDef *UIadapter) {
+void UIadapter_ReadUI_spi_callback(UIadapter_reg_TypeDef *UIadapter) {
 	SCB_InvalidateDCache_by_Addr((uint32_t*) UIadapter->UIinputRegs, 3);
 
 //	HAL_GPIO_WritePin(USER_SPI2_SW_CS_GPIO_Port, USER_SPI2_SW_CS_Pin, GPIO_PIN_RESET);// pull UI software CS pin low (load hc165 with values)
@@ -93,11 +93,15 @@ void getEncHWdata(UIadapter_reg_TypeDef *UIadapter, UiEncData_TypeDef *encData) 
 			& (1 << (encData->BBitNum)));
 }
 
+void UIadapter_spi_dma_restart(UIadapter_reg_TypeDef *UIadapter, SPI_HandleTypeDef *hspi) {
+	HAL_SPI_TransmitReceive_DMA(hspi, UIadapter->UIoutputRegs,
+			UIadapter->UIinputRegs, 3); // spi dma rx tx 3 bytes
+}
+
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
-	if(hspi->Instance == SPI2)
+	if(hspi->Instance == UI_ADAPTER_SPI)
 	{
-		UIadapter_ReadUI_spi2_callback(&UIadapterReg);
-		HAL_SPI_TransmitReceive_DMA(&(UI_ADAPTER_SPI), UIadapterReg.UIoutputRegs,
-						UIadapterReg.UIinputRegs, 3);
+		UIadapter_ReadUI_spi_callback(&UIadapterReg);
+		UIadapter_spi_dma_restart(&UIadapterReg, &(UI_ADAPTER_HSPI));
 	}
 }

@@ -42,7 +42,7 @@ static unsigned char    lcdBuildMemoryAccessControlConfig(
                                 bool horizontalRefreshOrder);
 
 
-void lcdInit(void)
+void __attribute__((optimize("O0"))) lcdInit(void)
 {
   lcdPortraitConfig = lcdBuildMemoryAccessControlConfig(
                                                     MemoryAccessControlNormalOrder,		// rowAddressOrder
@@ -349,7 +349,7 @@ tmpid = lcdGetControllerID();
 	ili9341_DelayMicro(10);
 
 	  lcdWriteCommand(ILI9341_MEMCONTROL);
-	  lcdWriteData(lcdPortraitConfig);
+	  lcdWriteData(lcdLandscapeConfig);
 
 	ili9341_DelayMicro(10);
 	lcdWriteCommand(0x3A);  // Pixel Format Set
@@ -415,7 +415,7 @@ tmpid = lcdGetControllerID();
   lcdWriteCommand(ILI9341_DISPLAYON);
   HAL_Delay(50);
 
-  //lcdWriteCommand(ILI9341_MEMORYWRITE);
+  lcdWriteCommand(ILI9341_MEMORYWRITE);
 
 }
 

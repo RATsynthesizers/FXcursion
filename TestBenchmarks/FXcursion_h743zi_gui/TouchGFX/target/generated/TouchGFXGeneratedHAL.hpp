@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -156,6 +156,24 @@ public:
      *        Called when a rendering pass is completed.
      */
     virtual void endFrame();
+    /**
+     *
+     * @fn inline uint8_t* TouchGFXGeneratedHAL::advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect) const;
+     *
+     * @brief This function calculates the offset in the framebuffer address according to "rect" coordinates.
+     *
+     *        This function is typically for users who need to transfer framebuffer data to
+     *        a display from within flushFrameBuffer(Rect& rect). While HAL::lockFrameBuffer()
+     *        returns a pointer to the current drawing framebuffer, users must manually calculate
+     *        the offset from that pointer to the Rect to transfer. This function will advance the offset
+     *        in the framebuffer equal to the rect's upper left corner (x, y).
+     *
+     *
+     * @param fbPtr Pointer to the start of the framebuffer, coordinates (0, 0)
+     * @param rect The area of the screen expressed in absolute coordinates, which has to be transformed to address.
+     *
+     */
+    inline uint8_t* advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect) const;
 
 protected:
     /**
