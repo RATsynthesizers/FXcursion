@@ -122,13 +122,13 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI5_Init();
   MX_I2C2_Init();
-//  MX_QUADSPI_Init();
+  MX_QUADSPI_Init();
   MX_UART4_Init();
-//  MX_ADC1_Init();
+  MX_ADC1_Init();
   MX_CRC_Init();
   MX_TIM6_Init();
   MX_SPI1_Init();
- // MX_TouchGFX_Init();
+  //MX_TouchGFX_Init();
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
   /* USER CODE BEGIN 2 */

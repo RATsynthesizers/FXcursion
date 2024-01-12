@@ -103,13 +103,6 @@ const osThreadAttr_t TouchGFXUpdateTask_attributes = {
   .stack_size = 4096 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for VSyncTask */
-osThreadId_t VSyncTaskHandle;
-const osThreadAttr_t VSyncTask_attributes = {
-  .name = "VSyncTask",
-  .stack_size = 1024 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
 /* Definitions for UpdateFromUITask */
 osThreadId_t UpdateFromUITaskHandle;
 const osThreadAttr_t UpdateFromUITask_attributes = {
@@ -122,6 +115,13 @@ osThreadId_t WriteSDTaskHandle;
 const osThreadAttr_t WriteSDTask_attributes = {
   .name = "WriteSDTask",
   .stack_size = 8192 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for VSyncTask */
+osThreadId_t VSyncTaskHandle;
+const osThreadAttr_t VSyncTask_attributes = {
+  .name = "VSyncTask",
+  .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for UpdateGUIQueue */
@@ -161,9 +161,9 @@ extern "C" void MX_USB_DEVICE_DeInit(void);
 
 void StartDefaultTask(void *argument);
 void StartTouchGFXUpdateTask(void *argument);
-void StartVSyncTask(void *argument);
 void StartUpdateFromUITask(void *argument);
 void StartWriteSDTask(void *argument);
+void StartVSyncTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -242,6 +242,7 @@ void MX_FREERTOS_Init(void) {
   /* creation of WriteSDTask */
   WriteSDTaskHandle = osThreadNew(StartWriteSDTask, NULL, &WriteSDTask_attributes);
 
+
   /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -297,24 +298,6 @@ void StartTouchGFXUpdateTask(void *argument)
 		osThreadTerminate(osThreadGetId());
 	}
   /* USER CODE END StartTouchGFXUpdateTask */
-}
-
-/* USER CODE BEGIN Header_StartVSyncTask */
-/**
- * @brief Function implementing the VSyncTask thread.
- * @param argument: Not used
- * @retval None
- */
-/* USER CODE END Header_StartVSyncTask */
-void StartVSyncTask(void *argument)
-{
-  /* USER CODE BEGIN StartVSyncTask */
-	/* Infinite loop */
-	for (;;) {
-		touchgfxSignalVSync();
-		osThreadYield();
-	}
-  /* USER CODE END StartVSyncTask */
 }
 
 /* USER CODE BEGIN Header_StartUpdateFromUITask */
@@ -445,6 +428,24 @@ void StartWriteSDTask(void *argument)
 		osThreadYield();
 	}
   /* USER CODE END StartWriteSDTask */
+}
+
+/* USER CODE BEGIN Header_StartVSyncTask */
+/**
+ * @brief Function implementing the VSyncTask thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_StartVSyncTask */
+void StartVSyncTask(void *argument)
+{
+  /* USER CODE BEGIN StartVSyncTask */
+	/* Infinite loop */
+	for (;;) {
+		touchgfxSignalVSync();
+		osThreadYield();
+	}
+  /* USER CODE END StartVSyncTask */
 }
 
 /* Private application code --------------------------------------------------*/
