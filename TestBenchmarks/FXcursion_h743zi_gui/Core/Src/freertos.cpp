@@ -108,21 +108,14 @@ osThreadId_t UpdateFromUITaskHandle;
 const osThreadAttr_t UpdateFromUITask_attributes = {
   .name = "UpdateFromUITask",
   .stack_size = 2048 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for WriteSDTask */
 osThreadId_t WriteSDTaskHandle;
 const osThreadAttr_t WriteSDTask_attributes = {
   .name = "WriteSDTask",
   .stack_size = 8192 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-/* Definitions for VSyncTask */
-osThreadId_t VSyncTaskHandle;
-const osThreadAttr_t VSyncTask_attributes = {
-  .name = "VSyncTask",
-  .stack_size = 1024 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for UpdateGUIQueue */
 osMessageQueueId_t UpdateGUIQueueHandle;
@@ -163,7 +156,6 @@ void StartDefaultTask(void *argument);
 void StartTouchGFXUpdateTask(void *argument);
 void StartUpdateFromUITask(void *argument);
 void StartWriteSDTask(void *argument);
-void StartVSyncTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -176,6 +168,7 @@ unsigned long getRunTimeCounterValue(void);
 __weak void configureTimerForRunTimeStats(void) {
 	ulStatsTimerTicks = 0;
 	HAL_TIM_Base_Start_IT(&htim6);
+
 }
 
 __weak unsigned long getRunTimeCounterValue(void) {
@@ -233,15 +226,11 @@ void MX_FREERTOS_Init(void) {
   /* creation of TouchGFXUpdateTask */
   TouchGFXUpdateTaskHandle = osThreadNew(StartTouchGFXUpdateTask, NULL, &TouchGFXUpdateTask_attributes);
 
-  /* creation of VSyncTask */
-  VSyncTaskHandle = osThreadNew(StartVSyncTask, NULL, &VSyncTask_attributes);
-
   /* creation of UpdateFromUITask */
   UpdateFromUITaskHandle = osThreadNew(StartUpdateFromUITask, NULL, &UpdateFromUITask_attributes);
 
   /* creation of WriteSDTask */
   WriteSDTaskHandle = osThreadNew(StartWriteSDTask, NULL, &WriteSDTask_attributes);
-
 
   /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
@@ -428,24 +417,6 @@ void StartWriteSDTask(void *argument)
 		osThreadYield();
 	}
   /* USER CODE END StartWriteSDTask */
-}
-
-/* USER CODE BEGIN Header_StartVSyncTask */
-/**
- * @brief Function implementing the VSyncTask thread.
- * @param argument: Not used
- * @retval None
- */
-/* USER CODE END Header_StartVSyncTask */
-void StartVSyncTask(void *argument)
-{
-  /* USER CODE BEGIN StartVSyncTask */
-	/* Infinite loop */
-	for (;;) {
-		touchgfxSignalVSync();
-		osThreadYield();
-	}
-  /* USER CODE END StartVSyncTask */
 }
 
 /* Private application code --------------------------------------------------*/

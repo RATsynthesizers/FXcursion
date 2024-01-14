@@ -140,6 +140,8 @@ public:
      */
     virtual bool blockCopy(void* RESTRICT dest, const void* RESTRICT src, uint32_t numBytes);
 
+    uint8_t* advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect);
+
 protected:
     /**
      * @fn virtual uint16_t* TouchGFXHAL::getTFTFrameBuffer() const;
@@ -162,6 +164,8 @@ protected:
      * @param [in,out] adr New frame buffer address.
      */
     virtual void setTFTFrameBuffer(uint16_t* adr);
+
+
 };
 
 /* USER CODE END TouchGFXHAL.hpp */

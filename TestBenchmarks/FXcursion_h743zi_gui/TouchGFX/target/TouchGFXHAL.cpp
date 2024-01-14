@@ -23,8 +23,12 @@
 #include <TouchGFXHAL.hpp>
 
 /* USER CODE BEGIN TouchGFXHAL.cpp */
+#include "../../Drivers/ili9341/ili9341.h"
+#include "../../Drivers/W9812G6JH/w9812g6jh.h"
+
 
 using namespace touchgfx;
+
 
 void TouchGFXHAL::initialize()
 {
@@ -86,7 +90,22 @@ void TouchGFXHAL::flushFrameBuffer(const touchgfx::Rect& rect)
     // use advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect)
     // defined in TouchGFXGeneratedHAL.cpp
 
+
+//	LCD_IO_WriteMultipleData((uint16_t*)(SDRAM_BANK1_ADDR), rect.width * rect.height);  // hard to include
+	__IO uint8_t *ptr;
+
+	lcdSetWindow(rect.x, rect.y, rect.x+rect.width-1, rect.y+rect.height-1);
+	//ptr = advanceFrameBufferToRect((uint8_t*)(SDRAM_BANK1_ADDR), rect);
+	lcdDrawBitmap((uint16_t*)(SDRAM_BANK1_ADDR), rect.width, rect.height);
+
     TouchGFXGeneratedHAL::flushFrameBuffer(rect);
+}
+
+uint8_t* TouchGFXHAL::advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect)
+{
+    //       Advance vertically                   Advance horizontally
+    fbPtr += rect.y * lcd().framebufferStride() + rect.x * 2;
+    return fbPtr;
 }
 
 bool TouchGFXHAL::blockCopy(void* RESTRICT dest, const void* RESTRICT src, uint32_t numBytes)

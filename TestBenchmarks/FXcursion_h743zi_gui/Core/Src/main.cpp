@@ -38,8 +38,11 @@
 #include "../../Drivers/W9812G6JH/w9812g6jh.h"
 #include "../../Drivers/ssd1305_i2c/ssd1305_i2c.h"
 #include "../../Drivers/ili9341/ili9341.h"
-//#include "../../Drivers/MyTouchGFXadapter/GFXadapter.h"
 #include "../../Drivers/UI/ui_adapter_reg.h"
+
+#include <touchgfx/hal/OSWrappers.hpp>
+#include <TouchGFXGeneratedHAL.hpp>
+using namespace touchgfx;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -128,15 +131,15 @@ int main(void)
   MX_CRC_Init();
   MX_TIM6_Init();
   MX_SPI1_Init();
-  //MX_TouchGFX_Init();
+  MX_TIM7_Init();
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
   /* USER CODE BEGIN 2 */
 
 
   UIadapter_Init(&UIadapterReg);  // spi buttons
-//  W9812G6JH_Init(&hsdram1);
-//  HAL_Delay(1);
+  W9812G6JH_Init(&hsdram1);
+  HAL_Delay(1);
 //  uint32_t b = 0x01BFAFFF;
 //  _RAM_WRITE32(b, 0 );
 //  uint32_t a = _RAM_READ32(0);
@@ -144,6 +147,7 @@ int main(void)
   lcdInit();
   //  ssd1305_Init();
   MX_TouchGFX_Init();
+  HAL_TIM_Base_Start_IT(&htim7); //VSYNC_TIMER start
 
 
 
@@ -299,6 +303,7 @@ void MPU_Config(void)
   MPU_InitStruct.Size = MPU_REGION_SIZE_256MB;
   MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
   MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
   MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
 
   HAL_MPU_ConfigRegion(&MPU_InitStruct);
@@ -324,7 +329,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
+  if (htim->Instance == VSYNC_TIMER) {
+	  touchgfx::OSWrappers::signalVSync();
+	  //touchgfx::OSWrappers::giveFrameBufferSemaphoreFromISR();
 
+  }
   /* USER CODE END Callback 1 */
 }
 

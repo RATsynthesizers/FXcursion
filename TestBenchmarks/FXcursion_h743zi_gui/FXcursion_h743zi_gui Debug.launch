@@ -44,7 +44,7 @@
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.enable_logging" value="false"/>
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.enable_max_halt_delay" value="false"/>
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.enable_shared_stlink" value="false"/>
-    <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.frequency" value="1000"/>
+    <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.frequency" value="8000"/>
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.halt_all_on_reset" value="false"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.log_file" value="C:\Users\romte\STM32CubeIDE\workspace_1.7.0\FXcursion_h743zi_gui\Debug\st-link_gdbserver_log.txt"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.low_power_debug" value="enable"/>

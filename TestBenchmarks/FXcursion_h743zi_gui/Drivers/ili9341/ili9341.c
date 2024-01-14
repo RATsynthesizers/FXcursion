@@ -974,10 +974,11 @@ void lcdDrawImage(uint16_t x, uint16_t y, GUI_CONST_STORAGE GUI_BITMAP* pBitmap)
 }
 
 void lcdDrawBitmap(uint16_t * colors, uint16_t w,uint16_t h) {
-	lcdWriteCommand(0x2C);
+	lcdWriteCommand(ILI9341_MEMORYWRITE);
 	uint32_t len = w*h;
 	for(uint32_t i=0;i<len;i++) {
 		lcdWriteData(*(colors+i));
+		__DSB();
 	}
 }
 

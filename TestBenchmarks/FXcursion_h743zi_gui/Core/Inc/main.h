@@ -104,16 +104,18 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define SPI2_FromAudio 1
-#define SPI1_optionalDisplay 1
-#define SPI5_UI 1
-#define I2C2_oled 1
-#define I2C4_Codec 1
-#define MY_UI_RESET PC15
-#define I2C4_EEPROM 1
-#define MY_LCD_RESET PC6
-#define MY_SD_DETECT PA10
-#define UART4_debug 1
+#define I2C4_EEPROM__ 1
+#define MY_SD_DETECT__ PA10
+#define I2C2_oled__ 1
+#define I2C4_Codec__ 1
+#define MY_LCD_RESET__ PC6
+#define MY_UI_RESET__ PC15
+#define SPI1_optionalDisplay__ 1
+#define SPI2_FromAudio__ 1
+#define SPI5_UI__ 1
+#define UART4_debug__ 1
+#define TIM7_for_display__ 1
+#define VSYNC_TIMER TIM7
 #define USER_UI_RESET_Pin GPIO_PIN_13
 #define USER_UI_RESET_GPIO_Port GPIOC
 #define USER_GUI_PB2_Pin GPIO_PIN_2
