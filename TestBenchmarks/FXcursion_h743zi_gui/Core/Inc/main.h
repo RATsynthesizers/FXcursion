@@ -105,17 +105,18 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define I2C4_EEPROM__ 1
-#define MY_SD_DETECT__ PA10
-#define I2C2_oled__ 1
-#define I2C4_Codec__ 1
-#define MY_LCD_RESET__ PC6
-#define MY_UI_RESET__ PC15
-#define SPI1_optionalDisplay__ 1
-#define SPI2_FromAudio__ 1
 #define SPI5_UI__ 1
-#define UART4_debug__ 1
+#define MY_SD_DETECT__ PA10
+#define MY_LCD_RESET__ PC6
+#define SPI2_FromAudio__ 1
+#define MY_UI_RESET__ PC15
 #define TIM7_for_display__ 1
+#define UART4_debug__ 1
+#define I2C4_Codec__ 1
+#define I2C2_oled__ 1
+#define SPI1_optionalDisplay__ 1
 #define VSYNC_TIMER TIM7
+#define Tim7_freq__ 5khz_div_3
 #define USER_UI_RESET_Pin GPIO_PIN_13
 #define USER_UI_RESET_GPIO_Port GPIOC
 #define USER_GUI_PB2_Pin GPIO_PIN_2

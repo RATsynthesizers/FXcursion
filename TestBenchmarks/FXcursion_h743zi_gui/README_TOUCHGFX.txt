@@ -36,4 +36,13 @@
 >> В таске StartTouchGFXUpdateTask заменил osDelay(1) на osThreadTerminate(osThreadGetId()); как в старом проекте, этого не замечал
 >> В итоге не срабатывал таск Vsync, его надо было создавать не в конце, какая-то хрень с приоритетами
 >> Ещё нао не забывать комментить в начале TouchGFXInit() до инита дисплея
->> 
+
+>> //	LCD_IO_WriteMultipleData((uint16_t*)(SDRAM_BANK1_ADDR), rect.width * rect.height);  // hard to include
+ЮЮ advanceFrameBufferToRect ptr -> uint16_t*
+>> todo TouchGFXHAL.hpp >> 143
+
+>> Пчинил дисплей, проблема была в том, что 0x2C ресетает позицию
+>> TIMER 7 ~0.6мс VSYNC для TouchGFX чтобы не было квадратов при полной отрисовке
+>> main.cpp HAL_TIM_Base_Start_IT(&htim7); //VSYNC_TIMER start
+>> IN CUBE UI SPI NSSP mode - ON and NSS Polarity - HIGH
+=======делаю аудио часть=========

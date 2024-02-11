@@ -35,13 +35,13 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-#include "../../Drivers/W9812G6JH/w9812g6jh.h"
-#include "../../Drivers/ssd1305_i2c/ssd1305_i2c.h"
-#include "../../Drivers/ili9341/ili9341.h"
-#include "../../Drivers/UI/ui_adapter_reg.h"
-
 #include <touchgfx/hal/OSWrappers.hpp>
 #include <TouchGFXGeneratedHAL.hpp>
+#include "../../Drivers/HW/ili9341/ili9341.h"
+#include "../../Drivers/HW/ssd1305_i2c/ssd1305_i2c.h"
+#include "../../Drivers/HW/UI/ui_adapter_reg.h"
+#include "../../Drivers/HW/W9812G6JH/w9812g6jh.h"
+
 using namespace touchgfx;
 /* USER CODE END Includes */
 
@@ -330,9 +330,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   }
   /* USER CODE BEGIN Callback 1 */
   if (htim->Instance == VSYNC_TIMER) {
+	  /* VSync has occurred, increment TouchGFX engine vsync counter */
+	  //HAL::getInstance()->vSync();  // does nothing
+	  /* VSync has occurred, signal TouchGFX engine */
 	  touchgfx::OSWrappers::signalVSync();
-	  //touchgfx::OSWrappers::giveFrameBufferSemaphoreFromISR();
-
   }
   /* USER CODE END Callback 1 */
 }

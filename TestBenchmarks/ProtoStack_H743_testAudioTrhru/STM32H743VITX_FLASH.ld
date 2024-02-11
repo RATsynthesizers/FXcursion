@@ -37,8 +37,8 @@ ENTRY(Reset_Handler)
 /* Highest address of the user mode stack */
 _estack = ORIGIN(DTCMRAM_S) + LENGTH(DTCMRAM_S);    
 /* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0x1600 ;      /* required amount of heap  */
-_Min_Stack_Size = 0x2400 ; /* required amount of stack */
+_Min_Heap_Size = 0x1600;      /* required amount of heap  */
+_Min_Stack_Size = 0x2400; /* required amount of stack */
 
 /* my DTCM stack placement */
 /* old _estack = ORIGIN(RAM_D1) + LENGTH(RAM_D1);    /* end of RAM */ 

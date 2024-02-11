@@ -9,7 +9,8 @@
 #include "stdio.h"
 #include "main.h"
 #include "cmsis_os.h"
-#include "../../../../Drivers/AudioAdapter/AudioAdapter.h"
+
+#include "../../../../../Drivers/HW/AudioAdapter/AudioAdapter.h"
 
 
 #define CHANNELS_NUM 6

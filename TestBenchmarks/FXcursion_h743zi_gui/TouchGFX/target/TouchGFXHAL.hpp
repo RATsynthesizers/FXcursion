@@ -140,7 +140,7 @@ public:
      */
     virtual bool blockCopy(void* RESTRICT dest, const void* RESTRICT src, uint32_t numBytes);
 
-    uint8_t* advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect);
+    uint8_t* advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect);  // TODO this is mine
 
 protected:
     /**

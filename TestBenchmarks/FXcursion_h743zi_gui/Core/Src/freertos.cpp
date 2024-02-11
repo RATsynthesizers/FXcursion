@@ -29,13 +29,13 @@
 #include "sdmmc.h"
 #include "fatfs.h"
 
-#include "../../Drivers/WAV/wav.h"
-#include "../../Drivers/UI/ui_adapter_reg.h"
-#include "../../Drivers/UI/Encoder.hpp"
-#include "../../Drivers/UI/Button.hpp"
-#include "../../Drivers/UI/Led.hpp"
-#include "../../Drivers/AudioAdapter/AudioAdapter.h"
-#include "../../Drivers/AudioTransfer/AudioTransfer.h"
+#include "../../Drivers/HW/AudioAdapter/AudioAdapter.h"
+#include "../../Drivers/HW/AudioTransfer/AudioTransfer.h"
+#include "../../Drivers/HW/UI/Button.hpp"
+#include "../../Drivers/HW/UI/Encoder.hpp"
+#include "../../Drivers/HW/UI/Led.hpp"
+#include "../../Drivers/HW/UI/ui_adapter_reg.h"
+#include "../../Drivers/HW/WAV/wav.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -108,14 +108,14 @@ osThreadId_t UpdateFromUITaskHandle;
 const osThreadAttr_t UpdateFromUITask_attributes = {
   .name = "UpdateFromUITask",
   .stack_size = 2048 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for WriteSDTask */
 osThreadId_t WriteSDTaskHandle;
 const osThreadAttr_t WriteSDTask_attributes = {
   .name = "WriteSDTask",
   .stack_size = 8192 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for UpdateGUIQueue */
 osMessageQueueId_t UpdateGUIQueueHandle;
@@ -257,11 +257,11 @@ void StartDefaultTask(void *argument)
 	MX_FATFS_Init();
 	MX_USB_DEVICE_Init();
 
-//	HAL_SD_CardInfoTypeDef info;
-//	HAL_SD_GetCardInfo(&hsd1, &info);
+	HAL_SD_CardInfoTypeDef info;
+	HAL_SD_GetCardInfo(&hsd1, &info);
 
-	//audioAdapter_Init(&audioAdapter);  // uart interface to audio mcu
-	//audioTransfer_Init();
+	audioAdapter_Init(&audioAdapter);  // uart interface to audio mcu
+	audioTransfer_Init();
 
 	UIadapter_spi_dma_restart(&UIadapterReg, &(UI_ADAPTER_HSPI));
 	/* Infinite loop */

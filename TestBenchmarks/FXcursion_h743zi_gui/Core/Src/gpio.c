@@ -60,7 +60,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, USER_UI_RESET_Pin|USER_LCD_RESET_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(USER_GUI_PB2_GPIO_Port, USER_GUI_PB2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(USER_GUI_PB2_GPIO_Port, USER_GUI_PB2_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pins : PCPin PCPin */
   GPIO_InitStruct.Pin = USER_UI_RESET_Pin|USER_LCD_RESET_Pin;

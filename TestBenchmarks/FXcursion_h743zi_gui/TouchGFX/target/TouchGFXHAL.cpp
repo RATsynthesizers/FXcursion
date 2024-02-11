@@ -23,9 +23,12 @@
 #include <TouchGFXHAL.hpp>
 
 /* USER CODE BEGIN TouchGFXHAL.cpp */
-#include "../../Drivers/ili9341/ili9341.h"
-#include "../../Drivers/W9812G6JH/w9812g6jh.h"
+#include "../../Drivers/HW/ili9341/ili9341.h"
+#include "../../Drivers/HW/W9812G6JH/w9812g6jh.h"
 
+extern "C" {
+	void LCD_IO_WriteMultipleData(uint16_t* pData, uint32_t Size);
+}
 
 using namespace touchgfx;
 
@@ -90,15 +93,19 @@ void TouchGFXHAL::flushFrameBuffer(const touchgfx::Rect& rect)
     // use advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect)
     // defined in TouchGFXGeneratedHAL.cpp
 
+//		lcdSetWindow(0, 0, 320-1, 240-1); // force whole framebuffer drawing
+//		LCD_IO_WriteMultipleData((uint16_t*)(SDRAM_BANK1_ADDR), 320*240);
 
-//	LCD_IO_WriteMultipleData((uint16_t*)(SDRAM_BANK1_ADDR), rect.width * rect.height);  // hard to include
-	__IO uint8_t *ptr;
-
+    uint16_t* ptr;
+    int16_t height;
 	lcdSetWindow(rect.x, rect.y, rect.x+rect.width-1, rect.y+rect.height-1);
-	//ptr = advanceFrameBufferToRect((uint8_t*)(SDRAM_BANK1_ADDR), rect);
-	lcdDrawBitmap((uint16_t*)(SDRAM_BANK1_ADDR), rect.width, rect.height);
-
-    TouchGFXGeneratedHAL::flushFrameBuffer(rect);
+    // This can be accelerated using regular DMA hardware
+    for (height = 0; height < rect.height ; height++)
+    {
+        ptr = getClientFrameBuffer() + rect.x + (height + rect.y) * HAL::DISPLAY_WIDTH;
+        LCD_IO_WriteMultipleData(ptr, rect.width);
+    }
+	TouchGFXGeneratedHAL::flushFrameBuffer(rect); // does it do anything?
 }
 
 uint8_t* TouchGFXHAL::advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect)
