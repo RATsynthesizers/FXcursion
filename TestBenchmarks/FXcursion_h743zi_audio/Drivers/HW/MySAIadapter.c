@@ -7,8 +7,8 @@
 
 #include "MySAIadapter.h"
 
-IN_RAM_D1_DMA SAIadapter_TypeDef sai1adapter;		// global adapter instances
-IN_RAM_D1_DMA SAIadapter_TypeDef sai4adapter;
+IN_RAM_D1_DMA 	SAIadapter_TypeDef sai1adapter;		// global adapter instances
+IN_RAMD3		SAIadapter_TypeDef sai4adapter;
 
 //IN_RAM_D1_DMA int16_t audioTransmitBuffer[SAI_IO_BUF_SIZE];
 
@@ -85,7 +85,8 @@ void HAL_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai) {
 //		for (int i = 0; i < SAI_IO_BUF_SIZE; i++)
 //			audioTransmitBuffer[i] = sai2adapter.TxData[i];
 
-		HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) sai4adapter.TxData, SAI_IO_BUF_SIZE / 2);
+		//pls enable back
+//		HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) sai4adapter.TxData, SAI_IO_BUF_SIZE / 2);
 	}
 }
 
@@ -98,7 +99,8 @@ void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai) {
 //		for (int i = 0; i < SAI_IO_BUF_SIZE; i++)
 //			audioTransmitBuffer[i] = sai2adapter.TxData[i];
 
-		HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) sai4adapter.TxData + SAI_IO_BUF_SIZE / 2, SAI_IO_BUF_SIZE / 2);
+		//pls enable back
+//		HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) sai4adapter.TxData + SAI_IO_BUF_SIZE / 2, SAI_IO_BUF_SIZE / 2);
 	}
 }
 

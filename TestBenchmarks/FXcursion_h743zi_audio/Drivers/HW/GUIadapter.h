@@ -11,6 +11,7 @@ extern "C" {
 
 #define GUIUART_INBUF_SIZE  5
 #define GUIUART_OUTBUF_SIZE 4
+#define GUIUART_UART (&huart2)
 
 typedef enum {
 	REQUEST_PARAM,

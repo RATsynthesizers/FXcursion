@@ -36,7 +36,7 @@ void AudioSys::updateGUI(GUIadapter_TypeDef *adapter) {
 					modules[adapter->RxBuf[1]][adapter->RxBuf[2]]->getPublicParameter(
 							i);
 		}
-		HAL_UART_Transmit_DMA(&huart2, adapter->TxBuf, GUIUART_OUTBUF_SIZE);
+		HAL_UART_Transmit_DMA(GUIUART_UART, adapter->TxBuf, GUIUART_OUTBUF_SIZE);
 
 		break;
 	case CHANGE_PARAM:

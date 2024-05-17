@@ -11,18 +11,18 @@ void guiAdapter_Init(GUIadapter_TypeDef *adapter) {
 	}
 
 	adapter->updateFlag = 0;
-	HAL_UART_Receive_DMA(&huart2, adapter->RxBuf, GUIUART_INBUF_SIZE);
+	HAL_UART_Receive_DMA(GUIUART_UART, adapter->RxBuf, GUIUART_INBUF_SIZE);
 }
 
 /////////////// UART2 callbacks ///////////////
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	if (huart == &huart2)
+	if (huart == GUIUART_UART)
 		guiadapter.updateFlag = 1;
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
-	if (huart == &huart2) {
-		HAL_UART_AbortReceive(&huart2);
+	if (huart == GUIUART_UART) {
+		HAL_UART_AbortReceive(GUIUART_UART);
 		guiAdapter_Init(&guiadapter);
 	}
 }

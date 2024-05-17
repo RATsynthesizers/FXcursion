@@ -18,6 +18,7 @@ extern "C" {
 
 #define AUDIOUART_INBUF_SIZE  4
 #define AUDIOUART_OUTBUF_SIZE 5
+#define AUDIOUART_UART (&huart2)
 
 typedef enum {
 	REQUEST_PARAM,

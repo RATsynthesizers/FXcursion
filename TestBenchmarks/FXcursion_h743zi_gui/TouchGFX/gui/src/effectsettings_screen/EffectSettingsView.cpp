@@ -49,7 +49,7 @@ void EffectSettingsView::setupScreen() {
 	audioAdapter.TxBuf[3] = 0; // no matter, doesn't count
 	audioAdapter.TxBuf[4] = 0; // no matter, doesn't count
 
-	HAL_UART_Transmit_DMA(&huart2, audioAdapter.TxBuf, AUDIOUART_OUTBUF_SIZE);
+	HAL_UART_Transmit_DMA(AUDIOUART_UART, audioAdapter.TxBuf, AUDIOUART_OUTBUF_SIZE);
 
 	while (!audioAdapter.updateFlag);
 
@@ -86,7 +86,7 @@ void EffectSettingsView::parameterChange(uint8_t id, int8_t scrollAmount) {
 	audioAdapter.TxBuf[3] = id;
 	audioAdapter.TxBuf[4] = customGauges[id]->getValue();
 
-	HAL_UART_Transmit_DMA(&huart2, audioAdapter.TxBuf, AUDIOUART_OUTBUF_SIZE);
+	HAL_UART_Transmit_DMA(AUDIOUART_UART, audioAdapter.TxBuf, AUDIOUART_OUTBUF_SIZE);
 }
 
 void EffectSettingsView::encScroll_action(int8_t scrollAmount) {
@@ -118,7 +118,7 @@ void EffectSettingsView::btnYES_action(void) {
 		audioAdapter.TxBuf[3] = 0; // no matter, doesn't count
 		audioAdapter.TxBuf[4] = 0; // no matter, doesn't count
 
-		HAL_UART_Transmit_DMA(&huart2, audioAdapter.TxBuf, AUDIOUART_OUTBUF_SIZE);
+		HAL_UART_Transmit_DMA(AUDIOUART_UART, audioAdapter.TxBuf, AUDIOUART_OUTBUF_SIZE);
 
 		while(!audioAdapter.updateFlag);
 

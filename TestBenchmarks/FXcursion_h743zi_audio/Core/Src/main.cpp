@@ -87,7 +87,7 @@ int main(void)
   SCB_EnableICache();
 
   /* Enable D-Cache---------------------------------------------------------*/
-//  SCB_EnableDCache();
+  SCB_EnableDCache();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -113,8 +113,9 @@ int main(void)
   MX_DMA_Init();
   MX_BDMA_Init();
   MX_FMC_Init();
-  MX_SAI1_Init();
   MX_SAI4_Init();
+  MX_SAI1_Init();
+
   MX_I2C4_Init();
   MX_USART2_UART_Init();
   MX_SPI1_Init();
@@ -133,8 +134,8 @@ int main(void)
 	CodecPowerUp(CODEC_ADDRESS_1);
 	SetHPGain(-8, CODEC_ADDRESS_1);
 
-	CodecPowerUp(CODEC_ADDRESS_0);
-	SetHPGain(-8, CODEC_ADDRESS_0);
+//	CodecPowerUp(CODEC_ADDRESS_0);
+//	SetHPGain(-8, CODEC_ADDRESS_0);
 
 	saiAdapter_Init(&sai4adapter, HW_SAI4);
 	saiAdapter_Init(&sai1adapter, HW_SAI1);
@@ -148,6 +149,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    audioSystem.update();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
