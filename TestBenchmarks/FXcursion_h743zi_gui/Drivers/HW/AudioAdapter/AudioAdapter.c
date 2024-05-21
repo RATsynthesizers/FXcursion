@@ -26,6 +26,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		audioAdapter.updateFlag = 1;
 }
 
+
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	if (huart == AUDIOUART_UART) {
 		HAL_UART_AbortReceive(AUDIOUART_UART);
