@@ -23,6 +23,11 @@
 #include <TouchGFXHAL.hpp>
 
 /* USER CODE BEGIN TouchGFXHAL.cpp */
+#include "ili9341.h"
+#include "w9812g6jh.h"
+extern "C" {
+	void LCD_IO_WriteMultipleData(uint16_t* pData, uint32_t Size);
+}
 
 using namespace touchgfx;
 
@@ -85,6 +90,19 @@ void TouchGFXHAL::flushFrameBuffer(const touchgfx::Rect& rect)
     // To calculate the start address of rect,
     // use advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect)
     // defined in TouchGFXGeneratedHAL.cpp
+
+	uint16_t* ptr;
+	    int16_t height;
+		lcdSetWindow(rect.x, rect.y, rect.x+rect.width-1, rect.y+rect.height-1);
+	    // This can be accelerated using regular DMA hardware
+	    for (height = 0; height < rect.height ; height++)
+	    {
+	        ptr = getClientFrameBuffer() + rect.x + (height + rect.y) * HAL::DISPLAY_WIDTH;
+	        LCD_IO_WriteMultipleData(ptr, rect.width);
+	    }
+
+	    //lcdSetWindow(0, 0, 320-1, 240-1); // force whole framebuffer drawing
+	    //LCD_IO_WriteMultipleData((uint16_t*)(0xC0000000), 320*240);
 
     TouchGFXGeneratedHAL::flushFrameBuffer(rect);
 }

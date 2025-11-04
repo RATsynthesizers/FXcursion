@@ -334,9 +334,10 @@ void init_all(void)
 
     W9812G6JH_Init(&hsdram1);
 
-    HAL_Delay(100);
+    HAL_Delay(10);
 
     lcdInit();
+    lcdSetWindow(0, 0, 320-1, 240-1); // force whole framebuffer drawing
 
 //    uint32_t b = 0xFFBFAFFF;
 //    _RAM_WRITE32(b, 0 );
@@ -403,12 +404,12 @@ static void InitThread(void const *argument)
 //        printf("PIXEL initialize failed!\n");
 //    }
 
-//	char test_txt[] = "soldering issues :(";
-//	  lcdTest();
-//	  lcdSetCursor(50,100);
-//	  lcdSetTextFont(&Font12);
-//	  lcdPrintf(test_txt);
-	memset((uint8_t*) LCD_BASE1, 0, 0x5000);
+	char test_txt[] = "> HELLO WORLD!";
+	  lcdTest();
+	  lcdSetCursor(50,100);
+	  lcdSetTextFont(&Font12);
+	  lcdPrintf(test_txt);
+	//memset((uint8_t*) LCD_BASE1, 0, 0x5000);
 	flag = 1;
 
 	/* definition and creation of TouchGFXTask */

@@ -2,6 +2,10 @@
 #ifndef ILI9341_H_
 #define ILI9341_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "main.h"
 #include "colors.h"
 #include "registers.h"
@@ -24,8 +28,8 @@
 
 #define swap(a, b) { int16_t t = a; a = b; b = t; }
 
-#define ILI9341_PIXEL_WIDTH		320
-#define ILI9341_PIXEL_HEIGHT 	240
+#define ILI9341_PIXEL_WIDTH		240
+#define ILI9341_PIXEL_HEIGHT 	320
 #define ILI9341_PIXEL_COUNT		ILI9341_PIXEL_WIDTH * ILI9341_PIXEL_HEIGHT
 
 // Any LCD needs to implement these common methods, which allow the low-level
@@ -37,7 +41,8 @@ typedef enum
 	LCD_ORIENTATION_PORTRAIT 			= 0,
 	LCD_ORIENTATION_LANDSCAPE 			= 1,
 	LCD_ORIENTATION_PORTRAIT_MIRROR 	= 2,
-	LCD_ORIENTATION_LANDSCAPE_MIRROR 	= 3
+	LCD_ORIENTATION_LANDSCAPE_MIRROR 	= 3,
+	LCD_ORIENTATION_LANDSCAPE_MIRROR2 	= 4
 } lcdOrientationTypeDef;
 
 /**
@@ -111,6 +116,10 @@ sFONT*					lcdGetTextFont(void);
 lcdPropertiesTypeDef   	lcdGetProperties(void);
 uint16_t				lcdReadPixel(uint16_t x, uint16_t y);
 uint16_t 				lcdColor565(uint8_t r, uint8_t g, uint8_t b);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ILI9341_H_ */
 
