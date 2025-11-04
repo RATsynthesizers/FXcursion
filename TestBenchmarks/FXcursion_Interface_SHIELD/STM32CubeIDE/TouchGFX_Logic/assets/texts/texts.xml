@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextDatabase xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="texts.xsd" Version="4.25.0">
+  <Languages>
+    <Language Id="GB" />
+    <Language Id="RU" />
+  </Languages>
+  <Texts>
+    <TextGroup Id="OverviewScreenTexts">
+      <Text Id="InputTextID" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">IN</Translation>
+        <Translation Language="RU">IN</Translation>
+      </Text>
+      <Text Id="LooperTextID" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">LOOP</Translation>
+        <Translation Language="RU">LOOP</Translation>
+      </Text>
+      <Text Id="MixerTextID" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">MIX</Translation>
+        <Translation Language="RU">MIX</Translation>
+      </Text>
+      <Text Id="RecorderTextID" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">REC</Translation>
+        <Translation Language="RU">REC</Translation>
+      </Text>
+      <Text Id="EffectsTextID" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">FX</Translation>
+        <Translation Language="RU">FX</Translation>
+      </Text>
+      <Text Id="OutputTextID" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">OUT</Translation>
+        <Translation Language="RU">OUT</Translation>
+      </Text>
+    </TextGroup>
+    <TextGroup Id="Unsorted">
+      <Text Id="__SingleUse_LHUE" Alignment="Left" TypographyId="Small">
+        <Translation Language="GB">Stomp 1</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_C009" Alignment="Left" TypographyId="Small">
+        <Translation Language="GB">Stomp 2</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_U75P" Alignment="Left" TypographyId="Small">
+        <Translation Language="GB">Stomp 3</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_VRO4" Alignment="Left" TypographyId="Small">
+        <Translation Language="GB">bat_stat</Translation>
+        <Translation Language="RU">bat_stat</Translation>
+      </Text>
+      <Text Id="__SingleUse_9PU7" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">project-name</Translation>
+        <Translation Language="RU">project-name</Translation>
+      </Text>
+      <Text Id="__SingleUse_FYCR" Alignment="Left" TypographyId="Small">
+        <Translation Language="GB">BPM &lt;bpmValue&gt;140</Translation>
+        <Translation Language="RU">BPM &lt;bpmValue&gt;140</Translation>
+      </Text>
+    </TextGroup>
+  </Texts>
+  <Typographies>
+    <Typography Id="Default" Font="PixelizerBold.ttf" Size="22" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" />
+    <Typography Id="Large" Font="verdana.ttf" Size="40" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" />
+    <Typography Id="Small" Font="PixelizerBold.ttf" Size="16" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" />
+  </Typographies>
+</TextDatabase>

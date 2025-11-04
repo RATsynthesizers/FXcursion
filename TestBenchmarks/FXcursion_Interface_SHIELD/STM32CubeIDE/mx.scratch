@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScratchFile FileVersion="3.0">
+  <FileVersion>3.0</FileVersion>
+  <Workspace>
+    <WorkspaceType>Single-project</WorkspaceType>
+    <WorkspacePath>C:\Users\ga\Documents\RAT_Sythesizers\FXcursion_Interface_SHIELD\STM32CubeIDE\</WorkspacePath>
+    <underRoot>true</underRoot>
+    <TrustZone>0</TrustZone>
+    <HAL_Driver>C:\Users\ga\STM32Cube\Repository\STM32Cube_FW_H7_V1.12.1</HAL_Driver>
+    <CMSIS>Drivers/CMSIS</CMSIS>
+    <Toolchain>STM32CubeIDE</Toolchain>
+    <IocFile>FXcursion_Interface.ioc</IocFile>
+    <Project>
+      <ProjectName>FXcursion_Interface</ProjectName>
+      <ProjectNature>Cpp</ProjectNature>
+      <Secure />
+      <filestoremove />
+      <sourceEntriesToRemove>
+        <sourceEntry />
+      </sourceEntriesToRemove>
+      <configs>
+        <config>
+          <name>FXcursion_Interface</name>
+          <mainSourceRepo>Core</mainSourceRepo>
+          <sourceStructure>Advanced</sourceStructure>
+          <device>STM32H743ZITx</device>
+          <cpucore>ARM Cortex-M7</cpucore>
+          <fpu>DP</fpu>
+          <memories>
+            <memory access="xrw" name="DTCMRAM" size="131072" start="0x20000000" />
+            <memory access="xrw" name="RAM" size="524288" start="0x24000000" />
+            <memory access="xrw" name="RAM_D2" size="294912" start="0x30000000" />
+            <memory access="xrw" name="RAM_D3" size="65536" start="0x38000000" />
+            <memory access="xrw" name="ITCMRAM" size="65536" start="0x00000000" />
+            <memory access="rx" name="FLASH" size="2097152" start="0x8000000" />
+          </memories>
+          <startup>C:\Users\ga\STM32Cube\Repository\STM32Cube_FW_H7_V1.12.1\Drivers\CMSIS\Device\ST\STM32H7xx\Source\Templates\gcc\startup_stm32h743xx.s</startup>
+          <LinkSettings>
+            <LinkAdditionalLibs />
+          </LinkSettings>
+          <heapSize>0x1000</heapSize>
+          <stackSize>0x1000</stackSize>
+          <cpuclock>240</cpuclock>
+          <board>custom</board>
+          <debugprobe>swd</debugprobe>
+          <optimization />
+          <Aincludes>
+            <include>Core\Inc</include>
+            <include>FATFS\Target</include>
+            <include>FATFS\App</include>
+            <include>TouchGFX\App</include>
+            <include>TouchGFX\target\generated</include>
+            <include>TouchGFX\target</include>
+            <include>USB_DEVICE\App</include>
+            <include>USB_DEVICE\Target</include>
+            <include>Drivers\STM32H7xx_HAL_Driver\Inc</include>
+            <include>Drivers\STM32H7xx_HAL_Driver\Inc\Legacy</include>
+            <include>Utilities\JPEG</include>
+            <include>Middlewares\Third_Party\FreeRTOS\Source\include</include>
+            <include>Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS</include>
+            <include>Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM4F</include>
+            <include>Middlewares\Third_Party\FatFs\src</include>
+            <include>Middlewares\ST\STM32_USB_Device_Library\Core\Inc</include>
+            <include>Middlewares\ST\STM32_USB_Device_Library\Class\MSC\Inc</include>
+            <include>Drivers\CMSIS\Device\ST\STM32H7xx\Include</include>
+            <include>Drivers\CMSIS\Include</include>
+          </Aincludes>
+          <Adefines />
+          <Cdefines>
+            <define>USE_PWR_LDO_SUPPLY</define>
+            <define>USE_HAL_DRIVER</define>
+            <define>STM32H743xx</define>
+          </Cdefines>
+          <Ldefines />
+          <Cincludes>
+            <include>Core\Inc</include>
+            <include>FATFS\Target</include>
+            <include>FATFS\App</include>
+            <include>TouchGFX\App</include>
+            <include>TouchGFX\target\generated</include>
+            <include>TouchGFX\target</include>
+            <include>USB_DEVICE\App</include>
+            <include>USB_DEVICE\Target</include>
+            <include>Drivers\STM32H7xx_HAL_Driver\Inc</include>
+            <include>Drivers\STM32H7xx_HAL_Driver\Inc\Legacy</include>
+            <include>Utilities\JPEG</include>
+            <include>Middlewares\Third_Party\FreeRTOS\Source\include</include>
+            <include>Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS</include>
+            <include>Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM4F</include>
+            <include>Middlewares\Third_Party\FatFs\src</include>
+            <include>Middlewares\ST\STM32_USB_Device_Library\Core\Inc</include>
+            <include>Middlewares\ST\STM32_USB_Device_Library\Class\MSC\Inc</include>
+            <include>Drivers\CMSIS\Device\ST\STM32H7xx\Include</include>
+            <include>Drivers\CMSIS\Include</include>
+          </Cincludes>
+          <definestoremove>
+            <Adefines />
+            <Cdefines>
+              <define>USE_FULL_LL_DRIVER</define>
+              <define>USE_FULL_ASSERT=1U</define>
+            </Cdefines>
+            <Ldefines />
+          </definestoremove>
+          <inctoremove>
+            <Aincludes>
+              <include />
+            </Aincludes>
+            <Cincludes />
+          </inctoremove>
+          <ThreadSafeSupport>
+            <ThreadSafeStrategy>4</ThreadSafeStrategy>
+          </ThreadSafeSupport>
+        </config>
+      </configs>
+      <copyAsReference>false</copyAsReference>
+      <sourceEntries>
+        <sourceEntry>
+          <name>Core</name>
+        </sourceEntry>
+        <sourceEntry>
+          <name>FATFS</name>
+        </sourceEntry>
+        <sourceEntry>
+          <name>TouchGFX</name>
+        </sourceEntry>
+        <sourceEntry>
+          <name>USB_DEVICE</name>
+        </sourceEntry>
+        <sourceEntry>
+          <name>Drivers</name>
+        </sourceEntry>
+        <sourceEntry>
+          <name>Middlewares</name>
+        </sourceEntry>
+        <sourceEntry>
+          <name>Utilities</name>
+        </sourceEntry>
+      </sourceEntries>
+      <Groups />
+    </Project>
+  </Workspace>
+</ScratchFile>
+

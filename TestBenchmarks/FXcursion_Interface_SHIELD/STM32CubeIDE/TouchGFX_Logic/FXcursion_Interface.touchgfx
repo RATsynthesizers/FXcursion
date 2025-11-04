@@ -1,0 +1,2126 @@
+{
+  "Application": {
+    "Screens": [
+      {
+        "Name": "LogoStartup",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Width": 320,
+            "Height": 240,
+            "LockPosition": true,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            }
+          },
+          {
+            "Type": "Image",
+            "Name": "logoImage",
+            "X": 20,
+            "Y": 51,
+            "Width": 293,
+            "Height": 171,
+            "LockPosition": true,
+            "RelativeFilename": "rat_logo.png"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "LogoFade",
+            "HasCompletedTrigger": true,
+            "Trigger": {
+              "Type": "TriggerScreenEntered"
+            },
+            "Action": {
+              "Type": "ActionFade",
+              "Alpha": 0,
+              "Easing": "Linear",
+              "EasingOption": "In",
+              "Duration": 7000,
+              "AnimationDelay": 2000,
+              "ActionComponent": "logoImage"
+            }
+          },
+          {
+            "InteractionName": "SetupEnded",
+            "HasCompletedTrigger": true,
+            "Trigger": {
+              "Type": "TriggerInteractionCompleted",
+              "InteractionToTriggerOn": "LogoFade"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionBlock",
+              "ActionComponent": "System"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "System",
+        "CanvasBufferSize": 4800,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Width": 320,
+            "Height": 240,
+            "LockPosition": true,
+            "Color": {
+              "Red": 72,
+              "Green": 90,
+              "Blue": 219
+            }
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "stompBoard",
+            "Y": 202,
+            "Width": 320,
+            "Height": 38,
+            "CustomContainerDefinitionName": "StompBoard"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "statusBar",
+            "Width": 320,
+            "Height": 34,
+            "LockPosition": true,
+            "CustomContainerDefinitionName": "StatusBar"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "inModule",
+            "X": 280,
+            "Y": 44,
+            "Width": 40,
+            "Height": 152,
+            "CustomContainerDefinitionName": "InModule"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "outModule",
+            "Y": 44,
+            "Width": 40,
+            "Height": 152,
+            "CustomContainerDefinitionName": "OutModule"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "stereoChain2",
+            "X": 40,
+            "Y": 125,
+            "Width": 240,
+            "Height": 62,
+            "Visible": false,
+            "CustomContainerDefinitionName": "StereoChain"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "stereoChain1",
+            "X": 40,
+            "Y": 53,
+            "Width": 240,
+            "Height": 62,
+            "Visible": false,
+            "CustomContainerDefinitionName": "StereoChain"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "monoChain4",
+            "X": 40,
+            "Y": 164,
+            "Width": 240,
+            "Height": 32,
+            "CustomContainerDefinitionName": "MonoChain"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "monoChain3",
+            "X": 40,
+            "Y": 124,
+            "Width": 240,
+            "Height": 32,
+            "CustomContainerDefinitionName": "MonoChain"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "monoChain2",
+            "X": 40,
+            "Y": 84,
+            "Width": 240,
+            "Height": 32,
+            "CustomContainerDefinitionName": "MonoChain"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "monoChain1",
+            "X": 40,
+            "Y": 44,
+            "Width": 240,
+            "Height": 32,
+            "CustomContainerDefinitionName": "MonoChain"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "selectIOModule",
+            "X": 276,
+            "Y": 40,
+            "Width": 48,
+            "Height": 160,
+            "Visible": false,
+            "CustomContainerDefinitionName": "SelectIOModule"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "selectMixer",
+            "X": 218,
+            "Y": 40,
+            "Width": 58,
+            "Height": 160,
+            "Visible": false,
+            "CustomContainerDefinitionName": "SelectMixer"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moveMixer",
+            "X": 218,
+            "Y": 40,
+            "Width": 58,
+            "Height": 160,
+            "Visible": false,
+            "CustomContainerDefinitionName": "MoveMixer"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "selectModuleStereo",
+            "X": 218,
+            "Y": 49,
+            "Width": 58,
+            "Height": 70,
+            "Visible": false,
+            "CustomContainerDefinitionName": "SelectModuleStereo"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moveModuleStereo",
+            "X": 218,
+            "Y": 49,
+            "Width": 58,
+            "Height": 70,
+            "Visible": false,
+            "CustomContainerDefinitionName": "MoveModuleStereo"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "selectModuleMono",
+            "X": 218,
+            "Y": 40,
+            "Width": 58,
+            "Height": 40,
+            "Visible": false,
+            "CustomContainerDefinitionName": "SelectModuleMono"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moveModuleMono",
+            "X": 218,
+            "Y": 40,
+            "Width": 58,
+            "Height": 40,
+            "Visible": false,
+            "CustomContainerDefinitionName": "MoveModuleMono"
+          }
+        ],
+        "Interactions": []
+      }
+    ],
+    "CustomContainerDefinitions": [
+      {
+        "Name": "StatusBar",
+        "Width": 320,
+        "Height": 34,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Width": 320,
+            "Height": 33,
+            "LockPosition": true
+          },
+          {
+            "Type": "TextArea",
+            "Name": "bpmText",
+            "X": 12,
+            "Y": 8,
+            "Width": 54,
+            "Height": 20,
+            "TextId": "__SingleUse_FYCR",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "AutoSize": true,
+            "Wildcard1": {}
+          },
+          {
+            "Type": "TextArea",
+            "Name": "batText",
+            "X": 249,
+            "Y": 7,
+            "Width": 56,
+            "Height": 20,
+            "TextId": "__SingleUse_VRO4",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "AutoSize": true
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textArea1",
+            "Width": 320,
+            "Height": 28,
+            "TextId": "__SingleUse_9PU7",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "StompBoard",
+        "Width": 320,
+        "Height": 38,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "stomp3select",
+            "X": 215,
+            "Width": 105,
+            "Height": 38,
+            "Visible": false
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "stomp3box",
+            "X": 219,
+            "Y": 4,
+            "Width": 101,
+            "Height": 34,
+            "Color": {
+              "Red": 255,
+              "Green": 190,
+              "Blue": 176
+            },
+            "BorderColor": {
+              "Red": 128,
+              "Green": 56,
+              "Blue": 9
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "stomp3text",
+            "X": 242,
+            "Y": 11,
+            "Width": 55,
+            "Height": 20,
+            "TextId": "__SingleUse_U75P",
+            "TextRotation": "0",
+            "AutoSize": true
+          },
+          {
+            "Type": "Box",
+            "Name": "stomp2select",
+            "X": 105,
+            "Width": 110,
+            "Height": 38,
+            "Visible": false
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "stomp2box",
+            "X": 109,
+            "Y": 4,
+            "Width": 102,
+            "Height": 34,
+            "Color": {
+              "Red": 255,
+              "Green": 190,
+              "Blue": 176
+            },
+            "BorderColor": {
+              "Red": 128,
+              "Green": 56,
+              "Blue": 9
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "stomp2text",
+            "X": 133,
+            "Y": 11,
+            "Width": 55,
+            "Height": 20,
+            "TextId": "__SingleUse_C009",
+            "TextRotation": "0",
+            "AutoSize": true
+          },
+          {
+            "Type": "Box",
+            "Name": "stomp1select",
+            "Width": 105,
+            "Height": 38,
+            "Visible": false
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "stomp1box",
+            "Y": 4,
+            "Width": 101,
+            "Height": 34,
+            "Color": {
+              "Red": 255,
+              "Green": 190,
+              "Blue": 176
+            },
+            "BorderColor": {
+              "Red": 128,
+              "Green": 56,
+              "Blue": 9
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "stomp1text",
+            "X": 23,
+            "Y": 11,
+            "Width": 54,
+            "Height": 20,
+            "TextId": "__SingleUse_LHUE",
+            "TextRotation": "0",
+            "AutoSize": true
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "StereoCable",
+        "Width": 8,
+        "Height": 14,
+        "Components": [
+          {
+            "Type": "Line",
+            "Name": "leftCable",
+            "Y": 10,
+            "Width": 8,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 240.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Square"
+          },
+          {
+            "Type": "Line",
+            "Name": "rightCable",
+            "Width": 8,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 240.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Square"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "StereoUnavailable",
+        "Width": 50,
+        "Height": 14,
+        "Components": [
+          {
+            "Type": "Line",
+            "Name": "stereoUnavailable2",
+            "Y": 10,
+            "Width": 50,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 240.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Square"
+          },
+          {
+            "Type": "Line",
+            "Name": "stereoUnavailable1",
+            "Width": 50,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 240.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Square"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "EmptyModuleMono",
+        "Width": 58,
+        "Height": 32,
+        "Components": [
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "stereoUnavailable",
+            "X": 8,
+            "Y": 9,
+            "Width": 50,
+            "Height": 14,
+            "Visible": false,
+            "CustomContainerDefinitionName": "StereoUnavailable"
+          },
+          {
+            "Type": "Line",
+            "Name": "monoUnavailable",
+            "X": 8,
+            "Y": 14,
+            "Width": 50,
+            "Height": 4,
+            "Visible": false,
+            "StartY": 2.0,
+            "EndX": 240.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Square"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "stereoCable",
+            "Y": 9,
+            "Width": 8,
+            "Height": 14,
+            "Visible": false,
+            "CustomContainerDefinitionName": "StereoCable"
+          },
+          {
+            "Type": "Line",
+            "Name": "monoCable",
+            "Y": 14,
+            "Width": 8,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 240.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Square"
+          },
+          {
+            "Type": "Line",
+            "Name": "horizontalLine",
+            "X": 24,
+            "Y": 14,
+            "Width": 18,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 54.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "verticalLine",
+            "X": 31,
+            "Y": 7,
+            "Width": 4,
+            "Height": 18,
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 150.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "emptyBox",
+            "X": 8,
+            "Width": 50,
+            "Height": 32,
+            "Color": {
+              "Red": 148,
+              "Green": 148,
+              "Blue": 148
+            },
+            "BorderColor": {
+              "Red": 56,
+              "Green": 56,
+              "Blue": 56
+            },
+            "BorderSize": 3,
+            "Alpha": 126
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "EmptyModuleStereo",
+        "Width": 58,
+        "Height": 62,
+        "Components": [
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "stereoUnavailable",
+            "X": 8,
+            "Y": 24,
+            "Width": 50,
+            "Height": 14,
+            "Visible": false,
+            "CustomContainerDefinitionName": "StereoUnavailable"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "stereoCable",
+            "Y": 24,
+            "Width": 8,
+            "Height": 14,
+            "CustomContainerDefinitionName": "StereoCable"
+          },
+          {
+            "Type": "Line",
+            "Name": "horizontalLine",
+            "X": 24,
+            "Y": 29,
+            "Width": 18,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 54.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "verticalLine",
+            "X": 31,
+            "Y": 22,
+            "Width": 4,
+            "Height": 18,
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 150.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "emptyBox",
+            "X": 8,
+            "Width": 50,
+            "Height": 62,
+            "Color": {
+              "Red": 148,
+              "Green": 148,
+              "Blue": 148
+            },
+            "BorderColor": {
+              "Red": 56,
+              "Green": 56,
+              "Blue": 56
+            },
+            "BorderSize": 3,
+            "Alpha": 126
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "SelectModuleMono",
+        "Width": 58,
+        "Height": 40,
+        "Components": [
+          {
+            "Type": "Line",
+            "Name": "botLine",
+            "Y": 36,
+            "Width": 58,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "topLine",
+            "Width": 58,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "leftLine",
+            "Y": 4,
+            "Width": 4,
+            "Height": 32,
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 32.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "rightLine",
+            "X": 54,
+            "Y": 4,
+            "Width": 4,
+            "Height": 32,
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 32.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "MoveModuleMono",
+        "Width": 58,
+        "Height": 40,
+        "Components": [
+          {
+            "Type": "Line",
+            "Name": "botLine",
+            "Y": 36,
+            "Width": 58,
+            "Height": 4,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "topLine",
+            "Width": 58,
+            "Height": 4,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "leftLine",
+            "Y": 4,
+            "Width": 4,
+            "Height": 32,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 32.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "rightLine",
+            "X": 54,
+            "Y": 4,
+            "Width": 4,
+            "Height": 32,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 32.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "SelectModuleStereo",
+        "Width": 58,
+        "Height": 70,
+        "Components": [
+          {
+            "Type": "Line",
+            "Name": "botLine",
+            "Y": 66,
+            "Width": 58,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "topLine",
+            "Width": 58,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "leftLine",
+            "Y": 4,
+            "Width": 4,
+            "Height": 62,
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 150.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "rightLine",
+            "X": 54,
+            "Y": 4,
+            "Width": 4,
+            "Height": 62,
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 150.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "MoveModuleStereo",
+        "Width": 58,
+        "Height": 70,
+        "Components": [
+          {
+            "Type": "Line",
+            "Name": "botLine",
+            "Y": 66,
+            "Width": 58,
+            "Height": 4,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "topLine",
+            "Width": 58,
+            "Height": 4,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "leftLine",
+            "Y": 4,
+            "Width": 4,
+            "Height": 62,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 150.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "rightLine",
+            "X": 54,
+            "Y": 4,
+            "Width": 4,
+            "Height": 62,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 150.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "SelectMixer",
+        "Width": 58,
+        "Height": 160,
+        "Components": [
+          {
+            "Type": "Line",
+            "Name": "botLine",
+            "Y": 156,
+            "Width": 58,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "topLine",
+            "Width": 58,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "leftLine",
+            "Y": 4,
+            "Width": 4,
+            "Height": 152,
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 152.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "rightLine",
+            "X": 54,
+            "Y": 4,
+            "Width": 4,
+            "Height": 152,
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 152.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "MoveMixer",
+        "Width": 58,
+        "Height": 160,
+        "Components": [
+          {
+            "Type": "Line",
+            "Name": "botLine",
+            "Y": 156,
+            "Width": 58,
+            "Height": 4,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "topLine",
+            "Width": 58,
+            "Height": 4,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "leftLine",
+            "Y": 4,
+            "Width": 4,
+            "Height": 152,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 152.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "rightLine",
+            "X": 54,
+            "Y": 4,
+            "Width": 4,
+            "Height": 152,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 152.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "StereoChain",
+        "Width": 240,
+        "Height": 62,
+        "Components": [
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "stereoCable",
+            "X": 232,
+            "Y": 24,
+            "Width": 8,
+            "Height": 14,
+            "CustomContainerDefinitionName": "StereoCable"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "emptyModuleStereo4",
+            "Width": 58,
+            "Height": 62,
+            "CustomContainerDefinitionName": "EmptyModuleStereo"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "emptyModuleStereo3",
+            "X": 58,
+            "Width": 58,
+            "Height": 62,
+            "CustomContainerDefinitionName": "EmptyModuleStereo"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "emptyModuleStereo2",
+            "X": 116,
+            "Width": 58,
+            "Height": 62,
+            "CustomContainerDefinitionName": "EmptyModuleStereo"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "emptyModuleStereo1",
+            "X": 174,
+            "Width": 58,
+            "Height": 62,
+            "CustomContainerDefinitionName": "EmptyModuleStereo"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "MonoChain",
+        "Width": 240,
+        "Height": 32,
+        "Components": [
+          {
+            "Type": "Line",
+            "Name": "monoCable",
+            "X": 232,
+            "Y": 14,
+            "Width": 8,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 240.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Square"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "emptyModuleMono4",
+            "Width": 58,
+            "Height": 32,
+            "CustomContainerDefinitionName": "EmptyModuleMono"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "emptyModuleMono3",
+            "X": 58,
+            "Width": 58,
+            "Height": 32,
+            "CustomContainerDefinitionName": "EmptyModuleMono"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "emptyModuleMono2",
+            "X": 116,
+            "Width": 58,
+            "Height": 32,
+            "CustomContainerDefinitionName": "EmptyModuleMono"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "emptyModuleMono1",
+            "X": 174,
+            "Width": 58,
+            "Height": 32,
+            "CustomContainerDefinitionName": "EmptyModuleMono"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "SelectIOModule",
+        "Width": 48,
+        "Height": 160,
+        "Components": [
+          {
+            "Type": "Line",
+            "Name": "botLine",
+            "Y": 156,
+            "Width": 48,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "topLine",
+            "Width": 48,
+            "Height": 4,
+            "StartY": 2.0,
+            "EndX": 58.0,
+            "EndY": 2.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "leftLine",
+            "Y": 4,
+            "Width": 4,
+            "Height": 152,
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 152.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          },
+          {
+            "Type": "Line",
+            "Name": "rightLine",
+            "X": 44,
+            "Y": 4,
+            "Width": 4,
+            "Height": 152,
+            "StartX": 2.0,
+            "EndX": 2.0,
+            "EndY": 152.0,
+            "LineWidth": 4.0,
+            "LineEndingStyle": "Butt"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "InModule",
+        "Width": 40,
+        "Height": 152,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "inBox",
+            "Width": 40,
+            "Height": 152,
+            "Color": {
+              "Red": 161,
+              "Green": 161,
+              "Blue": 161
+            },
+            "BorderColor": {
+              "Red": 112,
+              "Green": 112,
+              "Blue": 112
+            },
+            "BorderSize": 3
+          },
+          {
+            "Type": "Shape",
+            "Name": "arrowShape",
+            "X": 3,
+            "Y": 3,
+            "Width": 34,
+            "Height": 146,
+            "Color": {
+              "Red": 38,
+              "Green": 226,
+              "Blue": 255
+            },
+            "Points": [
+              {
+                "X": 34.0
+              },
+              {
+                "Y": 73.0
+              },
+              {
+                "X": 34.0,
+                "Y": 146.0
+              }
+            ],
+            "XScale": 1.0,
+            "YScale": 1.0
+          },
+          {
+            "Type": "TextArea",
+            "Name": "inText",
+            "X": 3,
+            "Y": 66,
+            "Width": 37,
+            "Height": 20,
+            "TextId": "InputTextID",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelMono4",
+            "X": 3,
+            "Y": 133,
+            "Width": 34,
+            "Height": 6,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelMono3",
+            "X": 3,
+            "Y": 93,
+            "Width": 34,
+            "Height": 6,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelMono2",
+            "X": 3,
+            "Y": 53,
+            "Width": 34,
+            "Height": 6,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelMono1",
+            "X": 3,
+            "Y": 13,
+            "Width": 34,
+            "Height": 6,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelStereo2Left",
+            "X": 3,
+            "Y": 114,
+            "Width": 34,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelStereo2Right",
+            "X": 3,
+            "Y": 104,
+            "Width": 34,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelStereo1Left",
+            "X": 3,
+            "Y": 42,
+            "Width": 34,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelStereo1Right",
+            "X": 3,
+            "Y": 32,
+            "Width": 34,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "IOLevel"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "OutModule",
+        "Width": 40,
+        "Height": 152,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "outBox",
+            "Width": 40,
+            "Height": 152,
+            "Color": {
+              "Red": 161,
+              "Green": 161,
+              "Blue": 161
+            },
+            "BorderColor": {
+              "Red": 112,
+              "Green": 112,
+              "Blue": 112
+            },
+            "BorderSize": 3
+          },
+          {
+            "Type": "Shape",
+            "Name": "arrowShape",
+            "X": 3,
+            "Y": 3,
+            "Width": 34,
+            "Height": 146,
+            "Color": {
+              "Red": 38,
+              "Green": 255,
+              "Blue": 150
+            },
+            "Points": [
+              {
+                "X": 34.0
+              },
+              {
+                "Y": 73.0
+              },
+              {
+                "X": 34.0,
+                "Y": 146.0
+              }
+            ],
+            "XScale": 1.0,
+            "YScale": 1.0
+          },
+          {
+            "Type": "TextArea",
+            "Name": "outText",
+            "X": 3,
+            "Y": 66,
+            "Width": 37,
+            "Height": 20,
+            "TextId": "OutputTextID",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelMono4",
+            "X": 3,
+            "Y": 133,
+            "Width": 34,
+            "Height": 6,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelMono3",
+            "X": 3,
+            "Y": 93,
+            "Width": 34,
+            "Height": 6,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelMono2",
+            "X": 3,
+            "Y": 53,
+            "Width": 34,
+            "Height": 6,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelMono1",
+            "X": 3,
+            "Y": 13,
+            "Width": 34,
+            "Height": 6,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelStereo2Left",
+            "X": 3,
+            "Y": 114,
+            "Width": 34,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelStereo2Right",
+            "X": 3,
+            "Y": 104,
+            "Width": 34,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelStereo1Left",
+            "X": 3,
+            "Y": 42,
+            "Width": 34,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "ioLevelStereo1Right",
+            "X": 3,
+            "Y": 32,
+            "Width": 34,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "IOLevel"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "MixModule",
+        "Width": 50,
+        "Height": 152,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "mixBox",
+            "Width": 50,
+            "Height": 152,
+            "Color": {
+              "Red": 127,
+              "Green": 255,
+              "Blue": 122
+            },
+            "BorderColor": {
+              "Red": 17,
+              "Green": 209
+            },
+            "BorderSize": 3
+          },
+          {
+            "Type": "TextArea",
+            "Name": "mixText",
+            "X": 2,
+            "Y": 66,
+            "Width": 48,
+            "Height": 20,
+            "TextId": "MixerTextID",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel4",
+            "X": 3,
+            "Y": 133,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel3",
+            "X": 3,
+            "Y": 93,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel2",
+            "X": 3,
+            "Y": 53,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel1",
+            "X": 3,
+            "Y": 13,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevelStereo4",
+            "X": 3,
+            "Y": 114,
+            "Width": 44,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevelStereo3",
+            "X": 3,
+            "Y": 104,
+            "Width": 44,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevelStereo2",
+            "X": 3,
+            "Y": 42,
+            "Width": 44,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevelStereo1",
+            "X": 3,
+            "Y": 32,
+            "Width": 44,
+            "Height": 6,
+            "Visible": false,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "RecModuleMono",
+        "Width": 50,
+        "Height": 32,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "recBox",
+            "Width": 50,
+            "Height": 32,
+            "Color": {
+              "Red": 255,
+              "Green": 145,
+              "Blue": 145
+            },
+            "BorderColor": {
+              "Red": 235,
+              "Green": 59,
+              "Blue": 59
+            },
+            "BorderSize": 3
+          },
+          {
+            "Type": "TextArea",
+            "Name": "recText",
+            "X": 2,
+            "Y": 9,
+            "Width": 48,
+            "Height": 20,
+            "TextId": "RecorderTextID",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel1",
+            "X": 3,
+            "Y": 3,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "RecModuleStereo",
+        "Width": 50,
+        "Height": 62,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "recBox",
+            "Width": 50,
+            "Height": 62,
+            "Color": {
+              "Red": 255,
+              "Green": 145,
+              "Blue": 145
+            },
+            "BorderColor": {
+              "Red": 235,
+              "Green": 59,
+              "Blue": 59
+            },
+            "BorderSize": 3
+          },
+          {
+            "Type": "TextArea",
+            "Name": "recText",
+            "X": 2,
+            "Y": 29,
+            "Width": 48,
+            "Height": 20,
+            "TextId": "RecorderTextID",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel2",
+            "X": 3,
+            "Y": 13,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel1",
+            "X": 3,
+            "Y": 3,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "LoopModuleMono",
+        "Width": 50,
+        "Height": 32,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "loopBox",
+            "Width": 50,
+            "Height": 32,
+            "Color": {
+              "Red": 232,
+              "Green": 138,
+              "Blue": 255
+            },
+            "BorderColor": {
+              "Red": 196,
+              "Green": 2,
+              "Blue": 199
+            },
+            "BorderSize": 3
+          },
+          {
+            "Type": "TextArea",
+            "Name": "loopText",
+            "X": 1,
+            "Y": 9,
+            "Width": 49,
+            "Height": 20,
+            "TextId": "LooperTextID",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel1",
+            "X": 3,
+            "Y": 3,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "LoopModuleStereo",
+        "Width": 50,
+        "Height": 62,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "loopBox",
+            "Width": 50,
+            "Height": 62,
+            "Color": {
+              "Red": 232,
+              "Green": 138,
+              "Blue": 255
+            },
+            "BorderColor": {
+              "Red": 196,
+              "Green": 2,
+              "Blue": 199
+            },
+            "BorderSize": 3
+          },
+          {
+            "Type": "TextArea",
+            "Name": "loopText",
+            "X": 2,
+            "Y": 29,
+            "Width": 48,
+            "Height": 20,
+            "TextId": "LooperTextID",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel2",
+            "X": 3,
+            "Y": 13,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel1",
+            "X": 3,
+            "Y": 3,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "FXModuleMono",
+        "Width": 50,
+        "Height": 32,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "fxBox",
+            "Width": 50,
+            "Height": 32,
+            "Color": {
+              "Red": 255,
+              "Green": 215,
+              "Blue": 140
+            },
+            "BorderColor": {
+              "Red": 199,
+              "Green": 129
+            },
+            "BorderSize": 3
+          },
+          {
+            "Type": "TextArea",
+            "Name": "fxText",
+            "X": 2,
+            "Y": 9,
+            "Width": 48,
+            "Height": 20,
+            "TextId": "EffectsTextID",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel1",
+            "X": 3,
+            "Y": 3,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "FXModuleStereo",
+        "Width": 50,
+        "Height": 62,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "fxBox",
+            "Width": 50,
+            "Height": 62,
+            "Color": {
+              "Red": 255,
+              "Green": 215,
+              "Blue": 140
+            },
+            "BorderColor": {
+              "Red": 199,
+              "Green": 129
+            },
+            "BorderSize": 3
+          },
+          {
+            "Type": "TextArea",
+            "Name": "fxText",
+            "X": 2,
+            "Y": 29,
+            "Width": 48,
+            "Height": 20,
+            "TextId": "EffectsTextID",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel2",
+            "X": 3,
+            "Y": 13,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moduleLevel1",
+            "X": 3,
+            "Y": 3,
+            "Width": 44,
+            "Height": 6,
+            "CustomContainerDefinitionName": "ModuleLevel"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "IOLevel",
+        "Width": 34,
+        "Height": 6,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Width": 34,
+            "Height": 6
+          },
+          {
+            "Type": "Box",
+            "Name": "level1",
+            "X": 1,
+            "Y": 1,
+            "Width": 5,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Green": 255,
+              "Blue": 21
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "level2",
+            "X": 7,
+            "Y": 1,
+            "Width": 5,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Green": 255,
+              "Blue": 21
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "level3",
+            "X": 13,
+            "Y": 1,
+            "Width": 5,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Green": 255,
+              "Blue": 21
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "level4",
+            "X": 19,
+            "Y": 1,
+            "Width": 4,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Red": 255,
+              "Green": 238
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "level5",
+            "X": 24,
+            "Y": 1,
+            "Width": 4,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Red": 255,
+              "Green": 238
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "level6",
+            "X": 29,
+            "Y": 1,
+            "Width": 4,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Red": 255
+            }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "ModuleLevel",
+        "Width": 44,
+        "Height": 6,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Width": 44,
+            "Height": 6
+          },
+          {
+            "Type": "Box",
+            "Name": "level1",
+            "X": 1,
+            "Y": 1,
+            "Width": 6,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Green": 255,
+              "Blue": 21
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "level2",
+            "X": 8,
+            "Y": 1,
+            "Width": 6,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Green": 255,
+              "Blue": 21
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "level3",
+            "X": 15,
+            "Y": 1,
+            "Width": 6,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Green": 255,
+              "Blue": 21
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "level4",
+            "X": 22,
+            "Y": 1,
+            "Width": 6,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Red": 255,
+              "Green": 238
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "level5",
+            "X": 29,
+            "Y": 1,
+            "Width": 6,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Red": 255,
+              "Green": 238
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "level6",
+            "X": 36,
+            "Y": 1,
+            "Width": 7,
+            "Height": 4,
+            "Visible": false,
+            "Color": {
+              "Red": 255
+            }
+          }
+        ],
+        "Interactions": []
+      }
+    ],
+    "Name": "MyApplication",
+    "Resolution": {
+      "Width": 320,
+      "Height": 240
+    },
+    "SelectedColorDepth": 16,
+    "StartupScreenName": "LogoStartup",
+    "SelectedStartupLanguage": "GB",
+    "TouchGfxPath": "../Middlewares/ST/touchgfx",
+    "UIPath": ".",
+    "AvailableColorDepths": [
+      16
+    ],
+    "AvailableLCDs": {
+      "16": "LCD16bpp"
+    },
+    "AvailableSections": [
+      "ExtFlashSection",
+      "IntFlashSection"
+    ],
+    "AvailableResolutions": [
+      {
+        "Width": 320,
+        "Height": 240
+      }
+    ],
+    "PhysicalButtons": [],
+    "FrameworkFeatures": {
+      "LCD16bpp": {
+        "Id": "LCD16bpp",
+        "IsEnabled": true
+      }
+    },
+    "GenerateAssetsCommand": "make -f simulator/gcc/Makefile assets -j8",
+    "PostGenerateCommand": "touchgfx update_project --project-file=simulator/msvs/Application.vcxproj",
+    "PostGenerateTargetCommand": "touchgfx update_project",
+    "CompileSimulatorCommand": "make -f simulator/gcc/Makefile -j8",
+    "RunSimulatorCommand": "build\\bin\\simulator.exe",
+    "LandscapeSkinX": 0,
+    "LandscapeSkinY": 0,
+    "PortraitSkinX": 0,
+    "PortraitSkinY": 0,
+    "DisplayOrientation": "Landscape",
+    "Family": "STM32H7",
+    "SubFamily": "STM32H743/753",
+    "Toolchain": "STM32CubeIDE",
+    "Platform": "m7",
+    "ProjectFile": "../FXcursion_Interface.ioc",
+    "OptionalComponentsRoot": "../Middlewares/ST/touchgfx_components",
+    "OptionalComponents": [],
+    "AdditionalFeatures": []
+  },
+  "Version": "4.25.0"
+}
