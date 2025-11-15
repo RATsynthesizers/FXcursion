@@ -24,10 +24,11 @@
 
 /* USER CODE BEGIN TouchGFXHAL.cpp */
 #include "ili9341.h"
-#include "w9812g6jh.h"
-extern "C" {
-	void LCD_IO_WriteMultipleData(uint16_t* pData, uint32_t Size);
-}
+#include "mdma.h"
+
+extern MDMA_HandleTypeDef hmdma_mdma_channel0_sw_0;
+#define DISPLAY_WIDTH   (HAL::DISPLAY_WIDTH)
+#define FMC_DATA_ADDRESS 0x60800000UL
 
 using namespace touchgfx;
 
@@ -81,29 +82,57 @@ void TouchGFXHAL::setTFTFrameBuffer(uint16_t* address)
  */
 void TouchGFXHAL::flushFrameBuffer(const touchgfx::Rect& rect)
 {
-    // Calling parent implementation of flushFrameBuffer(const touchgfx::Rect& rect).
-    //
-    // To overwrite the generated implementation, omit the call to the parent function
-    // and implement the needed functionality here.
-    // Please note, HAL::flushFrameBuffer(const touchgfx::Rect& rect) must
-    // be called to notify the touchgfx framework that flush has been performed.
-    // To calculate the start address of rect,
-    // use advanceFrameBufferToRect(uint8_t* fbPtr, const touchgfx::Rect& rect)
-    // defined in TouchGFXGeneratedHAL.cpp
+    HAL_StatusTypeDef status;
 
-	uint16_t* ptr;
-	    int16_t height;
-		lcdSetWindow(rect.x, rect.y, rect.x+rect.width-1, rect.y+rect.height-1);
-	    // This can be accelerated using regular DMA hardware
-	    for (height = 0; height < rect.height ; height++)
-	    {
-	        ptr = getClientFrameBuffer() + rect.x + (height + rect.y) * HAL::DISPLAY_WIDTH;
-	        LCD_IO_WriteMultipleData(ptr, rect.width);
-	    }
+    // 1. Calculate the starting address of the dirty rectangle in SDRAM (Source)
+    // Address in bytes:
+    uint32_t src_addr = (uint32_t)(getClientFrameBuffer() + (rect.y * DISPLAY_WIDTH + rect.x)); // * 2 for 16-bit pixels
 
-	    //lcdSetWindow(0, 0, 320-1, 240-1); // force whole framebuffer drawing
-	    //LCD_IO_WriteMultipleData((uint16_t*)(0xC0000000), 320*240);
+    // 2. Set the window commands (MANDATORY CPU STEP)
+    lcdSetWindow(rect.x, rect.y, rect.x + rect.width - 1, rect.y + rect.height - 1);
 
+    // 3. Configure the 2D parameters (Offsets and Counts) in the MDMA handle
+    hmdma_mdma_channel0_sw_0.Init.BufferTransferLength = rect.width * 2;
+    // Source Block Offset (Pitch): Skips the padding bytes in SDRAM
+    hmdma_mdma_channel0_sw_0.Init.SourceBlockAddressOffset = (DISPLAY_WIDTH - rect.width) * 2;
+    // Destination is fixed, so offset is zero
+    hmdma_mdma_channel0_sw_0.Init.DestBlockAddressOffset = 0;
+
+    // ******* CRUCIAL: Re-initialize to apply offsets to the TCB *******
+    if (HAL_MDMA_Init(&hmdma_mdma_channel0_sw_0) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    // We pass the total pixel count as BlockDataLength and 1 as BlockCount,
+    // BUT the MDMA uses the pitch/offset settings configured above
+    // combined with the internal TCB mechanism to execute the 2D transfer.
+    status = HAL_MDMA_Start(&hmdma_mdma_channel0_sw_0,
+                            src_addr,
+                            FMC_DATA_ADDRESS,
+                            rect.width * 2,       // BlockDataLength (TDC, width)
+                            rect.height);     // BlockCount (TBC, height)
+
+    if (status != HAL_OK)
+    {
+        // Handle error: MDMA failed to start
+        Error_Handler();
+    }
+
+    // 5. Poll for Transfer Completion (Blocking)
+    // We wait for the completion of the FULL transfer (all lines/blocks).
+    status = HAL_MDMA_PollForTransfer(&hmdma_mdma_channel0_sw_0,
+                                     HAL_MDMA_FULL_TRANSFER,
+                                     1000); // 100ms Timeout
+
+    if (status != HAL_OK)
+    {
+        // Handle error: MDMA timeout or error during transfer
+        HAL_MDMA_Abort(&hmdma_mdma_channel0_sw_0); // Abort transfer if it failed
+        Error_Handler();
+    }
+
+    // 6. Notify TouchGFX
     TouchGFXGeneratedHAL::flushFrameBuffer(rect);
 }
 

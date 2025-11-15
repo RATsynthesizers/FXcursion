@@ -49,15 +49,5 @@ void W9812G6JH_Init(SDRAM_HandleTypeDef *hsdram) {
 	HAL_Delay(1);
 
 	// Riddle  COUNT = (SDRAM refresh period ⁄ Number of rows) – 20
-	hsdram->Instance->SDRTR |= ((uint32_t)((SDRAM_RFR_COUNT)<< 1));
-}
-
-void W9812G6JH_Write(uint32_t* TxBuf, uint32_t size, uint32_t ramAddr) {
-	for (uint32_t i = 0; i < size; i++)
-		_RAM_WRITE32(TxBuf[i], ramAddr + 4*i);
-}
-
-void W9812G6JH_Read(uint32_t* RxBuf, uint32_t size, uint32_t ramAddr) {
-	for (uint32_t i = 0; i < size; i++)
-		*(RxBuf + i) = _RAM_READ32(ramAddr + 4 * i);
+	hsdram->Instance->SDRTR |= ((uint32_t)((SDRAM_RFR_COUNT - 1)<< 1));
 }

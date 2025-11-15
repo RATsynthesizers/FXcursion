@@ -55,6 +55,7 @@
 #include "crc.h"
 #include "dma.h"
 #include "dma2d.h"
+#include "mdma.h"
 #include "fatfs.h"
 #include "i2c.h"
 #include "jpeg.h"
@@ -325,31 +326,21 @@ void init_all(void)
     MX_FMC_Init();
     MX_CRC_Init();
     MX_DMA2D_Init();
+    MX_MDMA_Init();
     MX_FATFS_Init();
     MX_JPEG_Init();
     MX_RTC_Init();
 
 
-    /* Initialize display */
-
+    /* Initialize SDRAM */
     W9812G6JH_Init(&hsdram1);
 
-    HAL_Delay(10);
-
+    /* Initialize display */
     lcdInit();
-    lcdSetWindow(0, 0, 320-1, 240-1); // force whole framebuffer drawing
-
-//    uint32_t b = 0xFFBFAFFF;
-//    _RAM_WRITE32(b, 0 );
-//    uint32_t a = _RAM_READ32(0);
-
-//    memset((U8*) 0xC0000000, 0xA9, 0x1000000);
-
-    memset((U8*) 0xC0000000, 0x00, 0x10000);
-//    memcpy(&a, (U8*) 0xC0000004, 4);
 
     /* Initialize TouchGFX */
     MX_TouchGFX_Init();
+
     /* Create initialization thread */
     CreateInitThread();
 }
@@ -404,12 +395,6 @@ static void InitThread(void const *argument)
 //        printf("PIXEL initialize failed!\n");
 //    }
 
-	char test_txt[] = "> HELLO WORLD!";
-	  lcdTest();
-	  lcdSetCursor(50,100);
-	  lcdSetTextFont(&Font12);
-	  lcdPrintf(test_txt);
-	//memset((uint8_t*) LCD_BASE1, 0, 0x5000);
 	flag = 1;
 
 	/* definition and creation of TouchGFXTask */
@@ -634,7 +619,7 @@ static void MPU_Config(void)
 	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
 	MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
 	MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
-	MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
+	MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
 
 	HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
@@ -644,13 +629,13 @@ static void MPU_Config(void)
 	MPU_InitStruct.Enable = MPU_REGION_ENABLE;
 	MPU_InitStruct.Number = MPU_REGION_NUMBER4;
 	MPU_InitStruct.BaseAddress = 0xC0000000;
-	MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_64MB;
 	MPU_InitStruct.SubRegionDisable = 0x0;
 	MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
 	MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
 	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
-	MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
-	MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
+	MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
+	MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
 	MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
 
 	HAL_MPU_ConfigRegion(&MPU_InitStruct);

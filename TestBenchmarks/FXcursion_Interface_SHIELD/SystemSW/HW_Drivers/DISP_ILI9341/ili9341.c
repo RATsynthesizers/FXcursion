@@ -922,6 +922,9 @@ void lcdSetCursor(unsigned short x, unsigned short y) {
  *
  * \return void
  */
+
+#include "cmsis_os.h"
+
 void lcdSetWindow(unsigned short x0, unsigned short y0, unsigned short x1,
 		unsigned short y1) {
 	lcdWriteCommand(ILI9341_COLADDRSET);
@@ -934,6 +937,7 @@ void lcdSetWindow(unsigned short x0, unsigned short y0, unsigned short x1,
 	lcdWriteData(y0 & 0xFF);
 	lcdWriteData((y1 >> 8) & 0xFF);
 	lcdWriteData(y1 & 0xFF);
+	osDelay(5);
 	lcdWriteCommand(ILI9341_MEMORYWRITE);
 }
 

@@ -76,7 +76,7 @@ timings) in the FMC_SDTR1 register.
 #define SDRAM_MODEREG_WRITEBURST_MODE_SINGLE     ((uint16_t)0x0200)
 
 #define SDRAM_BANK_ADDR                 ((uint32_t)0xC0000000)
-#define SDRAM_RFR_COUNT					1600 // clock cycles to refresh
+#define SDRAM_RFR_COUNT					1350 // clock cycles to refresh
 
 #define BUFFER_SIZE         ((uint32_t)0x1000000) // 16M bits
 #define WRITE_READ_ADDR     ((uint32_t)0x0000000)

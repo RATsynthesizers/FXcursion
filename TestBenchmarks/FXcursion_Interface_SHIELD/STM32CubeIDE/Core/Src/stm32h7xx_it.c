@@ -66,6 +66,7 @@ extern SDRAM_HandleTypeDef hsdram2;
 extern I2C_HandleTypeDef hi2c2;
 extern I2C_HandleTypeDef hi2c4;
 extern JPEG_HandleTypeDef hjpeg;
+extern MDMA_HandleTypeDef hmdma_mdma_channel0_sw_0;
 extern QSPI_HandleTypeDef hqspi;
 extern SD_HandleTypeDef hsd1;
 extern DMA_HandleTypeDef hdma_spi1_rx;
@@ -716,6 +717,20 @@ void JPEG_IRQHandler(void)
   /* USER CODE BEGIN JPEG_IRQn 1 */
 
   /* USER CODE END JPEG_IRQn 1 */
+}
+
+/**
+  * @brief This function handles MDMA global interrupt.
+  */
+void MDMA_IRQHandler(void)
+{
+  /* USER CODE BEGIN MDMA_IRQn 0 */
+
+  /* USER CODE END MDMA_IRQn 0 */
+  HAL_MDMA_IRQHandler(&hmdma_mdma_channel0_sw_0);
+  /* USER CODE BEGIN MDMA_IRQn 1 */
+
+  /* USER CODE END MDMA_IRQn 1 */
 }
 
 /**

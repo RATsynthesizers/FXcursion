@@ -90,6 +90,7 @@ void OTG_FS_EP1_IN_IRQHandler(void);
 void OTG_FS_IRQHandler(void);
 void TIM17_IRQHandler(void);
 void JPEG_IRQHandler(void);
+void MDMA_IRQHandler(void);
 void HSEM1_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 

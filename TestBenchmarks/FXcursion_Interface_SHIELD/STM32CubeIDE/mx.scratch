@@ -3,7 +3,7 @@
   <FileVersion>3.0</FileVersion>
   <Workspace>
     <WorkspaceType>Single-project</WorkspaceType>
-    <WorkspacePath>C:\Users\ga\Documents\RAT_Sythesizers\FXcursion_Interface_SHIELD\STM32CubeIDE\</WorkspacePath>
+    <WorkspacePath>C:\Users\ga\Documents\FXcursion\TestBenchmarks\FXcursion_Interface_SHIELD\STM32CubeIDE\</WorkspacePath>
     <underRoot>true</underRoot>
     <TrustZone>0</TrustZone>
     <HAL_Driver>C:\Users\ga\STM32Cube\Repository\STM32Cube_FW_H7_V1.12.1</HAL_Driver>
