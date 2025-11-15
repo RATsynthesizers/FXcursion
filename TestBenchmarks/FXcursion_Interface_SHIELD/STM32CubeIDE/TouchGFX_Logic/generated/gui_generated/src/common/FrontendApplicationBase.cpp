@@ -48,13 +48,13 @@ void FrontendApplicationBase::gotoLogoStartupScreenNoTransitionImpl()
 
 // System
 
-void FrontendApplicationBase::gotoSystemScreenBlockTransition()
+void FrontendApplicationBase::gotoSystemScreenCoverTransitionEast()
 {
-    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoSystemScreenBlockTransitionImpl);
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoSystemScreenCoverTransitionEastImpl);
     pendingScreenTransitionCallback = &transitionCallback;
 }
 
-void FrontendApplicationBase::gotoSystemScreenBlockTransitionImpl()
+void FrontendApplicationBase::gotoSystemScreenCoverTransitionEastImpl()
 {
-    touchgfx::makeTransition<SystemView, SystemPresenter, touchgfx::BlockTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+    touchgfx::makeTransition<SystemView, SystemPresenter, touchgfx::CoverTransition<EAST>, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
 }

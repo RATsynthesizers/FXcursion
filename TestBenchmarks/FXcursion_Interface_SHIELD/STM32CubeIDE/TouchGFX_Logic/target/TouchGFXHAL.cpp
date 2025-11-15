@@ -25,22 +25,37 @@
 /* USER CODE BEGIN TouchGFXHAL.cpp */
 #include "ili9341.h"
 #include "mdma.h"
+#include "cmsis_os.h"
 
-extern MDMA_HandleTypeDef hmdma_mdma_channel0_sw_0;
 #define DISPLAY_WIDTH   (HAL::DISPLAY_WIDTH)
 #define FMC_DATA_ADDRESS 0x60800000UL
 
+
+extern MDMA_HandleTypeDef hmdma_mdma_channel0_sw_0;
+osSemaphoreId mdmaSemaphoreHandle;
+
 using namespace touchgfx;
+
+static void HAL_MDMA_XferCpltCallback(MDMA_HandleTypeDef *hmdma);
+static void HAL_MDMA_XferErrorCallback(MDMA_HandleTypeDef *hmdma);
+
+
 
 void TouchGFXHAL::initialize()
 {
-    // Calling parent implementation of initialize().
-    //
-    // To overwrite the generated implementation, omit the call to the parent function
-    // and implement the needed functionality here.
-    // Please note, HAL::initialize() must be called to initialize the framework.
+	// Calling parent implementation of initialize().
+	//
+	// To overwrite the generated implementation, omit the call to the parent function
+	// and implement the needed functionality here.
+	// Please note, HAL::initialize() must be called to initialize the framework.
 
-    TouchGFXGeneratedHAL::initialize();
+	osSemaphoreDef(mdmaSemaphore);
+	mdmaSemaphoreHandle = osSemaphoreCreate(osSemaphore(mdmaSemaphore), 1);
+
+	HAL_MDMA_RegisterCallback(&hmdma_mdma_channel0_sw_0, HAL_MDMA_XFER_CPLT_CB_ID, HAL_MDMA_XferCpltCallback);
+	HAL_MDMA_RegisterCallback(&hmdma_mdma_channel0_sw_0, HAL_MDMA_XFER_ERROR_CB_ID, HAL_MDMA_XferErrorCallback);
+
+	TouchGFXGeneratedHAL::initialize();
 }
 
 /**
@@ -95,42 +110,30 @@ void TouchGFXHAL::flushFrameBuffer(const touchgfx::Rect& rect)
     hmdma_mdma_channel0_sw_0.Init.BufferTransferLength = rect.width * 2;
     // Source Block Offset (Pitch): Skips the padding bytes in SDRAM
     hmdma_mdma_channel0_sw_0.Init.SourceBlockAddressOffset = (DISPLAY_WIDTH - rect.width) * 2;
-    // Destination is fixed, so offset is zero
-    hmdma_mdma_channel0_sw_0.Init.DestBlockAddressOffset = 0;
 
     // ******* CRUCIAL: Re-initialize to apply offsets to the TCB *******
     if (HAL_MDMA_Init(&hmdma_mdma_channel0_sw_0) != HAL_OK)
     {
-        Error_Handler();
+    	// Handle error: MDMA failed to init
+		__NOP();
     }
 
     // We pass the total pixel count as BlockDataLength and 1 as BlockCount,
     // BUT the MDMA uses the pitch/offset settings configured above
     // combined with the internal TCB mechanism to execute the 2D transfer.
-    status = HAL_MDMA_Start(&hmdma_mdma_channel0_sw_0,
-                            src_addr,
-                            FMC_DATA_ADDRESS,
-                            rect.width * 2,       // BlockDataLength (TDC, width)
-                            rect.height);     // BlockCount (TBC, height)
+    status = HAL_MDMA_Start_IT(&hmdma_mdma_channel0_sw_0,
+                               src_addr,
+                               FMC_DATA_ADDRESS,
+                               rect.width * 2,      // BlockDataLength (TDC, width)
+                               rect.height);		// BlockCount (TBC, height)
 
     if (status != HAL_OK)
     {
         // Handle error: MDMA failed to start
-        Error_Handler();
+        __NOP();
     }
 
-    // 5. Poll for Transfer Completion (Blocking)
-    // We wait for the completion of the FULL transfer (all lines/blocks).
-    status = HAL_MDMA_PollForTransfer(&hmdma_mdma_channel0_sw_0,
-                                     HAL_MDMA_FULL_TRANSFER,
-                                     1000); // 100ms Timeout
-
-    if (status != HAL_OK)
-    {
-        // Handle error: MDMA timeout or error during transfer
-        HAL_MDMA_Abort(&hmdma_mdma_channel0_sw_0); // Abort transfer if it failed
-        Error_Handler();
-    }
+    osSemaphoreWait(mdmaSemaphoreHandle, osWaitForever);
 
     // 6. Notify TouchGFX
     TouchGFXGeneratedHAL::flushFrameBuffer(rect);
@@ -203,6 +206,27 @@ bool TouchGFXHAL::beginFrame()
 void TouchGFXHAL::endFrame()
 {
     TouchGFXGeneratedHAL::endFrame();
+}
+
+// Called when the MDMA transfer is fully complete
+void HAL_MDMA_XferCpltCallback(MDMA_HandleTypeDef *hmdma)
+{
+    if (hmdma->Instance == MDMA_Channel0)
+    {
+        // Release the semaphore to unblock the waiting TouchGFX thread
+        osSemaphoreRelease(mdmaSemaphoreHandle);
+    }
+}
+
+// Optional: Implement the Error callback in case of an issue
+void HAL_MDMA_XferErrorCallback(MDMA_HandleTypeDef *hmdma)
+{
+    if (hmdma->Instance == MDMA_Channel0)
+    {
+        // Handle error: abort the MDMA and still release the semaphore
+        HAL_MDMA_Abort(hmdma);
+        osSemaphoreRelease(mdmaSemaphoreHandle);
+    }
 }
 
 /* USER CODE END TouchGFXHAL.cpp */

@@ -207,6 +207,22 @@ void __attribute__((optimize("O0"))) lcdInit(void) {
 
 	lcdWriteCommand(ILI9341_MEMORYWRITE);
 
+	lcdWriteCommand(ILI9341_COLADDRSET);
+	lcdWriteData((0 >> 8) & 0xFF);
+	lcdWriteData(0 & 0xFF);
+	lcdWriteData((319 >> 8) & 0xFF);
+	lcdWriteData(319 & 0xFF);
+	lcdWriteCommand(ILI9341_PAGEADDRSET);
+	lcdWriteData((0 >> 8) & 0xFF);
+	lcdWriteData(0 & 0xFF);
+	lcdWriteData((239 >> 8) & 0xFF);
+	lcdWriteData(239 & 0xFF);
+	lcdWriteCommand(ILI9341_MEMORYWRITE);
+	int dimensions = lcdProperties.width * lcdProperties.height;
+	while (dimensions--) {
+		lcdWriteData(0);
+	}
+
 }
 
 void lcdTest(void) {

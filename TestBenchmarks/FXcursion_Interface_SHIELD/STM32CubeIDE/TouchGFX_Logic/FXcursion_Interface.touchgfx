@@ -37,9 +37,9 @@
             "Action": {
               "Type": "ActionFade",
               "Alpha": 0,
-              "Easing": "Linear",
-              "EasingOption": "In",
-              "Duration": 7000,
+              "Easing": "Cubic",
+              "EasingOption": "InOut",
+              "Duration": 3000,
               "AnimationDelay": 2000,
               "ActionComponent": "logoImage"
             }
@@ -53,7 +53,8 @@
             },
             "Action": {
               "Type": "ActionGotoScreen",
-              "ScreenTransitionType": "ScreenTransitionBlock",
+              "ScreenTransitionType": "ScreenTransitionCover",
+              "ScreenTransitionDirection": "East",
               "ActionComponent": "System"
             }
           }

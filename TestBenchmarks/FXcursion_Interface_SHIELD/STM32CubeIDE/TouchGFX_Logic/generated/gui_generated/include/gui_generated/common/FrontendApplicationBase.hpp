@@ -24,7 +24,7 @@ public:
     void gotoLogoStartupScreenNoTransition();
 
     // System
-    void gotoSystemScreenBlockTransition();
+    void gotoSystemScreenCoverTransitionEast();
 
 protected:
     touchgfx::Callback<FrontendApplicationBase> transitionCallback;
@@ -35,7 +35,7 @@ protected:
     void gotoLogoStartupScreenNoTransitionImpl();
 
     // System
-    void gotoSystemScreenBlockTransitionImpl();
+    void gotoSystemScreenCoverTransitionEastImpl();
 };
 
 #endif // FRONTENDAPPLICATIONBASE_HPP
