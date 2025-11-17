@@ -15,12 +15,14 @@ public:
         model = m;
     }
 
-    virtual void encParam_action(uint8_t id, int8_t scrollAmount) = 0;
-    virtual void encSelect_action(int8_t scrollAmount) = 0;
-    virtual void btnYES_action(void) = 0;
-    virtual void btnNO_action(void) = 0;
-    virtual void btnUP_action(void) = 0;
-    virtual void btnDOWN_action(void) = 0;
+    virtual void btnYesUpdate(void) = 0;
+    virtual void btnNoUpdate(void) = 0;
+    virtual void btnUpUpdate(void) = 0;
+    virtual void btnDownUpdate(void) = 0;
+    virtual void btnFootUpdate(U8 nID) = 0;
+
+    virtual void encMenuUpdate(S8 nValue) = 0;
+    virtual void encParamUpdate(U8 nID, S8 nValue) = 0;
 protected:
     Model* model;
 };

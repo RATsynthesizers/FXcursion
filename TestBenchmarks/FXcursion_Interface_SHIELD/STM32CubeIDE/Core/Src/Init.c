@@ -31,26 +31,6 @@
 
 #include "touchgfx_wrapper.h"
 
-/*
-
-// Get pixel driver interface
-#include "pixel_drv.h"
-
-// Get pub-sub interface
-#include "pubsub.h"
-
-// Get settings module interface
-#include "ecuid.h"
-
-// Get settings component interface
-#include "Settings.h"
-
-// Get JSON library parser interface
-#include "jsmn_api.h"
-
-*/
-
-
 #include "adc.h"
 #include "crc.h"
 #include "dma.h"
@@ -126,8 +106,10 @@ static void SystemClock_Config(void);
 static void MPU_Config(void);
 /// Creates initialization thread */
 static void CreateInitThread(void);
+
 /// Init thread
 static void InitThread(void const *argument);
+
 #ifdef DEBUG
 /// Os monitoring thread
 static void MonitoringThread(void const *argument);
@@ -383,12 +365,7 @@ uint8_t flag = 0;
 
 static void InitThread(void const *argument)
 {
-//    /* Initialize pubsub service */
-//    if (RESULT_NOT_OK == PUBSUB_Init())
-//    {
-//        printf("PUBSUB init failed!\n");
-//    }
-//
+
 //    /* Initialize pixels */
 //    if (RESULT_OK != PIXEL_Init())
 //    {
@@ -419,10 +396,9 @@ static void InitThread(void const *argument)
 }
 
 
-
 #ifdef DEBUG
 /**
- * @fn    void MonitoringThread(void)
+ * @fn    void MonitoringThread(void const *argument)
  *
  * @brief Os monitoring thread.
  *

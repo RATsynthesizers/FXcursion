@@ -11,6 +11,8 @@
 #include <touchgfx/widgets/canvas/Line.hpp>
 #include <touchgfx/widgets/canvas/PainterRGB565.hpp>
 #include <touchgfx/widgets/BoxWithBorder.hpp>
+#include <gui/containers/SelectModuleStereo.hpp>
+#include <gui/containers/MoveModuleStereo.hpp>
 
 class EmptyModuleStereoBase : public touchgfx::Container
 {
@@ -34,6 +36,8 @@ protected:
     touchgfx::Line verticalLine;
     touchgfx::PainterRGB565 verticalLinePainter;
     touchgfx::BoxWithBorder emptyBox;
+    SelectModuleStereo selectModuleStereo;
+    MoveModuleStereo moveModuleStereo;
 
 private:
 

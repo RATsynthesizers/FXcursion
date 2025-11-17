@@ -32,11 +32,37 @@
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
+#define PUBSUB_TOPIC_UI		(char* const)"ui_survey"
+
 /***************************************************************************************************
 * Declarations of global (public) data types
 ***************************************************************************************************/
 
-/// None.
+typedef enum enUIObjectType
+{
+	BTN_YES		= 0,
+	BTN_NO		= 1,
+	BTN_UP		= 2,
+	BTN_DOWN	= 3,
+	BTN_FOOT	= 4,
+	BTN_FUNC	= 5,
+	BTN_PARAM	= 6,
+	BTN_PLAY	= 7,
+	BTN_STOP	= 8,
+	BTN_REC		= 9,
+
+	ENC_MENU	= 10,
+	ENC_PARAM	= 11,
+
+} UIObjectType;
+
+typedef struct stUIObjectInfo
+{
+	UIObjectType eName;
+	U8 nID;
+	S8 nValue;
+
+} UIObjectInfo_t;
 
 /***************************************************************************************************
 * Declarations of global (public) variables

@@ -11,6 +11,8 @@
 #include <touchgfx/widgets/canvas/PainterRGB565.hpp>
 #include <gui/containers/StereoCable.hpp>
 #include <touchgfx/widgets/BoxWithBorder.hpp>
+#include <gui/containers/SelectModuleMono.hpp>
+#include <gui/containers/MoveModuleMono.hpp>
 
 class EmptyModuleMonoBase : public touchgfx::Container
 {
@@ -38,6 +40,8 @@ protected:
     touchgfx::Line verticalLine;
     touchgfx::PainterRGB565 verticalLinePainter;
     touchgfx::BoxWithBorder emptyBox;
+    SelectModuleMono selectModuleMono;
+    MoveModuleMono moveModuleMono;
 
 private:
 

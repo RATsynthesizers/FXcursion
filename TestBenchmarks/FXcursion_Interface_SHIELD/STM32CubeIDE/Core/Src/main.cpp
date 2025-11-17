@@ -1,5 +1,6 @@
 
 #include "main.h"
+#include "UISurvey.hpp"
 
 extern "C" {
 // Get RTOS CMSIS-OS interface
@@ -30,6 +31,7 @@ const char btldr_code[] __attribute__ ((section(".btldr_code"), used)) =
 int main(void)
 {
     init_all();
+    UISurveyInit();
 
     /* Start scheduler */
     osKernelStart();

@@ -6,8 +6,8 @@
 StereoChainBase::StereoChainBase()
 {
     setWidth(240);
-    setHeight(62);
-    stereoCable.setXY(232, 24);
+    setHeight(70);
+    stereoCable.setXY(232, 28);
     add(stereoCable);
 
     emptyModuleStereo4.setXY(0, 0);

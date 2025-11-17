@@ -99,6 +99,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Services/JPEG}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Services/pubsub}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Services/pixel_drv}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/assert}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/FreeRTOS/Source/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/FreeRTOS/Source/CMSIS_RTOS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/FreeRTOS/Source/portable/GCC/ARM_CM4F}&quot;"/>
@@ -141,6 +142,7 @@
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32H7xx/Include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/ApplicationSW/Wrappers}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/ApplicationSW/UISurvey}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Services/FATFS/Target}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Services/FATFS/App}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/TouchGFX_Logic/App}&quot;"/>
@@ -161,6 +163,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/HW_Drivers/LED_WS2812}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/HW_Drivers/DISP_ILI9341}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/HW_Drivers/W9812G6JH}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/HW_Drivers/EncDriver}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/HW_Drivers/ButtonDriver}&quot;"/>
 									<listOptionValue builtIn="false" value="../../SystemSW/Lib/TouchGFX/framework/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/fonts/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/gui_generated/include"/>
@@ -248,9 +252,9 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Config"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry excluding="CMSIS/Device/ST/STM32H7xx/Source" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry excluding="HW_Drivers/LED_WS2812|Services/pubsub|Services/pixel_drv|Lib/TouchGFX/framework/source/platform/driver/touch/SDL2TouchController.cpp|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/OSWrappers.cpp|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/HALSDL2.cpp|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/HALSDL2_icon.cpp|Lib/TouchGFX/framework/source/touchgfx/widgets|Lib/TouchGFX/framework/source/touchgfx/containers|Lib/TouchGFX/os/OSWrappers.cpp|Lib/TouchGFX/os/OSWrappers_cmsis.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="SystemSW"/>
+						<entry excluding="Services/pixel_drv|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/HALSDL2.cpp|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/OSWrappers.cpp|Lib/TouchGFX/framework/source/platform/driver/touch/SDL2TouchController.cpp|Lib/TouchGFX/framework/source/touchgfx/widgets|Lib/TouchGFX/os/OSWrappers_cmsis.cpp|HW_Drivers/LED_WS2812|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/HALSDL2_icon.cpp|Lib/TouchGFX/framework/source/touchgfx/containers|Lib/TouchGFX/os/OSWrappers.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="SystemSW"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="TouchGFX"/>
-						<entry excluding="generated/simulator/src/mainBase.cpp|generated/simulator/src/video/SoftwareMJPEGDecoder.cpp|simulator/main.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="TouchGFX_Logic"/>
+						<entry excluding="simulator/main.cpp|generated/simulator/src/mainBase.cpp|generated/simulator/src/video/SoftwareMJPEGDecoder.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="TouchGFX_Logic"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="UtilitySW"/>
 					</sourceEntries>
 				</configuration>
@@ -453,9 +457,9 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="ApplicationSW"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry excluding="CMSIS/Device/ST/STM32H7xx/Source" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry excluding="HW_Drivers/LED_WS2812|Services/pubsub|Services/pixel_drv|Lib/TouchGFX/framework/source/platform/driver/touch/SDL2TouchController.cpp|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/OSWrappers.cpp|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/HALSDL2.cpp|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/HALSDL2_icon.cpp|Lib/TouchGFX/framework/source/touchgfx/widgets|Lib/TouchGFX/framework/source/touchgfx/containers|Lib/TouchGFX/os/OSWrappers.cpp|Lib/TouchGFX/os/OSWrappers_cmsis.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="SystemSW"/>
+						<entry excluding="Services/pixel_drv|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/HALSDL2.cpp|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/OSWrappers.cpp|Lib/TouchGFX/framework/source/platform/driver/touch/SDL2TouchController.cpp|Lib/TouchGFX/framework/source/touchgfx/widgets|Lib/TouchGFX/os/OSWrappers_cmsis.cpp|HW_Drivers/LED_WS2812|Lib/TouchGFX/framework/source/platform/hal/simulator/sdl2/HALSDL2_icon.cpp|Lib/TouchGFX/framework/source/touchgfx/containers|Lib/TouchGFX/os/OSWrappers.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="SystemSW"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="TouchGFX"/>
-						<entry excluding="generated/simulator/src/mainBase.cpp|generated/simulator/src/video/SoftwareMJPEGDecoder.cpp|simulator/main.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="TouchGFX_Logic"/>
+						<entry excluding="simulator/main.cpp|generated/simulator/src/mainBase.cpp|generated/simulator/src/video/SoftwareMJPEGDecoder.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="TouchGFX_Logic"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="UtilitySW"/>
 					</sourceEntries>
 				</configuration>

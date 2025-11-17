@@ -77,9 +77,19 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>SystemSW/HW_Drivers/ButtonDriver</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC/HW_Drivers/ButtonDriver</locationURI>
+		</link>
+		<link>
 			<name>SystemSW/HW_Drivers/DISP_ILI9341</name>
 			<type>2</type>
 			<locationURI>SYSTEM_SW_LOC/HW_Drivers/DISP_ILI9341</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/HW_Drivers/EncDriver</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC/HW_Drivers/EncDriver</locationURI>
 		</link>
 		<link>
 			<name>SystemSW/HW_Drivers/LED_WS2812</name>
@@ -110,6 +120,11 @@
 			<name>SystemSW/Lib/UsbDeviceLibrary</name>
 			<type>2</type>
 			<locationURI>SYSTEM_SW_LOC/Lib/UsbDeviceLibrary</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/Lib/assert</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC/Lib/assert</locationURI>
 		</link>
 		<link>
 			<name>SystemSW/Lib/std</name>

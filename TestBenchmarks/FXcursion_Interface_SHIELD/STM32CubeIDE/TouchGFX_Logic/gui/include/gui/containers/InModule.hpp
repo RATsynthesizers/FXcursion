@@ -10,6 +10,9 @@ public:
     virtual ~InModule() {}
 
     virtual void initialize();
+
+    void select();
+    void deselect();
 protected:
 };
 

@@ -78,14 +78,6 @@
           },
           {
             "Type": "CustomContainerInstance",
-            "Name": "stompBoard",
-            "Y": 202,
-            "Width": 320,
-            "Height": 38,
-            "CustomContainerDefinitionName": "StompBoard"
-          },
-          {
-            "Type": "CustomContainerInstance",
             "Name": "statusBar",
             "Width": 320,
             "Height": 34,
@@ -94,28 +86,37 @@
           },
           {
             "Type": "CustomContainerInstance",
+            "Name": "stompBoard",
+            "Y": 202,
+            "Width": 320,
+            "Height": 38,
+            "CustomContainerDefinitionName": "StompBoard"
+          },
+          {
+            "Type": "CustomContainerInstance",
             "Name": "inModule",
-            "X": 280,
-            "Y": 44,
-            "Width": 40,
-            "Height": 152,
+            "X": 276,
+            "Y": 40,
+            "Width": 48,
+            "Height": 160,
             "CustomContainerDefinitionName": "InModule"
           },
           {
             "Type": "CustomContainerInstance",
             "Name": "outModule",
-            "Y": 44,
-            "Width": 40,
-            "Height": 152,
+            "X": -4,
+            "Y": 40,
+            "Width": 48,
+            "Height": 160,
             "CustomContainerDefinitionName": "OutModule"
           },
           {
             "Type": "CustomContainerInstance",
             "Name": "stereoChain2",
             "X": 40,
-            "Y": 125,
+            "Y": 121,
             "Width": 240,
-            "Height": 62,
+            "Height": 70,
             "Visible": false,
             "CustomContainerDefinitionName": "StereoChain"
           },
@@ -123,9 +124,9 @@
             "Type": "CustomContainerInstance",
             "Name": "stereoChain1",
             "X": 40,
-            "Y": 53,
+            "Y": 49,
             "Width": 240,
-            "Height": 62,
+            "Height": 70,
             "Visible": false,
             "CustomContainerDefinitionName": "StereoChain"
           },
@@ -133,107 +134,37 @@
             "Type": "CustomContainerInstance",
             "Name": "monoChain4",
             "X": 40,
-            "Y": 164,
+            "Y": 160,
             "Width": 240,
-            "Height": 32,
+            "Height": 40,
             "CustomContainerDefinitionName": "MonoChain"
           },
           {
             "Type": "CustomContainerInstance",
             "Name": "monoChain3",
             "X": 40,
-            "Y": 124,
+            "Y": 120,
             "Width": 240,
-            "Height": 32,
+            "Height": 40,
             "CustomContainerDefinitionName": "MonoChain"
           },
           {
             "Type": "CustomContainerInstance",
             "Name": "monoChain2",
             "X": 40,
-            "Y": 84,
+            "Y": 80,
             "Width": 240,
-            "Height": 32,
+            "Height": 40,
             "CustomContainerDefinitionName": "MonoChain"
           },
           {
             "Type": "CustomContainerInstance",
             "Name": "monoChain1",
             "X": 40,
-            "Y": 44,
+            "Y": 40,
             "Width": 240,
-            "Height": 32,
+            "Height": 40,
             "CustomContainerDefinitionName": "MonoChain"
-          },
-          {
-            "Type": "CustomContainerInstance",
-            "Name": "selectIOModule",
-            "X": 276,
-            "Y": 40,
-            "Width": 48,
-            "Height": 160,
-            "Visible": false,
-            "CustomContainerDefinitionName": "SelectIOModule"
-          },
-          {
-            "Type": "CustomContainerInstance",
-            "Name": "selectMixer",
-            "X": 218,
-            "Y": 40,
-            "Width": 58,
-            "Height": 160,
-            "Visible": false,
-            "CustomContainerDefinitionName": "SelectMixer"
-          },
-          {
-            "Type": "CustomContainerInstance",
-            "Name": "moveMixer",
-            "X": 218,
-            "Y": 40,
-            "Width": 58,
-            "Height": 160,
-            "Visible": false,
-            "CustomContainerDefinitionName": "MoveMixer"
-          },
-          {
-            "Type": "CustomContainerInstance",
-            "Name": "selectModuleStereo",
-            "X": 218,
-            "Y": 49,
-            "Width": 58,
-            "Height": 70,
-            "Visible": false,
-            "CustomContainerDefinitionName": "SelectModuleStereo"
-          },
-          {
-            "Type": "CustomContainerInstance",
-            "Name": "moveModuleStereo",
-            "X": 218,
-            "Y": 49,
-            "Width": 58,
-            "Height": 70,
-            "Visible": false,
-            "CustomContainerDefinitionName": "MoveModuleStereo"
-          },
-          {
-            "Type": "CustomContainerInstance",
-            "Name": "selectModuleMono",
-            "X": 218,
-            "Y": 40,
-            "Width": 58,
-            "Height": 40,
-            "Visible": false,
-            "CustomContainerDefinitionName": "SelectModuleMono"
-          },
-          {
-            "Type": "CustomContainerInstance",
-            "Name": "moveModuleMono",
-            "X": 218,
-            "Y": 40,
-            "Width": 58,
-            "Height": 40,
-            "Visible": false,
-            "CustomContainerDefinitionName": "MoveModuleMono"
           }
         ],
         "Interactions": []
@@ -485,14 +416,14 @@
       },
       {
         "Name": "EmptyModuleMono",
-        "Width": 58,
-        "Height": 32,
+        "Width": 62,
+        "Height": 40,
         "Components": [
           {
             "Type": "CustomContainerInstance",
             "Name": "stereoUnavailable",
             "X": 8,
-            "Y": 9,
+            "Y": 13,
             "Width": 50,
             "Height": 14,
             "Visible": false,
@@ -502,7 +433,7 @@
             "Type": "Line",
             "Name": "monoUnavailable",
             "X": 8,
-            "Y": 14,
+            "Y": 18,
             "Width": 50,
             "Height": 4,
             "Visible": false,
@@ -515,7 +446,7 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "stereoCable",
-            "Y": 9,
+            "Y": 13,
             "Width": 8,
             "Height": 14,
             "Visible": false,
@@ -524,7 +455,7 @@
           {
             "Type": "Line",
             "Name": "monoCable",
-            "Y": 14,
+            "Y": 18,
             "Width": 8,
             "Height": 4,
             "StartY": 2.0,
@@ -537,7 +468,7 @@
             "Type": "Line",
             "Name": "horizontalLine",
             "X": 24,
-            "Y": 14,
+            "Y": 18,
             "Width": 18,
             "Height": 4,
             "StartY": 2.0,
@@ -550,7 +481,7 @@
             "Type": "Line",
             "Name": "verticalLine",
             "X": 31,
-            "Y": 7,
+            "Y": 11,
             "Width": 4,
             "Height": 18,
             "StartX": 2.0,
@@ -563,6 +494,7 @@
             "Type": "BoxWithBorder",
             "Name": "emptyBox",
             "X": 8,
+            "Y": 4,
             "Width": 50,
             "Height": 32,
             "Color": {
@@ -577,20 +509,38 @@
             },
             "BorderSize": 3,
             "Alpha": 126
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "selectModuleMono",
+            "X": 4,
+            "Width": 58,
+            "Height": 40,
+            "Visible": false,
+            "CustomContainerDefinitionName": "SelectModuleMono"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moveModuleMono",
+            "X": 4,
+            "Width": 58,
+            "Height": 40,
+            "Visible": false,
+            "CustomContainerDefinitionName": "MoveModuleMono"
           }
         ],
         "Interactions": []
       },
       {
         "Name": "EmptyModuleStereo",
-        "Width": 58,
-        "Height": 62,
+        "Width": 62,
+        "Height": 70,
         "Components": [
           {
             "Type": "CustomContainerInstance",
             "Name": "stereoUnavailable",
             "X": 8,
-            "Y": 24,
+            "Y": 28,
             "Width": 50,
             "Height": 14,
             "Visible": false,
@@ -599,7 +549,7 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "stereoCable",
-            "Y": 24,
+            "Y": 28,
             "Width": 8,
             "Height": 14,
             "CustomContainerDefinitionName": "StereoCable"
@@ -608,7 +558,7 @@
             "Type": "Line",
             "Name": "horizontalLine",
             "X": 24,
-            "Y": 29,
+            "Y": 33,
             "Width": 18,
             "Height": 4,
             "StartY": 2.0,
@@ -621,7 +571,7 @@
             "Type": "Line",
             "Name": "verticalLine",
             "X": 31,
-            "Y": 22,
+            "Y": 26,
             "Width": 4,
             "Height": 18,
             "StartX": 2.0,
@@ -634,6 +584,7 @@
             "Type": "BoxWithBorder",
             "Name": "emptyBox",
             "X": 8,
+            "Y": 4,
             "Width": 50,
             "Height": 62,
             "Color": {
@@ -648,6 +599,22 @@
             },
             "BorderSize": 3,
             "Alpha": 126
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "selectModuleStereo",
+            "Width": 58,
+            "Height": 70,
+            "Visible": false,
+            "CustomContainerDefinitionName": "SelectModuleStereo"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moveModuleStereo",
+            "Width": 58,
+            "Height": 70,
+            "Visible": false,
+            "CustomContainerDefinitionName": "MoveModuleStereo"
           }
         ],
         "Interactions": []
@@ -1051,13 +1018,13 @@
       {
         "Name": "StereoChain",
         "Width": 240,
-        "Height": 62,
+        "Height": 70,
         "Components": [
           {
             "Type": "CustomContainerInstance",
             "Name": "stereoCable",
             "X": 232,
-            "Y": 24,
+            "Y": 28,
             "Width": 8,
             "Height": 14,
             "CustomContainerDefinitionName": "StereoCable"
@@ -1065,32 +1032,32 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "emptyModuleStereo4",
-            "Width": 58,
-            "Height": 62,
+            "Width": 62,
+            "Height": 70,
             "CustomContainerDefinitionName": "EmptyModuleStereo"
           },
           {
             "Type": "CustomContainerInstance",
             "Name": "emptyModuleStereo3",
             "X": 58,
-            "Width": 58,
-            "Height": 62,
+            "Width": 62,
+            "Height": 70,
             "CustomContainerDefinitionName": "EmptyModuleStereo"
           },
           {
             "Type": "CustomContainerInstance",
             "Name": "emptyModuleStereo2",
             "X": 116,
-            "Width": 58,
-            "Height": 62,
+            "Width": 62,
+            "Height": 70,
             "CustomContainerDefinitionName": "EmptyModuleStereo"
           },
           {
             "Type": "CustomContainerInstance",
             "Name": "emptyModuleStereo1",
             "X": 174,
-            "Width": 58,
-            "Height": 62,
+            "Width": 62,
+            "Height": 70,
             "CustomContainerDefinitionName": "EmptyModuleStereo"
           }
         ],
@@ -1099,13 +1066,13 @@
       {
         "Name": "MonoChain",
         "Width": 240,
-        "Height": 32,
+        "Height": 40,
         "Components": [
           {
             "Type": "Line",
             "Name": "monoCable",
             "X": 232,
-            "Y": 14,
+            "Y": 18,
             "Width": 8,
             "Height": 4,
             "StartY": 2.0,
@@ -1117,32 +1084,32 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "emptyModuleMono4",
-            "Width": 58,
-            "Height": 32,
+            "Width": 62,
+            "Height": 40,
             "CustomContainerDefinitionName": "EmptyModuleMono"
           },
           {
             "Type": "CustomContainerInstance",
             "Name": "emptyModuleMono3",
             "X": 58,
-            "Width": 58,
-            "Height": 32,
+            "Width": 62,
+            "Height": 40,
             "CustomContainerDefinitionName": "EmptyModuleMono"
           },
           {
             "Type": "CustomContainerInstance",
             "Name": "emptyModuleMono2",
             "X": 116,
-            "Width": 58,
-            "Height": 32,
+            "Width": 62,
+            "Height": 40,
             "CustomContainerDefinitionName": "EmptyModuleMono"
           },
           {
             "Type": "CustomContainerInstance",
             "Name": "emptyModuleMono1",
             "X": 174,
-            "Width": 58,
-            "Height": 32,
+            "Width": 62,
+            "Height": 40,
             "CustomContainerDefinitionName": "EmptyModuleMono"
           }
         ],
@@ -1206,12 +1173,14 @@
       },
       {
         "Name": "InModule",
-        "Width": 40,
-        "Height": 152,
+        "Width": 48,
+        "Height": 160,
         "Components": [
           {
             "Type": "BoxWithBorder",
             "Name": "inBox",
+            "X": 4,
+            "Y": 4,
             "Width": 40,
             "Height": 152,
             "Color": {
@@ -1229,8 +1198,8 @@
           {
             "Type": "Shape",
             "Name": "arrowShape",
-            "X": 3,
-            "Y": 3,
+            "X": 7,
+            "Y": 7,
             "Width": 34,
             "Height": 146,
             "Color": {
@@ -1256,8 +1225,8 @@
           {
             "Type": "TextArea",
             "Name": "inText",
-            "X": 3,
-            "Y": 66,
+            "X": 7,
+            "Y": 70,
             "Width": 37,
             "Height": 20,
             "TextId": "InputTextID",
@@ -1267,8 +1236,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelMono4",
-            "X": 3,
-            "Y": 133,
+            "X": 7,
+            "Y": 137,
             "Width": 34,
             "Height": 6,
             "CustomContainerDefinitionName": "IOLevel"
@@ -1276,8 +1245,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelMono3",
-            "X": 3,
-            "Y": 93,
+            "X": 7,
+            "Y": 97,
             "Width": 34,
             "Height": 6,
             "CustomContainerDefinitionName": "IOLevel"
@@ -1285,8 +1254,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelMono2",
-            "X": 3,
-            "Y": 53,
+            "X": 7,
+            "Y": 57,
             "Width": 34,
             "Height": 6,
             "CustomContainerDefinitionName": "IOLevel"
@@ -1294,8 +1263,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelMono1",
-            "X": 3,
-            "Y": 13,
+            "X": 7,
+            "Y": 17,
             "Width": 34,
             "Height": 6,
             "CustomContainerDefinitionName": "IOLevel"
@@ -1303,8 +1272,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelStereo2Left",
-            "X": 3,
-            "Y": 114,
+            "X": 7,
+            "Y": 118,
             "Width": 34,
             "Height": 6,
             "Visible": false,
@@ -1313,8 +1282,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelStereo2Right",
-            "X": 3,
-            "Y": 104,
+            "X": 7,
+            "Y": 108,
             "Width": 34,
             "Height": 6,
             "Visible": false,
@@ -1323,8 +1292,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelStereo1Left",
-            "X": 3,
-            "Y": 42,
+            "X": 7,
+            "Y": 46,
             "Width": 34,
             "Height": 6,
             "Visible": false,
@@ -1333,24 +1302,34 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelStereo1Right",
-            "X": 3,
-            "Y": 32,
+            "X": 7,
+            "Y": 36,
             "Width": 34,
             "Height": 6,
             "Visible": false,
             "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "selectIOModule",
+            "Width": 48,
+            "Height": 160,
+            "Visible": false,
+            "CustomContainerDefinitionName": "SelectIOModule"
           }
         ],
         "Interactions": []
       },
       {
         "Name": "OutModule",
-        "Width": 40,
-        "Height": 152,
+        "Width": 48,
+        "Height": 160,
         "Components": [
           {
             "Type": "BoxWithBorder",
             "Name": "outBox",
+            "X": 4,
+            "Y": 4,
             "Width": 40,
             "Height": 152,
             "Color": {
@@ -1368,8 +1347,8 @@
           {
             "Type": "Shape",
             "Name": "arrowShape",
-            "X": 3,
-            "Y": 3,
+            "X": 7,
+            "Y": 7,
             "Width": 34,
             "Height": 146,
             "Color": {
@@ -1395,8 +1374,8 @@
           {
             "Type": "TextArea",
             "Name": "outText",
-            "X": 3,
-            "Y": 66,
+            "X": 7,
+            "Y": 70,
             "Width": 37,
             "Height": 20,
             "TextId": "OutputTextID",
@@ -1406,8 +1385,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelMono4",
-            "X": 3,
-            "Y": 133,
+            "X": 7,
+            "Y": 137,
             "Width": 34,
             "Height": 6,
             "CustomContainerDefinitionName": "IOLevel"
@@ -1415,8 +1394,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelMono3",
-            "X": 3,
-            "Y": 93,
+            "X": 7,
+            "Y": 97,
             "Width": 34,
             "Height": 6,
             "CustomContainerDefinitionName": "IOLevel"
@@ -1424,8 +1403,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelMono2",
-            "X": 3,
-            "Y": 53,
+            "X": 7,
+            "Y": 57,
             "Width": 34,
             "Height": 6,
             "CustomContainerDefinitionName": "IOLevel"
@@ -1433,8 +1412,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelMono1",
-            "X": 3,
-            "Y": 13,
+            "X": 7,
+            "Y": 17,
             "Width": 34,
             "Height": 6,
             "CustomContainerDefinitionName": "IOLevel"
@@ -1442,8 +1421,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelStereo2Left",
-            "X": 3,
-            "Y": 114,
+            "X": 7,
+            "Y": 118,
             "Width": 34,
             "Height": 6,
             "Visible": false,
@@ -1452,8 +1431,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelStereo2Right",
-            "X": 3,
-            "Y": 104,
+            "X": 7,
+            "Y": 108,
             "Width": 34,
             "Height": 6,
             "Visible": false,
@@ -1462,8 +1441,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelStereo1Left",
-            "X": 3,
-            "Y": 42,
+            "X": 7,
+            "Y": 46,
             "Width": 34,
             "Height": 6,
             "Visible": false,
@@ -1472,24 +1451,34 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "ioLevelStereo1Right",
-            "X": 3,
-            "Y": 32,
+            "X": 7,
+            "Y": 36,
             "Width": 34,
             "Height": 6,
             "Visible": false,
             "CustomContainerDefinitionName": "IOLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "selectIOModule",
+            "Width": 48,
+            "Height": 160,
+            "Visible": false,
+            "CustomContainerDefinitionName": "SelectIOModule"
           }
         ],
         "Interactions": []
       },
       {
         "Name": "MixModule",
-        "Width": 50,
-        "Height": 152,
+        "Width": 58,
+        "Height": 160,
         "Components": [
           {
             "Type": "BoxWithBorder",
             "Name": "mixBox",
+            "X": 4,
+            "Y": 4,
             "Width": 50,
             "Height": 152,
             "Color": {
@@ -1506,8 +1495,8 @@
           {
             "Type": "TextArea",
             "Name": "mixText",
-            "X": 2,
-            "Y": 66,
+            "X": 6,
+            "Y": 70,
             "Width": 48,
             "Height": 20,
             "TextId": "MixerTextID",
@@ -1517,8 +1506,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "moduleLevel4",
-            "X": 3,
-            "Y": 133,
+            "X": 7,
+            "Y": 137,
             "Width": 44,
             "Height": 6,
             "CustomContainerDefinitionName": "ModuleLevel"
@@ -1526,8 +1515,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "moduleLevel3",
-            "X": 3,
-            "Y": 93,
+            "X": 7,
+            "Y": 97,
             "Width": 44,
             "Height": 6,
             "CustomContainerDefinitionName": "ModuleLevel"
@@ -1535,8 +1524,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "moduleLevel2",
-            "X": 3,
-            "Y": 53,
+            "X": 7,
+            "Y": 57,
             "Width": 44,
             "Height": 6,
             "CustomContainerDefinitionName": "ModuleLevel"
@@ -1544,8 +1533,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "moduleLevel1",
-            "X": 3,
-            "Y": 13,
+            "X": 7,
+            "Y": 17,
             "Width": 44,
             "Height": 6,
             "CustomContainerDefinitionName": "ModuleLevel"
@@ -1553,8 +1542,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "moduleLevelStereo4",
-            "X": 3,
-            "Y": 114,
+            "X": 7,
+            "Y": 118,
             "Width": 44,
             "Height": 6,
             "Visible": false,
@@ -1563,8 +1552,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "moduleLevelStereo3",
-            "X": 3,
-            "Y": 104,
+            "X": 7,
+            "Y": 108,
             "Width": 44,
             "Height": 6,
             "Visible": false,
@@ -1573,8 +1562,8 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "moduleLevelStereo2",
-            "X": 3,
-            "Y": 42,
+            "X": 7,
+            "Y": 46,
             "Width": 44,
             "Height": 6,
             "Visible": false,
@@ -1583,12 +1572,28 @@
           {
             "Type": "CustomContainerInstance",
             "Name": "moduleLevelStereo1",
-            "X": 3,
-            "Y": 32,
+            "X": 7,
+            "Y": 36,
             "Width": 44,
             "Height": 6,
             "Visible": false,
             "CustomContainerDefinitionName": "ModuleLevel"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "selectMixer",
+            "Width": 58,
+            "Height": 160,
+            "Visible": false,
+            "CustomContainerDefinitionName": "SelectMixer"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "moveMixer",
+            "Width": 58,
+            "Height": 160,
+            "Visible": false,
+            "CustomContainerDefinitionName": "MoveMixer"
           }
         ],
         "Interactions": []

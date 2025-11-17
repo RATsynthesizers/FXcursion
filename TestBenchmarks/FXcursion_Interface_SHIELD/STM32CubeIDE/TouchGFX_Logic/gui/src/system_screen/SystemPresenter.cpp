@@ -17,26 +17,37 @@ void SystemPresenter::deactivate()
 
 }
 
-void SystemPresenter::encParam_action(uint8_t id, int8_t scrollAmount) {
+void SystemPresenter::encMenuUpdate(S8 nValue)
+{
+	view.encMenuUpdate(nValue);
+}
+
+void SystemPresenter::encParamUpdate(U8 nID, S8 nValue)
+{
 
 }
 
-void SystemPresenter::encSelect_action(int8_t scrollAmount) {
+void SystemPresenter::btnYesUpdate(void)
+{
 
 }
 
-void SystemPresenter::btnYES_action(void) {
+void SystemPresenter::btnNoUpdate(void)
+{
 
 }
 
-void SystemPresenter::btnNO_action(void) {
-
+void SystemPresenter::btnUpUpdate(void)
+{
+	view.btnUpUpdate();
 }
 
-void SystemPresenter::btnUP_action(void) {
-
+void SystemPresenter::btnDownUpdate(void)
+{
+	view.btnDownUpdate();
 }
 
-void SystemPresenter::btnDOWN_action(void) {
+void SystemPresenter::btnFootUpdate(U8 nID)
+{
 
 }

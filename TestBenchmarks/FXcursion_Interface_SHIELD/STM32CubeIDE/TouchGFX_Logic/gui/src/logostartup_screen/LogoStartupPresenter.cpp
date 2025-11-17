@@ -17,26 +17,38 @@ void LogoStartupPresenter::deactivate()
 
 }
 
-void LogoStartupPresenter::encParam_action(uint8_t id, int8_t scrollAmount) {
+
+void LogoStartupPresenter::encMenuUpdate(S8 nValue)
+{
 
 }
 
-void LogoStartupPresenter::encSelect_action(int8_t scrollAmount) {
+void LogoStartupPresenter::encParamUpdate(U8 nID, S8 nValue)
+{
 
 }
 
-void LogoStartupPresenter::btnYES_action(void) {
+void LogoStartupPresenter::btnYesUpdate(void)
+{
 
 }
 
-void LogoStartupPresenter::btnNO_action(void) {
+void LogoStartupPresenter::btnNoUpdate(void)
+{
 
 }
 
-void LogoStartupPresenter::btnUP_action(void) {
+void LogoStartupPresenter::btnUpUpdate(void)
+{
 
 }
 
-void LogoStartupPresenter::btnDOWN_action(void) {
+void LogoStartupPresenter::btnDownUpdate(void)
+{
+
+}
+
+void LogoStartupPresenter::btnFootUpdate(U8 nID)
+{
 
 }

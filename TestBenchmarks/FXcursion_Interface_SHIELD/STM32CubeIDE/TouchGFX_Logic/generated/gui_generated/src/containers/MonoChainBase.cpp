@@ -7,8 +7,8 @@
 MonoChainBase::MonoChainBase()
 {
     setWidth(240);
-    setHeight(32);
-    monoCable.setPosition(232, 14, 8, 4);
+    setHeight(40);
+    monoCable.setPosition(232, 18, 8, 4);
     monoCablePainter.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     monoCable.setPainter(monoCablePainter);
     monoCable.setStart(0, 2);

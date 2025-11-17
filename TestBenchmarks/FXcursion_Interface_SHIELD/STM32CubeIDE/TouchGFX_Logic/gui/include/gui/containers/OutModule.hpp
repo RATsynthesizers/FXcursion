@@ -10,6 +10,9 @@ public:
     virtual ~OutModule() {}
 
     virtual void initialize();
+
+    void select();
+    void deselect();
 protected:
 };
 

@@ -11,6 +11,7 @@
 #include <touchgfx/widgets/canvas/PainterRGB565.hpp>
 #include <touchgfx/widgets/TextArea.hpp>
 #include <gui/containers/IOLevel.hpp>
+#include <gui/containers/SelectIOModule.hpp>
 
 class InModuleBase : public touchgfx::Container
 {
@@ -39,6 +40,7 @@ protected:
     IOLevel ioLevelStereo2Right;
     IOLevel ioLevelStereo1Left;
     IOLevel ioLevelStereo1Right;
+    SelectIOModule selectIOModule;
 
 private:
 

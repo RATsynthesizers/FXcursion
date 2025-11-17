@@ -8,19 +8,12 @@
 #include <mvp/View.hpp>
 #include <gui/system_screen/SystemPresenter.hpp>
 #include <touchgfx/widgets/Box.hpp>
-#include <gui/containers/StompBoard.hpp>
 #include <gui/containers/StatusBar.hpp>
+#include <gui/containers/StompBoard.hpp>
 #include <gui/containers/InModule.hpp>
 #include <gui/containers/OutModule.hpp>
 #include <gui/containers/StereoChain.hpp>
 #include <gui/containers/MonoChain.hpp>
-#include <gui/containers/SelectIOModule.hpp>
-#include <gui/containers/SelectMixer.hpp>
-#include <gui/containers/MoveMixer.hpp>
-#include <gui/containers/SelectModuleStereo.hpp>
-#include <gui/containers/MoveModuleStereo.hpp>
-#include <gui/containers/SelectModuleMono.hpp>
-#include <gui/containers/MoveModuleMono.hpp>
 
 class SystemViewBase : public touchgfx::View<SystemPresenter>
 {
@@ -39,8 +32,8 @@ protected:
      */
     touchgfx::Box __background;
     touchgfx::Box background;
-    StompBoard stompBoard;
     StatusBar statusBar;
+    StompBoard stompBoard;
     InModule inModule;
     OutModule outModule;
     StereoChain stereoChain2;
@@ -49,13 +42,6 @@ protected:
     MonoChain monoChain3;
     MonoChain monoChain2;
     MonoChain monoChain1;
-    SelectIOModule selectIOModule;
-    SelectMixer selectMixer;
-    MoveMixer moveMixer;
-    SelectModuleStereo selectModuleStereo;
-    MoveModuleStereo moveModuleStereo;
-    SelectModuleMono selectModuleMono;
-    MoveModuleMono moveModuleMono;
 
 private:
 

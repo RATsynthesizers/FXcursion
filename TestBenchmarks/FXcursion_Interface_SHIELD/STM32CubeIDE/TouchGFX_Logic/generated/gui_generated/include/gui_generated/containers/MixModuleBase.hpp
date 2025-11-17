@@ -9,6 +9,8 @@
 #include <touchgfx/widgets/BoxWithBorder.hpp>
 #include <touchgfx/widgets/TextArea.hpp>
 #include <gui/containers/ModuleLevel.hpp>
+#include <gui/containers/SelectMixer.hpp>
+#include <gui/containers/MoveMixer.hpp>
 
 class MixModuleBase : public touchgfx::Container
 {
@@ -35,6 +37,8 @@ protected:
     ModuleLevel moduleLevelStereo3;
     ModuleLevel moduleLevelStereo2;
     ModuleLevel moduleLevelStereo1;
+    SelectMixer selectMixer;
+    MoveMixer moveMixer;
 
 private:
 

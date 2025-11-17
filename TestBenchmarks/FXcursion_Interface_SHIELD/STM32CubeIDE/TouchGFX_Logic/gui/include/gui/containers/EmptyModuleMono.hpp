@@ -10,6 +10,9 @@ public:
     virtual ~EmptyModuleMono() {}
 
     virtual void initialize();
+
+    void select();
+    void deselect();
 protected:
 };
 

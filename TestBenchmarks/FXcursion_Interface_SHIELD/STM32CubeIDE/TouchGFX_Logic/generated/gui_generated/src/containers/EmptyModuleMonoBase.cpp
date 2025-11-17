@@ -6,13 +6,13 @@
 
 EmptyModuleMonoBase::EmptyModuleMonoBase()
 {
-    setWidth(58);
-    setHeight(32);
-    stereoUnavailable.setXY(8, 9);
+    setWidth(62);
+    setHeight(40);
+    stereoUnavailable.setXY(8, 13);
     stereoUnavailable.setVisible(false);
     add(stereoUnavailable);
 
-    monoUnavailable.setPosition(8, 14, 50, 4);
+    monoUnavailable.setPosition(8, 18, 50, 4);
     monoUnavailablePainter.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     monoUnavailable.setPainter(monoUnavailablePainter);
     monoUnavailable.setStart(0, 2);
@@ -22,11 +22,11 @@ EmptyModuleMonoBase::EmptyModuleMonoBase()
     monoUnavailable.setVisible(false);
     add(monoUnavailable);
 
-    stereoCable.setXY(0, 9);
+    stereoCable.setXY(0, 13);
     stereoCable.setVisible(false);
     add(stereoCable);
 
-    monoCable.setPosition(0, 14, 8, 4);
+    monoCable.setPosition(0, 18, 8, 4);
     monoCablePainter.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     monoCable.setPainter(monoCablePainter);
     monoCable.setStart(0, 2);
@@ -35,7 +35,7 @@ EmptyModuleMonoBase::EmptyModuleMonoBase()
     monoCable.setLineEndingStyle(touchgfx::Line::SQUARE_CAP_ENDING);
     add(monoCable);
 
-    horizontalLine.setPosition(24, 14, 18, 4);
+    horizontalLine.setPosition(24, 18, 18, 4);
     horizontalLinePainter.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     horizontalLine.setPainter(horizontalLinePainter);
     horizontalLine.setStart(0, 2);
@@ -44,7 +44,7 @@ EmptyModuleMonoBase::EmptyModuleMonoBase()
     horizontalLine.setLineEndingStyle(touchgfx::Line::BUTT_CAP_ENDING);
     add(horizontalLine);
 
-    verticalLine.setPosition(31, 7, 4, 18);
+    verticalLine.setPosition(31, 11, 4, 18);
     verticalLinePainter.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     verticalLine.setPainter(verticalLinePainter);
     verticalLine.setStart(2, 0);
@@ -53,12 +53,20 @@ EmptyModuleMonoBase::EmptyModuleMonoBase()
     verticalLine.setLineEndingStyle(touchgfx::Line::BUTT_CAP_ENDING);
     add(verticalLine);
 
-    emptyBox.setPosition(8, 0, 50, 32);
+    emptyBox.setPosition(8, 4, 50, 32);
     emptyBox.setColor(touchgfx::Color::getColorFromRGB(148, 148, 148));
     emptyBox.setBorderColor(touchgfx::Color::getColorFromRGB(56, 56, 56));
     emptyBox.setBorderSize(3);
     emptyBox.setAlpha(126);
     add(emptyBox);
+
+    selectModuleMono.setXY(4, 0);
+    selectModuleMono.setVisible(false);
+    add(selectModuleMono);
+
+    moveModuleMono.setXY(4, 0);
+    moveModuleMono.setVisible(false);
+    add(moveModuleMono);
 }
 
 EmptyModuleMonoBase::~EmptyModuleMonoBase()
@@ -70,4 +78,6 @@ void EmptyModuleMonoBase::initialize()
 {
     stereoUnavailable.initialize();
     stereoCable.initialize();
+    selectModuleMono.initialize();
+    moveModuleMono.initialize();
 }

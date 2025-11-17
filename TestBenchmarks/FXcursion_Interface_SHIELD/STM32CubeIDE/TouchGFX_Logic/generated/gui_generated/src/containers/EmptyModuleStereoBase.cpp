@@ -6,16 +6,16 @@
 
 EmptyModuleStereoBase::EmptyModuleStereoBase()
 {
-    setWidth(58);
-    setHeight(62);
-    stereoUnavailable.setXY(8, 24);
+    setWidth(62);
+    setHeight(70);
+    stereoUnavailable.setXY(8, 28);
     stereoUnavailable.setVisible(false);
     add(stereoUnavailable);
 
-    stereoCable.setXY(0, 24);
+    stereoCable.setXY(0, 28);
     add(stereoCable);
 
-    horizontalLine.setPosition(24, 29, 18, 4);
+    horizontalLine.setPosition(24, 33, 18, 4);
     horizontalLinePainter.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     horizontalLine.setPainter(horizontalLinePainter);
     horizontalLine.setStart(0, 2);
@@ -24,7 +24,7 @@ EmptyModuleStereoBase::EmptyModuleStereoBase()
     horizontalLine.setLineEndingStyle(touchgfx::Line::BUTT_CAP_ENDING);
     add(horizontalLine);
 
-    verticalLine.setPosition(31, 22, 4, 18);
+    verticalLine.setPosition(31, 26, 4, 18);
     verticalLinePainter.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     verticalLine.setPainter(verticalLinePainter);
     verticalLine.setStart(2, 0);
@@ -33,12 +33,20 @@ EmptyModuleStereoBase::EmptyModuleStereoBase()
     verticalLine.setLineEndingStyle(touchgfx::Line::BUTT_CAP_ENDING);
     add(verticalLine);
 
-    emptyBox.setPosition(8, 0, 50, 62);
+    emptyBox.setPosition(8, 4, 50, 62);
     emptyBox.setColor(touchgfx::Color::getColorFromRGB(148, 148, 148));
     emptyBox.setBorderColor(touchgfx::Color::getColorFromRGB(56, 56, 56));
     emptyBox.setBorderSize(3);
     emptyBox.setAlpha(126);
     add(emptyBox);
+
+    selectModuleStereo.setXY(0, 0);
+    selectModuleStereo.setVisible(false);
+    add(selectModuleStereo);
+
+    moveModuleStereo.setXY(0, 0);
+    moveModuleStereo.setVisible(false);
+    add(moveModuleStereo);
 }
 
 EmptyModuleStereoBase::~EmptyModuleStereoBase()
@@ -50,4 +58,6 @@ void EmptyModuleStereoBase::initialize()
 {
     stereoUnavailable.initialize();
     stereoCable.initialize();
+    selectModuleStereo.initialize();
+    moveModuleStereo.initialize();
 }

@@ -27,7 +27,7 @@ static unsigned char lcdPortraitConfig = 0;
 static unsigned char lcdLandscapeConfig = 0;
 static unsigned char lcdPortraitMirrorConfig = 0;
 static unsigned char lcdLandscapeMirrorConfig = 0;
-static unsigned char lcdLandscapeMirror2Config = 0;
+static unsigned char lcdLandscapeRotatedConfig = 0;
 
 static void lcdDrawPixels(uint16_t x, uint16_t y, uint16_t *data,
 		uint32_t dataLength);
@@ -54,7 +54,7 @@ void __attribute__((optimize("O0"))) lcdInit(void) {
 			MemoryAccessControlNormalOrder);	// horizontalRefreshOrder
 
 	lcdLandscapeConfig = lcdBuildMemoryAccessControlConfig(
-			MemoryAccessControlNormalOrder,		// rowAddressOrder
+			MemoryAccessControlReverseOrder,		// rowAddressOrder
 			MemoryAccessControlNormalOrder,		// columnAddressOrder
 			MemoryAccessControlReverseOrder,	// rowColumnExchange
 			MemoryAccessControlNormalOrder,		// verticalRefreshOrder
@@ -77,9 +77,9 @@ void __attribute__((optimize("O0"))) lcdInit(void) {
 			MemoryAccessControlColorOrderBGR,	// colorOrder
 			MemoryAccessControlNormalOrder);	// horizontalRefreshOrder
 
-	lcdLandscapeMirror2Config = lcdBuildMemoryAccessControlConfig(
+	lcdLandscapeRotatedConfig = lcdBuildMemoryAccessControlConfig(
 			MemoryAccessControlNormalOrder,	// rowAddressOrder
-			MemoryAccessControlReverseOrder,	// columnAddressOrder
+			MemoryAccessControlNormalOrder,	// columnAddressOrder
 			MemoryAccessControlReverseOrder,	// rowColumnExchange
 			MemoryAccessControlNormalOrder,		// verticalRefreshOrder
 			MemoryAccessControlColorOrderBGR,	// colorOrder
@@ -139,7 +139,7 @@ void __attribute__((optimize("O0"))) lcdInit(void) {
 	ili9341_DelayMicro(10);
 
 	lcdWriteCommand(ILI9341_MEMCONTROL);
-	lcdWriteData(lcdLandscapeMirror2Config);
+	lcdWriteData(lcdLandscapeConfig);
 
 	ili9341_DelayMicro(10);
 	lcdWriteCommand(0x3A);  // Pixel Format Set
@@ -909,8 +909,8 @@ void lcdSetOrientation(lcdOrientationTypeDef value) {
 		lcdProperties.width = ILI9341_PIXEL_HEIGHT;
 		lcdProperties.height = ILI9341_PIXEL_WIDTH;
 		break;
-	case LCD_ORIENTATION_LANDSCAPE_MIRROR2:
-		lcdWriteData(lcdLandscapeMirror2Config);
+	case LCD_ORIENTATION_LANDSCAPE_ROTATED:
+		lcdWriteData(lcdLandscapeRotatedConfig);
 		lcdProperties.width = ILI9341_PIXEL_HEIGHT;
 		lcdProperties.height = ILI9341_PIXEL_WIDTH;
 		break;

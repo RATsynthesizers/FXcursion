@@ -7,47 +7,55 @@
 
 MixModuleBase::MixModuleBase()
 {
-    setWidth(50);
-    setHeight(152);
-    mixBox.setPosition(0, 0, 50, 152);
+    setWidth(58);
+    setHeight(160);
+    mixBox.setPosition(4, 4, 50, 152);
     mixBox.setColor(touchgfx::Color::getColorFromRGB(127, 255, 122));
     mixBox.setBorderColor(touchgfx::Color::getColorFromRGB(17, 209, 0));
     mixBox.setBorderSize(3);
     add(mixBox);
 
-    mixText.setPosition(2, 66, 48, 20);
+    mixText.setPosition(6, 70, 48, 20);
     mixText.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     mixText.setLinespacing(-3);
     mixText.setTypedText(touchgfx::TypedText(T_MIXERTEXTID));
     add(mixText);
 
-    moduleLevel4.setXY(3, 133);
+    moduleLevel4.setXY(7, 137);
     add(moduleLevel4);
 
-    moduleLevel3.setXY(3, 93);
+    moduleLevel3.setXY(7, 97);
     add(moduleLevel3);
 
-    moduleLevel2.setXY(3, 53);
+    moduleLevel2.setXY(7, 57);
     add(moduleLevel2);
 
-    moduleLevel1.setXY(3, 13);
+    moduleLevel1.setXY(7, 17);
     add(moduleLevel1);
 
-    moduleLevelStereo4.setXY(3, 114);
+    moduleLevelStereo4.setXY(7, 118);
     moduleLevelStereo4.setVisible(false);
     add(moduleLevelStereo4);
 
-    moduleLevelStereo3.setXY(3, 104);
+    moduleLevelStereo3.setXY(7, 108);
     moduleLevelStereo3.setVisible(false);
     add(moduleLevelStereo3);
 
-    moduleLevelStereo2.setXY(3, 42);
+    moduleLevelStereo2.setXY(7, 46);
     moduleLevelStereo2.setVisible(false);
     add(moduleLevelStereo2);
 
-    moduleLevelStereo1.setXY(3, 32);
+    moduleLevelStereo1.setXY(7, 36);
     moduleLevelStereo1.setVisible(false);
     add(moduleLevelStereo1);
+
+    selectMixer.setXY(0, 0);
+    selectMixer.setVisible(false);
+    add(selectMixer);
+
+    moveMixer.setXY(0, 0);
+    moveMixer.setVisible(false);
+    add(moveMixer);
 }
 
 MixModuleBase::~MixModuleBase()
@@ -65,4 +73,6 @@ void MixModuleBase::initialize()
     moduleLevelStereo3.initialize();
     moduleLevelStereo2.initialize();
     moduleLevelStereo1.initialize();
+    selectMixer.initialize();
+    moveMixer.initialize();
 }

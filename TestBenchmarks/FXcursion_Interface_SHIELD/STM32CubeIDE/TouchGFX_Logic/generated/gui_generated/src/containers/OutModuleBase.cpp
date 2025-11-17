@@ -7,15 +7,15 @@
 
 OutModuleBase::OutModuleBase()
 {
-    setWidth(40);
-    setHeight(152);
-    outBox.setPosition(0, 0, 40, 152);
+    setWidth(48);
+    setHeight(160);
+    outBox.setPosition(4, 4, 40, 152);
     outBox.setColor(touchgfx::Color::getColorFromRGB(161, 161, 161));
     outBox.setBorderColor(touchgfx::Color::getColorFromRGB(112, 112, 112));
     outBox.setBorderSize(3);
     add(outBox);
 
-    arrowShape.setPosition(3, 3, 34, 146);
+    arrowShape.setPosition(7, 7, 34, 146);
     arrowShape.setOrigin(0.0f, 0.0f);
     arrowShape.setScale(1.0f, 1.0f);
     arrowShape.setAngle(0.0f);
@@ -25,39 +25,43 @@ OutModuleBase::OutModuleBase()
     arrowShape.setShape(arrowShapePoints);
     add(arrowShape);
 
-    outText.setPosition(3, 66, 37, 20);
+    outText.setPosition(7, 70, 37, 20);
     outText.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     outText.setLinespacing(-3);
     outText.setTypedText(touchgfx::TypedText(T_OUTPUTTEXTID));
     add(outText);
 
-    ioLevelMono4.setXY(3, 133);
+    ioLevelMono4.setXY(7, 137);
     add(ioLevelMono4);
 
-    ioLevelMono3.setXY(3, 93);
+    ioLevelMono3.setXY(7, 97);
     add(ioLevelMono3);
 
-    ioLevelMono2.setXY(3, 53);
+    ioLevelMono2.setXY(7, 57);
     add(ioLevelMono2);
 
-    ioLevelMono1.setXY(3, 13);
+    ioLevelMono1.setXY(7, 17);
     add(ioLevelMono1);
 
-    ioLevelStereo2Left.setXY(3, 114);
+    ioLevelStereo2Left.setXY(7, 118);
     ioLevelStereo2Left.setVisible(false);
     add(ioLevelStereo2Left);
 
-    ioLevelStereo2Right.setXY(3, 104);
+    ioLevelStereo2Right.setXY(7, 108);
     ioLevelStereo2Right.setVisible(false);
     add(ioLevelStereo2Right);
 
-    ioLevelStereo1Left.setXY(3, 42);
+    ioLevelStereo1Left.setXY(7, 46);
     ioLevelStereo1Left.setVisible(false);
     add(ioLevelStereo1Left);
 
-    ioLevelStereo1Right.setXY(3, 32);
+    ioLevelStereo1Right.setXY(7, 36);
     ioLevelStereo1Right.setVisible(false);
     add(ioLevelStereo1Right);
+
+    selectIOModule.setXY(0, 0);
+    selectIOModule.setVisible(false);
+    add(selectIOModule);
 }
 
 OutModuleBase::~OutModuleBase()
@@ -75,4 +79,5 @@ void OutModuleBase::initialize()
     ioLevelStereo2Right.initialize();
     ioLevelStereo1Left.initialize();
     ioLevelStereo1Right.initialize();
+    selectIOModule.initialize();
 }

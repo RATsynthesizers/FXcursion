@@ -17,65 +17,37 @@ SystemViewBase::SystemViewBase()
     background.setColor(touchgfx::Color::getColorFromRGB(72, 90, 219));
     add(background);
 
-    stompBoard.setXY(0, 202);
-    add(stompBoard);
-
     statusBar.setXY(0, 0);
     add(statusBar);
 
-    inModule.setXY(280, 44);
+    stompBoard.setXY(0, 202);
+    add(stompBoard);
+
+    inModule.setXY(276, 40);
     add(inModule);
 
-    outModule.setXY(0, 44);
+    outModule.setXY(-4, 40);
     add(outModule);
 
-    stereoChain2.setXY(40, 125);
+    stereoChain2.setXY(40, 121);
     stereoChain2.setVisible(false);
     add(stereoChain2);
 
-    stereoChain1.setXY(40, 53);
+    stereoChain1.setXY(40, 49);
     stereoChain1.setVisible(false);
     add(stereoChain1);
 
-    monoChain4.setXY(40, 164);
+    monoChain4.setXY(40, 160);
     add(monoChain4);
 
-    monoChain3.setXY(40, 124);
+    monoChain3.setXY(40, 120);
     add(monoChain3);
 
-    monoChain2.setXY(40, 84);
+    monoChain2.setXY(40, 80);
     add(monoChain2);
 
-    monoChain1.setXY(40, 44);
+    monoChain1.setXY(40, 40);
     add(monoChain1);
-
-    selectIOModule.setXY(276, 40);
-    selectIOModule.setVisible(false);
-    add(selectIOModule);
-
-    selectMixer.setXY(218, 40);
-    selectMixer.setVisible(false);
-    add(selectMixer);
-
-    moveMixer.setXY(218, 40);
-    moveMixer.setVisible(false);
-    add(moveMixer);
-
-    selectModuleStereo.setXY(218, 49);
-    selectModuleStereo.setVisible(false);
-    add(selectModuleStereo);
-
-    moveModuleStereo.setXY(218, 49);
-    moveModuleStereo.setVisible(false);
-    add(moveModuleStereo);
-
-    selectModuleMono.setXY(218, 40);
-    selectModuleMono.setVisible(false);
-    add(selectModuleMono);
-
-    moveModuleMono.setXY(218, 40);
-    moveModuleMono.setVisible(false);
-    add(moveModuleMono);
 }
 
 SystemViewBase::~SystemViewBase()
@@ -85,8 +57,8 @@ SystemViewBase::~SystemViewBase()
 
 void SystemViewBase::setupScreen()
 {
-    stompBoard.initialize();
     statusBar.initialize();
+    stompBoard.initialize();
     inModule.initialize();
     outModule.initialize();
     stereoChain2.initialize();
@@ -95,11 +67,4 @@ void SystemViewBase::setupScreen()
     monoChain3.initialize();
     monoChain2.initialize();
     monoChain1.initialize();
-    selectIOModule.initialize();
-    selectMixer.initialize();
-    moveMixer.initialize();
-    selectModuleStereo.initialize();
-    moveModuleStereo.initialize();
-    selectModuleMono.initialize();
-    moveModuleMono.initialize();
 }

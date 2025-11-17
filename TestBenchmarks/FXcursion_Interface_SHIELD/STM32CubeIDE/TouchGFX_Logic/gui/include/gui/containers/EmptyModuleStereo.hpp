@@ -10,6 +10,9 @@ public:
     virtual ~EmptyModuleStereo() {}
 
     virtual void initialize();
+
+    void select();
+    void deselect();
 protected:
 };
 

@@ -27,12 +27,14 @@ public:
 
     virtual ~SystemPresenter() {}
 
-    void encParam_action(uint8_t id, int8_t scrollAmount);
-    void encSelect_action(int8_t scrollAmount);
-    void btnYES_action(void);
-    void btnNO_action(void);
-    void btnUP_action(void);
-    void btnDOWN_action(void);
+    void btnYesUpdate(void);
+    void btnNoUpdate(void);
+    void btnUpUpdate(void);
+    void btnDownUpdate(void);
+    void btnFootUpdate(U8 nID);
+
+    void encMenuUpdate(S8 nValue);
+    void encParamUpdate(U8 nID, S8 nValue);
 
 private:
     SystemPresenter();

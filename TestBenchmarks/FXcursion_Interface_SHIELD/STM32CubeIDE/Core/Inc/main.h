@@ -101,9 +101,9 @@ void Error_Handler(void);
 #define MY_SD_DETECT_GPIO_Port GPIOA
 #define MY_LED_REAR_Pin GPIO_PIN_15
 #define MY_LED_REAR_GPIO_Port GPIOA
-#define BTN_UP_Pin GPIO_PIN_13
+#define BTN_UP_Pin GPIO_PIN_14
 #define BTN_UP_GPIO_Port GPIOG
-#define BTN_DOWN_Pin GPIO_PIN_14
+#define BTN_DOWN_Pin GPIO_PIN_13
 #define BTN_DOWN_GPIO_Port GPIOG
 #define BTN_YES_Pin GPIO_PIN_4
 #define BTN_YES_GPIO_Port GPIOB
