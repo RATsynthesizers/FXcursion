@@ -194,14 +194,18 @@ int8_t STORAGE_Init_FS(uint8_t lun)
 int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_size)
 {
   /* USER CODE BEGIN 3 */
-  UNUSED(lun);
 
-  	HAL_SD_CardInfoTypeDef info;
-	BSP_SD_GetCardInfo(&info);
+	// Check state first. If it's not ready, don't even try to get info.
+  if (BSP_SD_GetCardState() != SD_TRANSFER_OK) {
+	  return USBD_FAIL; // Tells Windows immediately: "No media"
+  }
 
+	HAL_SD_CardInfoTypeDef info;
+    BSP_SD_GetCardInfo(&info);
+	/* Use -1 because the host expects the last logical block address */
 	*block_num  = info.LogBlockNbr - 1;
-    *block_size = info.LogBlockSize;
-  return (USBD_OK);
+	*block_size = info.LogBlockSize;
+	return USBD_OK;
   /* USER CODE END 3 */
 }
 
@@ -213,9 +217,12 @@ int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_
 int8_t STORAGE_IsReady_FS(uint8_t lun)
 {
   /* USER CODE BEGIN 4 */
-  UNUSED(lun);
+  if (BSP_SD_GetCardState() == SD_TRANSFER_OK)
+  {
+	return USBD_OK;
+  }
 
-  return (USBD_OK);
+  return (USBD_FAIL);
   /* USER CODE END 4 */
 }
 

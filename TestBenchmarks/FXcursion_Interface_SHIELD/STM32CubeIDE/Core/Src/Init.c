@@ -379,11 +379,11 @@ static void InitThread(void const *argument)
     usbThreadHandle = osThreadCreate(osThread(USBThread), NULL);
 
 	/* definition and creation of TouchGFXTask */
-	osThreadDef(TouchGFXTask, TouchGFX_Task, osPriorityNormal, 0, 4096U);
+	osThreadDef(TouchGFXTask, TouchGFX_Task, osPriorityBelowNormal, 0, 4096U);
 	TouchGFXTaskHandle = osThreadCreate(osThread(TouchGFXTask), NULL);
 
 #ifdef DEBUG
-    osThreadDef(MonitoringThread, MonitoringThread, osPriorityBelowNormal, 0, 200U);
+    osThreadDef(MonitoringThread, MonitoringThread, osPriorityLow, 0, 200U);
     monitoringThreadHandle = osThreadCreate(osThread(MonitoringThread), NULL);
 #endif
 
@@ -412,10 +412,13 @@ static void USBThread(void const *argument)
 
 	MX_USB_DEVICE_Init();
 
+	static uint8_t current_status = 0; // 0 = No Card, 1 = Card Present
+	static uint8_t prev_status = 1;    // 0 = No Card, 1 = Card Present
+
     for(;;)
     {
     	// Wait for the signal from any of the 3 ISRs
-		osEvent evt = osSignalWait(0x01, osWaitForever);
+		osEvent evt = osSignalWait(0x01, 1000);
 
 		if (evt.status == osEventSignal) {
 			/* 1. Call the library handler */
@@ -424,6 +427,48 @@ static void USBThread(void const *argument)
 			// 2. Re-enable the interrupt so the next USB event can trigger the ISR
 		    HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
 		}
+
+		if (prev_status == 0)
+		{
+			HAL_NVIC_DisableIRQ(SDMMC1_IRQn);
+
+		    HAL_SD_Abort(&hsd1);
+		    HAL_SD_DeInit(&hsd1);
+
+		    __HAL_RCC_SDMMC1_FORCE_RESET();
+		    __HAL_RCC_SDMMC1_RELEASE_RESET();
+
+		    HAL_Delay(10);
+
+		    HAL_SD_Init(&hsd1);
+
+		    HAL_NVIC_EnableIRQ(SDMMC1_IRQn);
+
+			if (HAL_SD_GetCardState(&hsd1) == HAL_SD_CARD_TRANSFER)
+			{
+				current_status = 1;
+			}
+			else
+			{
+				current_status = 0;
+			}
+		}
+		else
+		{
+			if (SD_NOT_PRESENT == BSP_PlatformIsDetected())
+			{
+				current_status = 0;
+			}
+		}
+
+		if (current_status == 1 && prev_status == 0) {
+		   // SUCCESSFUL INSERTION
+		   HAL_PCD_DevDisconnect(&hpcd_USB_OTG_FS);
+		   osDelay(200);
+		   HAL_PCD_DevConnect(&hpcd_USB_OTG_FS);
+		}
+
+		prev_status = current_status;
     }
 }
 
