@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -11,15 +11,16 @@
 *******************************************************************************/
 
 #include <math.h>
+#include <touchgfx/canvas_widget_renderer/CanvasWidgetRenderer.hpp>
 #include <touchgfx/widgets/canvas/CWRVectorRenderer.hpp>
 
 namespace touchgfx
 {
-void CWRVectorRenderer::setup(const Widget& renderer, const Rect& drawingArea)
+void CWRVectorRenderer::setup(const Rect& canvasAreaAbs, const Rect& invalidatedAreaRel)
 {
-    drawArea = drawingArea;
-    proxyWidget.setPosition(renderer);
-    proxyWidget.setParent(renderer.getParent());
+    canvasAreaAbsolute = canvasAreaAbs;
+    drawArea = invalidatedAreaRel;
+    canvasPainter = 0;
 
     // Clear transformation matrix
     matrix.reset();
@@ -39,9 +40,9 @@ void CWRVectorRenderer::tearDown()
     // Clear drawing area to avoid drawing any paths until next setup
     drawArea = Rect();
     // Wait for the painter to finish
-    if (proxyWidget.getPainter())
+    if (canvasPainter)
     {
-        proxyWidget.getPainter()->tearDown();
+        canvasPainter->tearDown();
     }
 }
 
@@ -54,23 +55,78 @@ void CWRVectorRenderer::drawPath(const uint8_t* cmds, uint32_t nCmds, const floa
         return;
     }
 
-    const int16_t bottom = area.bottom();
-    while (area.y < bottom)
+    switch (HAL::DISPLAY_ROTATION)
     {
-        while (!drawPathArea(cmds, nCmds, points, nPoints, area))
+    case rotate0:
         {
-            if (area.height == 1)
+            const int16_t bottom = area.bottom();
+            while (area.y < bottom)
             {
-                // Failed on a single line
-                break;
+                while (!drawPathArea(cmds, nCmds, points, nPoints, area))
+                {
+                    if (area.height == 1)
+                    {
+                        // Failed on a single line
+                        break;
+                    }
+                    area.height = (area.height + 1) >> 1;
+#ifdef SIMULATOR
+                    if (CanvasWidgetRenderer::getWriteMemoryUsageReport())
+                    {
+                        if (area.height > 1)
+                        {
+                            touchgfx_printf("CWR will split draw into multiple draws due to limited memory.\n");
+                        }
+                        else
+                        {
+                            touchgfx_printf("CWR was unable to complete a draw operation due to limited memory.\n");
+                        }
+                    }
+#endif
+                }
+                area.y += area.height;
+                if (area.bottom() > bottom)
+                {
+                    area.height = bottom - area.y;
+                }
             }
-            area.height = (area.height + 1) >> 1; // Cannot become 0 as (2+1)>>1=1
         }
-        area.y += area.height;
-        if (area.bottom() > bottom)
+        break;
+    case rotate90:
         {
-            area.height = bottom - area.y;
+            const int16_t right = area.right();
+            while (area.x < right)
+            {
+                while (!drawPathArea(cmds, nCmds, points, nPoints, area))
+                {
+                    if (area.width == 1)
+                    {
+                        // Failed on a single line
+                        break;
+                    }
+                    area.width = (area.width + 1) >> 1;
+#ifdef SIMULATOR
+                    if (CanvasWidgetRenderer::getWriteMemoryUsageReport())
+                    {
+                        if (area.width > 1)
+                        {
+                            touchgfx_printf("CWR will split draw into multiple draws due to limited memory.\n");
+                        }
+                        else
+                        {
+                            touchgfx_printf("CWR was unable to complete a draw operation due to limited memory.\n");
+                        }
+                    }
+#endif
+                }
+                area.x += area.width;
+                if (area.right() > right)
+                {
+                    area.width = right - area.x;
+                }
+            }
         }
+        break;
     }
 }
 
@@ -92,7 +148,7 @@ bool CWRVectorRenderer::drawFill(const uint8_t* cmds, uint32_t nCmds, const floa
     uint32_t cmdInx = 0;
     uint32_t pointInx = 0;
 
-    Canvas canvas(&proxyWidget, area);
+    Canvas canvas(canvasPainter, canvasAreaAbsolute, area, 255U);
     canvas.setFillingRule((drawMode == FILL_EVEN_ODD) ? Rasterizer::FILL_EVEN_ODD : Rasterizer::FILL_NON_ZERO);
 
     float positionX = 0.0f;
@@ -179,7 +235,7 @@ bool CWRVectorRenderer::drawStroke(const uint8_t* cmds, uint32_t nCmds, const fl
         return true;
     }
 
-    StrokeCanvas canvas(&proxyWidget, area, matrix);
+    StrokeCanvas canvas(canvasPainter, canvasAreaAbsolute, area, 255U, matrix);
     canvas.setStroke(strokeWidth, strokeMiterLimit, strokeLineJoin, strokeLineCap, LCD::div255(colorAlpha * alpha));
 
     float positionX = 0.0f;
@@ -315,17 +371,17 @@ void CWRVectorRenderer::drawStrokeBackwards(uint32_t cmdInxPathStart, uint32_t c
             assert(pointInx >= 4);
             pointInx -= 4;
             getPreviousDestination(positionX, positionY, cmdInx, pointInx, cmds, points);
-            canvas.strokeBezierQuad(points[pointInx + 2], points[pointInx + 3],
-                                    points[pointInx], points[pointInx + 1],
+            canvas.strokeBezierQuad(points[pointInx + 2], points[pointInx + 3], //lint !e662 !e661
+                                    points[pointInx], points[pointInx + 1],     //lint !e662 !e661
                                     positionX, positionY);
             break;
         case VECTOR_PRIM_BEZIER_CUBIC:
             assert(pointInx >= 6);
             pointInx -= 6;
             getPreviousDestination(positionX, positionY, cmdInx, pointInx, cmds, points);
-            canvas.strokeBezierCubic(points[pointInx + 4], points[pointInx + 5],
-                                     points[pointInx + 2], points[pointInx + 3],
-                                     points[pointInx], points[pointInx + 1],
+            canvas.strokeBezierCubic(points[pointInx + 4], points[pointInx + 5], //lint !e662 !e661
+                                     points[pointInx + 2], points[pointInx + 3], //lint !e662 !e661
+                                     points[pointInx], points[pointInx + 1],     //lint !e662 !e661
                                      positionX, positionY);
             break;
         }
@@ -355,11 +411,11 @@ void CWRVectorRenderer::getPreviousDestination(float& positionX, float& position
             pointInx -= 2;
             if (!foundX)
             {
-                positionX = points[pointInx];
+                positionX = points[pointInx]; //lint !e662 !e661
             }
             if (!foundY)
             {
-                positionY = points[pointInx + 1];
+                positionY = points[pointInx + 1]; //lint !e662 !e661
             }
             return;
         case VECTOR_PRIM_HLINE:
@@ -367,7 +423,7 @@ void CWRVectorRenderer::getPreviousDestination(float& positionX, float& position
             pointInx -= 1;
             if (!foundX)
             {
-                positionX = points[pointInx];
+                positionX = points[pointInx]; //lint !e662 !e661
             }
             if (foundY)
             {
@@ -380,7 +436,7 @@ void CWRVectorRenderer::getPreviousDestination(float& positionX, float& position
             pointInx -= 1;
             if (!foundY)
             {
-                positionY = points[pointInx];
+                positionY = points[pointInx]; //lint !e662 !e661
             }
             if (foundX)
             {
@@ -411,7 +467,7 @@ void CWRVectorRenderer::setColor(colortype c)
     colorAlpha = c >> 24;
 
     getColorPainterColor().setColor(c);
-    proxyWidget.setPainter(getColorPainter());
+    canvasPainter = &getColorPainter();
 }
 
 void CWRVectorRenderer::setAlpha(uint8_t a)
@@ -440,18 +496,11 @@ void CWRVectorRenderer::setLinearGradient(float x0, float y0, float x1, float y1
     colorAlpha = 255;
 
     AbstractPainterLinearGradient& linearPainter = getLinearPainter();
+    linearPainter.setWidgetWidth(canvasAreaAbsolute.width);
     linearPainter.setGradientEndPoints(x0, y0, x1, y1, width, height, matrix);
     assert(palette && "A gradient palette is required by CWRVectorRenderer");
     linearPainter.setGradientTexture(palette, isSolid);
-    proxyWidget.setPainter(linearPainter);
-}
-
-void CWRVectorRenderer::setRadialGradient(float /* cx */, float /* cy */, float /* radius */,
-                                          uint32_t /* stops */,
-                                          const float* /* stopPositions */,
-                                          const colortype* /* stopColors */)
-{
-    assert(!"CWRVectorRenderer does not support radial gradient!");
+    canvasPainter = &linearPainter;
 }
 
 void CWRVectorRenderer::setTransformationMatrix(const Matrix3x3& m)
@@ -469,8 +518,8 @@ void CWRVectorRenderer::StrokeCanvas::strokeMoveTo(float x, float y)
 
 void CWRVectorRenderer::StrokeCanvas::strokeLineTo(float x, float y)
 {
-    float dx = x - lastX;
-    float dy = y - lastY;
+    const float dx = x - lastX;
+    const float dy = y - lastY;
     float len = sqrtf(dx * dx + dy * dy);
     if (len > 0.0f)
     {

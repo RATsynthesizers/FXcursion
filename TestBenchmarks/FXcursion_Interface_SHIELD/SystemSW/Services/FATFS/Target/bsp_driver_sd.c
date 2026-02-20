@@ -11,7 +11,7 @@
  ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -27,12 +27,21 @@
 /* USER CODE END FirstSection */
 /* Includes ------------------------------------------------------------------*/
 #include "bsp_driver_sd.h"
+#include "cmsis_os.h"
+#include "general.h"
 
 /* Extern variables ---------------------------------------------------------*/
 
 extern SD_HandleTypeDef hsd1;
 
 /* USER CODE BEGIN BeforeInitSection */
+
+SD_OwnerTypeDef sd_owner = SD_OWNER_NONE;
+
+osMessageQId FatFS_QueueID = NULL;
+osMessageQId USB_SD_QueueID = NULL; // The new dedicated queue for USB
+osMutexId 	 SDMMC_MutexID = NULL;
+
 /* can be used to modify / undefine following code or add code */
 /* USER CODE END BeforeInitSection */
 /**
@@ -41,12 +50,29 @@ extern SD_HandleTypeDef hsd1;
   */
 __weak uint8_t BSP_SD_Init(void)
 {
-  uint8_t sd_state = MSD_OK;
+  uint8_t sd_state = MSD_ERROR;
   /* Check if the SD card is plugged in the slot */
   if (BSP_SD_IsDetected() != SD_PRESENT)
   {
     return MSD_ERROR_SD_NOT_PRESENT;
   }
+
+  // ... Inside SD_initialize ...
+
+  osMutexDef(SDMMC_Mutex);
+  SDMMC_MutexID = osMutexCreate(osMutex(SDMMC_Mutex));
+
+  osMessageQDef(FatFS_Queue, 10, U8);
+  FatFS_QueueID = osMessageCreate(osMessageQ(FatFS_Queue), NULL);
+
+  osMessageQDef(USB_SD_Queue, 10, U8);
+  USB_SD_QueueID = osMessageCreate(osMessageQ(USB_SD_Queue), NULL);
+
+  if(SDMMC_MutexID == NULL || FatFS_QueueID == NULL || USB_SD_QueueID == NULL)
+  {
+	  return sd_state;
+  }
+
   /* HAL SD initialization */
   sd_state = HAL_SD_Init(&hsd1);
   /* Configure SD Bus width (4 bits mode selected) */
@@ -254,35 +280,58 @@ void HAL_SD_RxCpltCallback(SD_HandleTypeDef *hsd)
 }
 
 /* USER CODE BEGIN CallBacksSection_C */
+/* USER CODE BEGIN callbackSection */
+/* can be used to modify / following code or add new code */
+/* USER CODE END callbackSection */
 /**
-  * @brief BSP SD Abort callback
+  * @brief Tx Transfer completed callbacks
+  * @param hsd: SD handle
   * @retval None
-  * @note empty (up to the user to fill it in or to remove it if useless)
   */
-__weak void BSP_SD_AbortCallback(void)
+void BSP_SD_WriteCpltCallback(void)
 {
-
+	if (sd_owner == SD_OWNER_USB)
+	{
+		osMessagePut(USB_SD_QueueID, WRITE_CPLT_MSG, 0);
+	}
+	else if (sd_owner == SD_OWNER_FATFS)
+	{
+		osMessagePut(FatFS_QueueID, WRITE_CPLT_MSG, 0);
+	}
 }
 
 /**
-  * @brief BSP Tx Transfer completed callback
+  * @brief Rx Transfer completed callbacks
+  * @param hsd: SD handle
   * @retval None
-  * @note empty (up to the user to fill it in or to remove it if useless)
   */
-__weak void BSP_SD_WriteCpltCallback(void)
+void BSP_SD_ReadCpltCallback(void)
 {
-
+	if (sd_owner == SD_OWNER_USB)
+	{
+		osMessagePut(USB_SD_QueueID, READ_CPLT_MSG, 0);
+	}
+	else if (sd_owner == SD_OWNER_FATFS)
+	{
+		osMessagePut(FatFS_QueueID, READ_CPLT_MSG, 0);
+	}
 }
 
-/**
-  * @brief BSP Rx Transfer completed callback
-  * @retval None
-  * @note empty (up to the user to fill it in or to remove it if useless)
-  */
-__weak void BSP_SD_ReadCpltCallback(void)
-{
+/* USER CODE BEGIN ErrorAbortCallbacks */
 
+void BSP_SD_AbortCallback(void)
+{
+	if (sd_owner == SD_OWNER_USB)
+	{
+		osMessagePut(USB_SD_QueueID, RW_ABORT_MSG, 0);
+	}
+	else if (sd_owner == SD_OWNER_FATFS)
+	{
+		osMessagePut(FatFS_QueueID, RW_ABORT_MSG, 0);
+	}
 }
+
+/* USER CODE END ErrorAbortCallbacks */
 /* USER CODE END CallBacksSection_C */
 
 /**

@@ -9,8 +9,6 @@
 #include <mvp/MVPHeap.hpp>
 
 #include <touchgfx/transitions/NoTransition.hpp>
-#include <touchgfx/transitions/CoverTransition.hpp>
-
 #include <gui/common/FrontendApplication.hpp>
 #include <gui/model/Model.hpp>
 
@@ -18,6 +16,22 @@
 #include <gui/logostartup_screen/LogoStartupPresenter.hpp>
 #include <gui/system_screen/SystemView.hpp>
 #include <gui/system_screen/SystemPresenter.hpp>
+#include <gui/fxchain_screen/FXChainView.hpp>
+#include <gui/fxchain_screen/FXChainPresenter.hpp>
+#include <gui/effectsettings_screen/EffectSettingsView.hpp>
+#include <gui/effectsettings_screen/EffectSettingsPresenter.hpp>
+#include <gui/recorder_screen/RecorderView.hpp>
+#include <gui/recorder_screen/RecorderPresenter.hpp>
+#include <gui/looper_screen/LooperView.hpp>
+#include <gui/looper_screen/LooperPresenter.hpp>
+#include <gui/mixer_screen/MixerView.hpp>
+#include <gui/mixer_screen/MixerPresenter.hpp>
+#include <gui/input_screen/InputView.hpp>
+#include <gui/input_screen/InputPresenter.hpp>
+#include <gui/output_screen/OutputView.hpp>
+#include <gui/output_screen/OutputPresenter.hpp>
+#include <gui/stomp_screen/StompView.hpp>
+#include <gui/stomp_screen/StompPresenter.hpp>
 
 
 /**
@@ -42,7 +56,15 @@ public:
      */
     typedef touchgfx::meta::TypeList< LogoStartupView,
             touchgfx::meta::TypeList< SystemView,
-            touchgfx::meta::Nil >
+            touchgfx::meta::TypeList< FXChainView,
+            touchgfx::meta::TypeList< EffectSettingsView,
+            touchgfx::meta::TypeList< RecorderView,
+            touchgfx::meta::TypeList< LooperView,
+            touchgfx::meta::TypeList< MixerView,
+            touchgfx::meta::TypeList< InputView,
+            touchgfx::meta::TypeList< OutputView,
+            touchgfx::meta::TypeList< StompView,
+            touchgfx::meta::Nil > > > > > > > > >
             > GeneratedViewTypes;
 
     /**
@@ -56,7 +78,15 @@ public:
      */
     typedef touchgfx::meta::TypeList< LogoStartupPresenter,
             touchgfx::meta::TypeList< SystemPresenter,
-            touchgfx::meta::Nil >
+            touchgfx::meta::TypeList< FXChainPresenter,
+            touchgfx::meta::TypeList< EffectSettingsPresenter,
+            touchgfx::meta::TypeList< RecorderPresenter,
+            touchgfx::meta::TypeList< LooperPresenter,
+            touchgfx::meta::TypeList< MixerPresenter,
+            touchgfx::meta::TypeList< InputPresenter,
+            touchgfx::meta::TypeList< OutputPresenter,
+            touchgfx::meta::TypeList< StompPresenter,
+            touchgfx::meta::Nil > > > > > > > > >
             > GeneratedPresenterTypes;
 
     /**
@@ -69,8 +99,7 @@ public:
      * @note All transition types used in the application MUST be added to this list!
      */
     typedef touchgfx::meta::TypeList< touchgfx::NoTransition,
-            touchgfx::meta::TypeList< CoverTransition<EAST>,
-            touchgfx::meta::Nil >
+            touchgfx::meta::Nil
             > GeneratedTransitionTypes;
 
     /**

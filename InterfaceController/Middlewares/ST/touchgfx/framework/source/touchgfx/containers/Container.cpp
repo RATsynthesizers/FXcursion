@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -125,7 +125,7 @@ void Container::draw(const Rect& invalidatedArea) const
         return;
     }
 
-    Rect tmp = invalidatedArea;
+    const Rect tmp = invalidatedArea;
     Drawable* d = firstChild;
     while (d)
     {
@@ -162,8 +162,8 @@ void Container::getLastChild(int16_t x, int16_t y, Drawable** last)
         // Iterate over children.
         if (d->isVisible() && d->getRect().intersect(x, y))
         {
-            int16_t xadj = x - d->getX();
-            int16_t yadj = y - d->getY();
+            const int16_t xadj = x - d->getX();
+            const int16_t yadj = y - d->getY();
             d->getLastChild(xadj, yadj, last);
         }
         d = d->nextSibling;
@@ -190,9 +190,9 @@ void Container::getLastChildNear(int16_t x, int16_t y, Drawable** last, int16_t*
         {
             // Touched a drawable, but perhaps there is a better alternative
             previous = *last;
-            Rect absRect = (*last)->getAbsoluteRect();
-            int dx = (x + meAbsRect.x) - (absRect.x + (absRect.width / 2));
-            int dy = (y + meAbsRect.y) - (absRect.y + (absRect.height / 2));
+            const Rect absRect = (*last)->getAbsoluteRect();
+            const int dx = (x + meAbsRect.x) - (absRect.x + (absRect.width / 2));
+            const int dy = (y + meAbsRect.y) - (absRect.y + (absRect.height / 2));
             bestDistance = dx * dx + dy * dy;
         }
 
@@ -203,12 +203,12 @@ void Container::getLastChildNear(int16_t x, int16_t y, Drawable** last, int16_t*
         for (int ring = 0; ring < numRings; ring++)
         {
             // For each 'ring' "distance" increases up to "fingerSize":
-            int distance = fingerSize * (ring + 1) / numRings;
+            const int distance = fingerSize * (ring + 1) / numRings;
             for (int sampleIndex = 0; sampleIndex < 4; sampleIndex++)
             {
                 const int* xy = samplePoints[ring % 2][sampleIndex];
-                int16_t deltaX = xy[0] * distance;
-                int16_t deltaY = xy[1] * distance;
+                const int16_t deltaX = xy[0] * distance;
+                const int16_t deltaY = xy[1] * distance;
                 if (rect.intersect(x + deltaX, y + deltaY))
                 {
                     Drawable* drawable = 0;
@@ -216,11 +216,11 @@ void Container::getLastChildNear(int16_t x, int16_t y, Drawable** last, int16_t*
                     if (drawable && drawable != previous)
                     {
                         previous = drawable;
-                        Rect absRect = drawable->getAbsoluteRect();
+                        const Rect absRect = drawable->getAbsoluteRect();
                         // Find distance to center of drawable
-                        int dx = (x + meAbsRect.x) - (absRect.x + (absRect.width / 2));
-                        int dy = (y + meAbsRect.y) - (absRect.y + (absRect.height / 2));
-                        uint32_t dist = dx * dx + dy * dy;
+                        const int dx = (x + meAbsRect.x) - (absRect.x + (absRect.width / 2));
+                        const int dy = (y + meAbsRect.y) - (absRect.y + (absRect.height / 2));
+                        const uint32_t dist = dx * dx + dy * dy;
                         // Check if this drawable center is closer than the previous
                         if (dist < bestDistance)
                         {

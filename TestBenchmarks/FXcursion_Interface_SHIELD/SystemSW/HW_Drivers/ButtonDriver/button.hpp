@@ -16,8 +16,9 @@
 
 typedef enum enButtonState
 {
-	BTN_RELEASED = 0,
-	BTN_PRESSED	 = 1
+	BTN_RELEASED 	= 0,
+	BTN_PRESSED	 	= 1,
+	BTN_LONG_PRESS 	= 2,
 
 } ButtonState;
 
@@ -52,6 +53,9 @@ private:
 	U32 stateChangeTime;	  	  // Time (in ms) when the rawPinState last changed
 	const U32 DEBOUNCE_TIME = 50; // 50ms is a safe debounce window
 
+	U32 pressStartTime; 			   // Time when the button state became stable BTN_PRESSED
+	const U32 LONG_PRESS_TIME = 1000;  // 1000ms (1 second) for a long press event
+
 	/////////////////////////////////////////////////
 };
 
@@ -59,6 +63,6 @@ extern Button btnYes;
 extern Button btnNo;
 extern Button btnUp;
 extern Button btnDown;
-extern Button btnFoot;
+extern Button btnFunc;
 
 #endif /* BUTTON_H_ */

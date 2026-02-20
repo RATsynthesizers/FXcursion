@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -39,8 +39,8 @@ void GraphWrapAndOverwriteData::beforeAddValue()
 {
     if (current == 0 && usedCapacity >= maxCapacity)
     {
-        int xMin = getGraphRangeXMin();
-        int xMax = getGraphRangeXMax();
+        const int xMin = getGraphRangeXMin();
+        const int xMax = getGraphRangeXMax();
         for (int i = xMin; i < 0; i++)
         {
             invalidateXAxisPointAt(i);
@@ -74,8 +74,8 @@ int16_t GraphWrapAndOverwriteData::addValue(int value)
     }
     if (index == 0 && usedCapacity >= maxCapacity)
     {
-        int xMin = getGraphRangeXMin();
-        int xMax = getGraphRangeXMax();
+        const int xMin = getGraphRangeXMin();
+        const int xMax = getGraphRangeXMax();
         for (int i = xMin; i < 0; i++)
         {
             invalidateXAxisPointAt(i);

@@ -18,6 +18,11 @@ public:
         model.tick();
         FrontendApplicationBase::handleTickEvent();
     }
+
+    Model* getModel()
+    {
+        return &model;
+    }
 private:
 };
 

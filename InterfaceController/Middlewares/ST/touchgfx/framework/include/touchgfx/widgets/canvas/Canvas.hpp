@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -41,13 +41,14 @@ public:
      * Canvas Constructor. Locks the framebuffer and prepares for drawing only in the allowed area
      * which has been invalidated. The color depth of the LCD is taken into account.
      *
-     * @param  _widget         a pointer to the CanvasWidget using this Canvas. Used for getting the
-     *                         canvas dimensions.
-     * @param  invalidatedArea the are which should be updated.
+     * @param  painter              The painter used for drawing in the canvas.
+     * @param  canvasAreaAbs        The canvas dimensions in absolute coordinates.
+     * @param  invalidatedAreaRel   The area which should be updated in relative coordinates to the canvas area.
+     * @param  globalAlpha          The alpha value to use when drawing in the canvas.
      *
      * @note Locks the framebuffer.
      */
-    Canvas(const CanvasWidget* _widget, const Rect& invalidatedArea);
+    Canvas(const AbstractPainter* const painter, const Rect& canvasAreaAbs, const Rect& invalidatedAreaRel, uint8_t globalAlpha);
 
     /**
      * Finalizes an instance of the Canvas class.
@@ -199,18 +200,18 @@ public:
     }
 
 private:
-    // Pointer to the widget using the Canvas
-    const CanvasWidget* widget;
+    // For drawing
+    const AbstractPainter* const canvasPainter;
+    int16_t canvasAreaWidth;
+    uint8_t canvasAlpha;
+    Rect dirtyAreaAbsolute;
+    Rasterizer rasterizer;
 
     // Invalidate area in Q5 coordinates
     CWRUtil::Q5 invalidatedAreaX;
     CWRUtil::Q5 invalidatedAreaY;
     CWRUtil::Q5 invalidatedAreaWidth;
     CWRUtil::Q5 invalidatedAreaHeight;
-
-    // For drawing
-    Rect dirtyAreaAbsolute;
-    Rasterizer rasterizer;
 
     // Used for optimization of drawing algorithm
     bool isPenDown;

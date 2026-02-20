@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -284,17 +284,29 @@ public:
 
     /**
      * Invalidates the entire screen.
-     *
-     * @param   area    The area to invalidate.
      */
-    void invalidate();
+    virtual void invalidate();
 
     /**
      * Invalidates the given area.
      *
      * @param  area The area to invalidate.
      */
-    void invalidateArea(Rect area);
+    virtual void invalidateArea(Rect area);
+
+    /**
+     * Get list of the invalidated areas in the current frame.
+     * The list is cleared in the beginning of HAL::tick.
+     *
+     * The list can be usefull on some platforms where the information
+     * can be used to reduce the amount of pixels sent to the display.
+     *
+     * @return Const reference to the list.
+     */
+    const Vector<Rect, 8>& getInvalidatedAreas()
+    {
+        return cachedDirtyAreas;
+    }
 
 protected:
     /** Protected constructor. */

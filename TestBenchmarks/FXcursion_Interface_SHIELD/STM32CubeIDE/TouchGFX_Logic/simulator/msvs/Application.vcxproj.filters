@@ -208,6 +208,102 @@
     <Filter Include="Header Files\generated\gui_generated\system_screen">
       <UniqueIdentifier>7A202B63-BDB6-62D1-59C2-B052D0B9A3DD</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\gui\fxchain_screen">
+      <UniqueIdentifier>4C6A75DC-6186-8FC5-201F-09E8DF408715</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\fxchain_screen">
+      <UniqueIdentifier>364D79EE-5F8C-1C58-E9B3-A1E85923B54C</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\generated\gui_generated\fxchain_screen">
+      <UniqueIdentifier>561E6EBE-9E38-1D5F-3BD4-15F0F80AC0B3</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\generated\gui_generated\fxchain_screen">
+      <UniqueIdentifier>8AF6BBF2-D5EC-2AA5-9EEE-EB90B1ACFD4A</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\effectsettings_screen">
+      <UniqueIdentifier>B4B93EB6-8D83-7F76-A138-4D16D491D30C</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\effectsettings_screen">
+      <UniqueIdentifier>835EEC51-64CF-3B97-AA6A-A9280C8306FC</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\generated\gui_generated\effectsettings_screen">
+      <UniqueIdentifier>F9A1FF45-0135-0DE8-5101-431682A79BDF</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\generated\gui_generated\effectsettings_screen">
+      <UniqueIdentifier>ACBED91F-7C98-E568-2650-A6DBF6F0CD0B</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\stomp_screen">
+      <UniqueIdentifier>D0C8012A-C326-E921-3959-5FEA0E4149B5</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\stomp_screen">
+      <UniqueIdentifier>8F6F04D4-0FD6-4494-73BE-F445821A50BA</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\mixer_screen">
+      <UniqueIdentifier>6C1F79FB-CC8C-8618-9F16-905F498740F4</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\mixer_screen">
+      <UniqueIdentifier>533F8F02-809C-9884-C7AA-AE80BD97B5B5</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\output_screen">
+      <UniqueIdentifier>568B7443-A0BA-B932-83EF-474ECD923E8E</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\output_screen">
+      <UniqueIdentifier>4BB95F95-688D-4059-3C58-915122D66032</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\looper_screen">
+      <UniqueIdentifier>B93395F3-F422-9BC9-AD22-5B082DB539EE</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\looper_screen">
+      <UniqueIdentifier>B465399C-7282-9260-5D62-872B51B9A66A</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\recorder_screen">
+      <UniqueIdentifier>DD5A04F6-66B6-6EFF-1F2E-CB5AACCC781A</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\recorder_screen">
+      <UniqueIdentifier>FE877AC3-FF55-E372-9585-33FC165E7AEF</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\input_screen">
+      <UniqueIdentifier>47B57916-BF9D-CECA-BA88-10D9C2257C63</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\input_screen">
+      <UniqueIdentifier>FA6FFDC8-2638-87E1-9F27-FB602245284C</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\generated\gui_generated\recorder_screen">
+      <UniqueIdentifier>EFBDC941-D114-87B6-14C3-5A778C3AE579</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\generated\gui_generated\recorder_screen">
+      <UniqueIdentifier>A5133B51-33DC-26FD-1F66-B2299311E08E</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\generated\gui_generated\output_screen">
+      <UniqueIdentifier>F6E9E6DF-6435-429B-C7A8-E4AF9CBA4A58</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\generated\gui_generated\output_screen">
+      <UniqueIdentifier>49EAB6A2-D83E-1188-6331-C35C5A95201B</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\generated\gui_generated\mixer_screen">
+      <UniqueIdentifier>B8DEAD24-5B63-5BE8-0D36-F138ECE63565</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\generated\gui_generated\mixer_screen">
+      <UniqueIdentifier>4CA476F9-30A8-7597-7EB8-B7E338A61F77</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\generated\gui_generated\stomp_screen">
+      <UniqueIdentifier>F409EC77-9C86-E885-DE54-0C87B08917D0</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\generated\gui_generated\stomp_screen">
+      <UniqueIdentifier>7209B47F-DE2A-146C-E248-7A23E39139F0</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\generated\gui_generated\looper_screen">
+      <UniqueIdentifier>8A66AD66-BF15-617F-9E82-333355E1F9C7</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\generated\gui_generated\looper_screen">
+      <UniqueIdentifier>1BE29C47-9450-D2B4-7006-53694362EEDF</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\generated\gui_generated\input_screen">
+      <UniqueIdentifier>1DB40BCA-52E2-8A53-63DB-6A30ECBBFEDF</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\generated\gui_generated\input_screen">
+      <UniqueIdentifier>E5EC9E2A-FE56-D846-42EF-31324312320D</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(TouchGFXReleasePath)\framework\source\platform\driver\touch\SDL2TouchController.cpp">
@@ -413,6 +509,132 @@
     </ClCompile>
     <ClCompile Include="..\..\generated\gui_generated\src\system_screen\SystemViewBase.cpp">
       <Filter>Source Files\generated\gui_generated\system_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\containers\AddModuleWindow.cpp">
+      <Filter>Source Files\gui\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\containers\AddModuleWindowBase.cpp">
+      <Filter>Source Files\generated\gui_generated\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\containers\EffectListContainer.cpp">
+      <Filter>Source Files\gui\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\containers\EffectListContainerBase.cpp">
+      <Filter>Source Files\generated\gui_generated\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\containers\EffectListItemSelected.cpp">
+      <Filter>Source Files\gui\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\containers\EffectListItemSelectedBase.cpp">
+      <Filter>Source Files\generated\gui_generated\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\containers\FXChainItem.cpp">
+      <Filter>Source Files\gui\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\containers\FXChainItemBase.cpp">
+      <Filter>Source Files\generated\gui_generated\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\fxchain_screen\FXChainPresenter.cpp">
+      <Filter>Source Files\gui\fxchain_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\fxchain_screen\FXChainView.cpp">
+      <Filter>Source Files\gui\fxchain_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\fxchain_screen\FXChainViewBase.cpp">
+      <Filter>Source Files\generated\gui_generated\fxchain_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\containers\CustomGauge.cpp">
+      <Filter>Source Files\gui\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\containers\CustomGaugeBase.cpp">
+      <Filter>Source Files\generated\gui_generated\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\containers\EffectPictogram.cpp">
+      <Filter>Source Files\gui\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\containers\EffectPictogramBase.cpp">
+      <Filter>Source Files\generated\gui_generated\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\effectsettings_screen\EffectSettingsPresenter.cpp">
+      <Filter>Source Files\gui\effectsettings_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\effectsettings_screen\EffectSettingsView.cpp">
+      <Filter>Source Files\gui\effectsettings_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\effectsettings_screen\EffectSettingsViewBase.cpp">
+      <Filter>Source Files\generated\gui_generated\effectsettings_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\input_screen\InputPresenter.cpp">
+      <Filter>Source Files\gui\input_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\input_screen\InputView.cpp">
+      <Filter>Source Files\gui\input_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\input_screen\InputViewBase.cpp">
+      <Filter>Source Files\generated\gui_generated\input_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\looper_screen\LooperPresenter.cpp">
+      <Filter>Source Files\gui\looper_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\looper_screen\LooperView.cpp">
+      <Filter>Source Files\gui\looper_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\looper_screen\LooperViewBase.cpp">
+      <Filter>Source Files\generated\gui_generated\looper_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\mixer_screen\MixerPresenter.cpp">
+      <Filter>Source Files\gui\mixer_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\mixer_screen\MixerView.cpp">
+      <Filter>Source Files\gui\mixer_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\mixer_screen\MixerViewBase.cpp">
+      <Filter>Source Files\generated\gui_generated\mixer_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\output_screen\OutputPresenter.cpp">
+      <Filter>Source Files\gui\output_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\output_screen\OutputView.cpp">
+      <Filter>Source Files\gui\output_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\output_screen\OutputViewBase.cpp">
+      <Filter>Source Files\generated\gui_generated\output_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\recorder_screen\RecorderPresenter.cpp">
+      <Filter>Source Files\gui\recorder_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\recorder_screen\RecorderView.cpp">
+      <Filter>Source Files\gui\recorder_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\recorder_screen\RecorderViewBase.cpp">
+      <Filter>Source Files\generated\gui_generated\recorder_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\stomp_screen\StompPresenter.cpp">
+      <Filter>Source Files\gui\stomp_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\stomp_screen\StompView.cpp">
+      <Filter>Source Files\gui\stomp_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\stomp_screen\StompViewBase.cpp">
+      <Filter>Source Files\generated\gui_generated\stomp_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\containers\EffectListItem.cpp">
+      <Filter>Source Files\gui\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\containers\EffectListItemBase.cpp">
+      <Filter>Source Files\generated\gui_generated\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\containers\ModalWindowDelete.cpp">
+      <Filter>Source Files\gui\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\containers\ModalWindowDeleteBase.cpp">
+      <Filter>Source Files\generated\gui_generated\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\containers\Pages.cpp">
+      <Filter>Source Files\gui\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\containers\PagesBase.cpp">
+      <Filter>Source Files\generated\gui_generated\containers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1029,6 +1251,132 @@
     </ClInclude>
     <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\system_screen\SystemViewBase.hpp">
       <Filter>Header Files\generated\gui_generated\system_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\containers\AddModuleWindow.hpp">
+      <Filter>Header Files\gui\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\containers\AddModuleWindowBase.hpp">
+      <Filter>Header Files\generated\gui_generated\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\containers\EffectListContainer.hpp">
+      <Filter>Header Files\gui\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\containers\EffectListContainerBase.hpp">
+      <Filter>Header Files\generated\gui_generated\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\containers\EffectListItemSelected.hpp">
+      <Filter>Header Files\gui\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\containers\EffectListItemSelectedBase.hpp">
+      <Filter>Header Files\generated\gui_generated\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\containers\FXChainItem.hpp">
+      <Filter>Header Files\gui\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\containers\FXChainItemBase.hpp">
+      <Filter>Header Files\generated\gui_generated\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\fxchain_screen\FXChainPresenter.hpp">
+      <Filter>Header Files\gui\fxchain_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\fxchain_screen\FXChainView.hpp">
+      <Filter>Header Files\gui\fxchain_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\fxchain_screen\FXChainViewBase.hpp">
+      <Filter>Header Files\generated\gui_generated\fxchain_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\containers\CustomGauge.hpp">
+      <Filter>Header Files\gui\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\containers\CustomGaugeBase.hpp">
+      <Filter>Header Files\generated\gui_generated\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\containers\EffectPictogram.hpp">
+      <Filter>Header Files\gui\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\containers\EffectPictogramBase.hpp">
+      <Filter>Header Files\generated\gui_generated\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\effectsettings_screen\EffectSettingsPresenter.hpp">
+      <Filter>Header Files\gui\effectsettings_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\effectsettings_screen\EffectSettingsView.hpp">
+      <Filter>Header Files\gui\effectsettings_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\effectsettings_screen\EffectSettingsViewBase.hpp">
+      <Filter>Header Files\generated\gui_generated\effectsettings_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\input_screen\InputPresenter.hpp">
+      <Filter>Header Files\gui\input_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\input_screen\InputView.hpp">
+      <Filter>Header Files\gui\input_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\input_screen\InputViewBase.hpp">
+      <Filter>Header Files\generated\gui_generated\input_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\looper_screen\LooperPresenter.hpp">
+      <Filter>Header Files\gui\looper_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\looper_screen\LooperView.hpp">
+      <Filter>Header Files\gui\looper_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\looper_screen\LooperViewBase.hpp">
+      <Filter>Header Files\generated\gui_generated\looper_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\mixer_screen\MixerPresenter.hpp">
+      <Filter>Header Files\gui\mixer_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\mixer_screen\MixerView.hpp">
+      <Filter>Header Files\gui\mixer_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\mixer_screen\MixerViewBase.hpp">
+      <Filter>Header Files\generated\gui_generated\mixer_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\output_screen\OutputPresenter.hpp">
+      <Filter>Header Files\gui\output_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\output_screen\OutputView.hpp">
+      <Filter>Header Files\gui\output_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\output_screen\OutputViewBase.hpp">
+      <Filter>Header Files\generated\gui_generated\output_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\recorder_screen\RecorderPresenter.hpp">
+      <Filter>Header Files\gui\recorder_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\recorder_screen\RecorderView.hpp">
+      <Filter>Header Files\gui\recorder_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\recorder_screen\RecorderViewBase.hpp">
+      <Filter>Header Files\generated\gui_generated\recorder_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\stomp_screen\StompPresenter.hpp">
+      <Filter>Header Files\gui\stomp_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\stomp_screen\StompView.hpp">
+      <Filter>Header Files\gui\stomp_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\stomp_screen\StompViewBase.hpp">
+      <Filter>Header Files\generated\gui_generated\stomp_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\containers\EffectListItem.hpp">
+      <Filter>Header Files\gui\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\containers\EffectListItemBase.hpp">
+      <Filter>Header Files\generated\gui_generated\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\containers\ModalWindowDelete.hpp">
+      <Filter>Header Files\gui\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\containers\ModalWindowDeleteBase.hpp">
+      <Filter>Header Files\generated\gui_generated\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\containers\Pages.hpp">
+      <Filter>Header Files\gui\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\containers\PagesBase.hpp">
+      <Filter>Header Files\generated\gui_generated\containers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

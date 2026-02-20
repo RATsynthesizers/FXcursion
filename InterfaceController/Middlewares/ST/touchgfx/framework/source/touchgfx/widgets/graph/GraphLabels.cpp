@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -254,7 +254,7 @@ void GraphLabelsX::drawString(const Rect& invalidatedArea, const Font* fontToDra
         dirty.x -= labelRect.x;
         dirty.y -= labelRect.y;
         translateRectToAbsolute(labelRect);
-        LCD::StringVisuals visuals(fontToDraw, color, a, labelTypedText.getAlignment(), 0, labelRotation, labelTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
+        const LCD::StringVisuals visuals(fontToDraw, color, a, labelTypedText.getAlignment(), 0, labelRotation, labelTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
         HAL::lcd().drawString(labelRect, dirty, visuals, text, wildcard, 0);
     }
 }
@@ -292,7 +292,7 @@ void GraphLabelsY::drawString(const Rect& invalidatedArea, const Font* fontToDra
         dirty.x -= labelRect.x;
         dirty.y -= labelRect.y;
         translateRectToAbsolute(labelRect);
-        LCD::StringVisuals visuals(fontToDraw, color, a, labelTypedText.getAlignment(), 0, labelRotation, labelTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
+        const LCD::StringVisuals visuals(fontToDraw, color, a, labelTypedText.getAlignment(), 0, labelRotation, labelTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
         HAL::lcd().drawString(labelRect, dirty, visuals, text, wildcard, 0);
     }
 }
@@ -336,7 +336,7 @@ void GraphTitle::draw(const Rect& invalidatedArea) const
         dirty.x -= labelRect.x;
         dirty.y -= labelRect.y;
         translateRectToAbsolute(labelRect);
-        LCD::StringVisuals visuals(fontToDraw, getColor(), a, titleTypedText.getAlignment(), 0, titleRotation, titleTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
+        const LCD::StringVisuals visuals(fontToDraw, getColor(), a, titleTypedText.getAlignment(), 0, titleRotation, titleTypedText.getTextDirection(), 0, WIDE_TEXT_NONE);
         HAL::lcd().drawString(labelRect, dirty, visuals, titleTypedText.getText(), 0, 0);
     }
 }

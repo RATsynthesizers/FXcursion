@@ -3,6 +3,7 @@
 
 #include <touchgfx/hal/FlashDataReader.hpp>
 #include <fonts/ApplicationFontProvider.hpp>
+#include <fonts/CompressedUnmappedFontCache.hpp>
 #include <fonts/UnmappedDataFont.hpp>
 
 namespace touchgfx
@@ -148,5 +149,88 @@ int UnmappedDataFont::lookupUnicode(uint16_t unicode) const
         }
     }
     return -1;
+}
+
+CompressedUnmappedDataFont::CompressedUnmappedDataFont(const GlyphNode* glyphs, const uint16_t* unicodes, uint16_t numGlyphs, uint16_t height, uint16_t baseline, uint8_t pixAboveTop, uint8_t pixBelowBottom, uint8_t bitsPerPixel, uint8_t byteAlignRow, uint8_t maxLeft, uint8_t maxRight, const uint8_t* const* glyphDataList, const KerningNode* kerningList, const Unicode::UnicodeChar fallbackChar, const Unicode::UnicodeChar ellipsisChar, const uint16_t* const gsubData, const FontContextualFormsTable* formsTable)
+    : UnmappedDataFont(glyphs, unicodes, numGlyphs, height, baseline, pixAboveTop, pixBelowBottom, bitsPerPixel, byteAlignRow, maxLeft, maxRight,  glyphDataList, kerningList, fallbackChar, ellipsisChar, gsubData, formsTable)
+{
+}
+
+const GlyphNode* CompressedUnmappedDataFont::getGlyph(Unicode::UnicodeChar unicode) const
+{
+    const int index = lookupUnicode(unicode);
+    if (index != -1)
+    {
+        const GlyphNode* glyphNode = glyphList + index;
+
+        // Is the GlyphNode already cached
+        const GlyphNode* cachedNode = CompressedUnmappedFontCache::hasCachedGlyphNode(glyphNode);
+        if (cachedNode)
+        {
+            return cachedNode;
+        }
+
+        // Read glyphNode from unmapped flash
+        touchgfx::FlashDataReader* const flashReader = ApplicationFontProvider::getFlashReader();
+        if (flashReader)
+        {
+            GlyphNode* newGlyphNode = CompressedUnmappedFontCache::cacheGlyphNode(glyphNode);
+            flashReader->copyData(glyphList + index, (uint8_t*)newGlyphNode, sizeof(GlyphNode));
+            return newGlyphNode;
+        }
+    }
+
+    return 0;
+}
+
+const GlyphNode* CompressedUnmappedDataFont::getGlyph(Unicode::UnicodeChar unicode, const uint8_t*& pixelData, uint8_t& bitsPerPixel) const
+{
+    const int index = lookupUnicode(unicode);
+    if (index != -1)
+    {
+        const GlyphNode* glyphNode = glyphList + index;
+        const uint8_t* pixels = 0;
+        const GlyphNode* cachedNode = CompressedUnmappedFontCache::hasCachedGlyphData(glyphNode, pixels);
+        if (pixels)
+        {
+            pixelData = pixels;
+            bitsPerPixel = 4;
+            return cachedNode;
+        }
+
+        // Cache glyphNode if not found already
+	if (cachedNode == 0)
+	{
+	    cachedNode = getGlyph(unicode);
+	}
+	if (cachedNode->width() == 0)
+	{
+	    bitsPerPixel = 4;
+	    pixelData = 0;
+	    return cachedNode;
+	}
+
+	// Read data from unmapped flash
+	touchgfx::FlashDataReader* const flashReader = ApplicationFontProvider::getFlashReader();
+	if (flashReader)
+	{
+            const uint8_t* const* table = (const uint8_t* const*)glyphDataList;
+            const uint32_t dataOffset = cachedNode->dataOffset & 0x3FFFFFFF;
+            const uint8_t* compressedData = &(table[unicode / 2048][dataOffset]);
+            const uint8_t* cachedData = CompressedUnmappedFontCache::cacheGlyphData(glyphNode, compressedData, flashReader);
+            if (cachedData)
+            {
+                bitsPerPixel = 4;
+                pixelData = cachedData;
+                return cachedNode;
+            }
+        }
+    }
+    return 0;
+}
+
+const uint8_t* CompressedUnmappedDataFont::getPixelData(const GlyphNode* glyph) const
+{
+    return 0;
 }
 } // namespace touchgfx

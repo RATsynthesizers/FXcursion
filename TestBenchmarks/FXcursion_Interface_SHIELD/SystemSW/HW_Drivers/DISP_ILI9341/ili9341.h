@@ -72,6 +72,12 @@ typedef struct
   bool					hwscrolling;   // Whether the LCD support HW scrolling
 } lcdPropertiesTypeDef;
 
+// In ili9341.h or TouchGFXHAL.cpp
+#define TE_PIN GPIO_PIN_2
+#define TE_PORT GPIOB
+
+
+void 				    waitForVBlank();
 void					lcdInit(void);
 void              		lcdTest(void);
 void					lcdFillRGB(uint16_t color);

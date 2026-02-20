@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -117,12 +117,20 @@ void VideoWidget::draw(const Rect& invalidatedArea) const
     // If we have a buffer, draw that
     if (buffer != 0)
     {
-        // Limit to buffer size
-        invVideoRect &= Rect(0, 0, bufferWidth, bufferHeight);
-
-        // Convert to lcd coordinates. Width is buffer stride.
+        // Convert to lcd coordinates.
         Rect absolute = getAbsoluteRect();
-        absolute.width = bufferWidth;
+        invVideoRect &= Rect(0, 0, bufferWidth, bufferHeight);
+        // Width is buffer stride in rotate0, and Height is buffer stride in rotate90.
+        if (HAL::DISPLAY_ROTATION == rotate90)
+        {
+            // Limit to buffer size
+            absolute.height = bufferWidth;
+        }
+        else
+        {
+            // Limit to buffer size
+            absolute.width = bufferWidth;
+        }
         // Copy to LCD, always solid
         HAL::lcd().blitCopy(buffer, format, absolute, invVideoRect, 255, false);
     }
@@ -164,7 +172,7 @@ void VideoWidget::readVideoInformation()
     VideoController::getInstance().getVideoInformation(handle, &videoInformation);
     videoWidth = (int16_t)videoInformation.frame_width;
     videoHeight = (int16_t)videoInformation.frame_height;
-    uint32_t videoFramesIn1000ms = 1000 / videoInformation.ms_between_frames;
+    const uint32_t videoFramesIn1000ms = 1000 / videoInformation.ms_between_frames;
     setFrameRate(60, videoFramesIn1000ms);
 }
 

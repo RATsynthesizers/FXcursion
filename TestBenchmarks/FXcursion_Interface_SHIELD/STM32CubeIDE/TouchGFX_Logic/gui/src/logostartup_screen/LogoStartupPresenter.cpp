@@ -17,7 +17,6 @@ void LogoStartupPresenter::deactivate()
 
 }
 
-
 void LogoStartupPresenter::encMenuUpdate(S8 nValue)
 {
 
@@ -28,22 +27,22 @@ void LogoStartupPresenter::encParamUpdate(U8 nID, S8 nValue)
 
 }
 
-void LogoStartupPresenter::btnYesUpdate(void)
+void LogoStartupPresenter::btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 {
 
 }
 
-void LogoStartupPresenter::btnNoUpdate(void)
+void LogoStartupPresenter::btnNoUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 {
 
 }
 
-void LogoStartupPresenter::btnUpUpdate(void)
+void LogoStartupPresenter::btnUpUpdate(BOOLEAN bIsFuncPressed)
 {
 
 }
 
-void LogoStartupPresenter::btnDownUpdate(void)
+void LogoStartupPresenter::btnDownUpdate(BOOLEAN bIsFuncPressed)
 {
 
 }

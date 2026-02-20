@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -19,14 +19,14 @@ namespace touchgfx
 {
 void RadioButton::draw(const Rect& invalidatedArea) const
 {
-    Bitmap bitmap = getCurrentlyDisplayedBitmap();
+    const Bitmap bitmap = getCurrentlyDisplayedBitmap();
     if (bitmap.getId() != BITMAP_INVALID)
     {
         Rect meAbs;
         translateRectToAbsolute(meAbs); // To find our x and y coords in absolute.
 
         // Calculate intersection between bitmap rect and invalidated area.
-        Rect dirtyBitmapArea = bitmap.getRect() & invalidatedArea;
+        const Rect dirtyBitmapArea = bitmap.getRect() & invalidatedArea;
 
         if (!dirtyBitmapArea.isEmpty())
         {
@@ -37,7 +37,7 @@ void RadioButton::draw(const Rect& invalidatedArea) const
 
 void RadioButton::handleClickEvent(const ClickEvent& event)
 {
-    bool wasPressed = pressed;
+    const bool wasPressed = pressed;
     pressed = (event.getType() == ClickEvent::PRESSED);
     if ((pressed && !wasPressed) || (!pressed && wasPressed))
     {
@@ -78,7 +78,7 @@ Rect RadioButton::getSolidRect() const
 
 void RadioButton::setSelected(bool newSelected)
 {
-    bool wasSelected = selected;
+    const bool wasSelected = selected;
     selected = newSelected;
 
     if (wasSelected && !newSelected)

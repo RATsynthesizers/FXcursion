@@ -85,8 +85,6 @@ void DMA2D_IRQHandler(void);
 void QUADSPI_IRQHandler(void);
 void I2C4_EV_IRQHandler(void);
 void I2C4_ER_IRQHandler(void);
-void OTG_FS_EP1_OUT_IRQHandler(void);
-void OTG_FS_EP1_IN_IRQHandler(void);
 void OTG_FS_IRQHandler(void);
 void TIM17_IRQHandler(void);
 void JPEG_IRQHandler(void);

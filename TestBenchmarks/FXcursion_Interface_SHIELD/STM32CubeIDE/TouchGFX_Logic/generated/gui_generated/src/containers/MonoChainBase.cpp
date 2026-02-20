@@ -28,6 +28,18 @@ MonoChainBase::MonoChainBase()
 
     emptyModuleMono1.setXY(174, 0);
     add(emptyModuleMono1);
+
+    recModule.setXY(8, 4);
+    recModule.setVisible(false);
+    add(recModule);
+
+    fXModule.setXY(66, 4);
+    fXModule.setVisible(false);
+    add(fXModule);
+
+    loopModule.setXY(124, 4);
+    loopModule.setVisible(false);
+    add(loopModule);
 }
 
 MonoChainBase::~MonoChainBase()
@@ -41,4 +53,7 @@ void MonoChainBase::initialize()
     emptyModuleMono3.initialize();
     emptyModuleMono2.initialize();
     emptyModuleMono1.initialize();
+    recModule.initialize();
+    fXModule.initialize();
+    loopModule.initialize();
 }

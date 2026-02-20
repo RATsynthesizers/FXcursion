@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -19,7 +19,7 @@ namespace touchgfx
 {
 void Button::draw(const Rect& invalidatedArea) const
 {
-    Bitmap bmp(pressed ? down : up);
+    const Bitmap bmp(pressed ? down : up);
     Rect dirty(0, 0, bmp.getWidth(), bmp.getHeight());
     dirty &= invalidatedArea;
     if ((bmp.getId() != BITMAP_INVALID) && !dirty.isEmpty())

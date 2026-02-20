@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -19,6 +19,7 @@
 #include <touchgfx/Utils.hpp>
 #include <touchgfx/Version.hpp>
 #include <touchgfx/hal/FrameBufferAllocator.hpp>
+#include <touchgfx/hal/PaintARGB8888Impl.hpp>
 #include <touchgfx/hal/PaintImpl.hpp>
 #include <touchgfx/hal/PaintRGB565Impl.hpp>
 #include <touchgfx/hal/PaintRGB888Impl.hpp>
@@ -789,6 +790,16 @@ void HALSDL2::recreateWindow(bool updateContent /*= true*/)
         SDL_GetWindowPosition(simulatorWindow, &windowX, &windowY);
         SDL_DestroyRenderer(simulatorRenderer);
         SDL_DestroyWindow(simulatorWindow);
+    }
+    // Truncate window coordinates to fit on screen
+    const int TOPBAR_MARGIN_PIXELS = 50;
+    if (windowY < TOPBAR_MARGIN_PIXELS)
+    {
+        windowY = TOPBAR_MARGIN_PIXELS; // Adjust for height of top bar
+    }
+    if (windowX < 0)
+    {
+        windowX = 0;
     }
     int width = DISPLAY_WIDTH;
     int height = DISPLAY_HEIGHT;

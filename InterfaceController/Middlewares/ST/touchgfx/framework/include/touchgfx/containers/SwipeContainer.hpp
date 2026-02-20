@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -29,8 +29,8 @@
 namespace touchgfx
 {
 /**
- * A SwipeContainer is a Container with a horizontally laid out list of identically sized Drawables. The bottom of
- * the SwipeContainer shows a page indicator to indicate the position in the horizontal
+ * A SwipeContainer is a Container with a horizontally laid out list of identically sized Drawables.
+ * The bottom of the SwipeContainer shows a page indicator to indicate the position in the horizontal
  * list of items in the SwipeContainer.
  *
  * @see ListLayout
@@ -169,6 +169,52 @@ public:
      */
     uint8_t getSelectedPage() const;
 
+    /**
+     * Go to next page with animation
+     *
+     * @param duration duration of the swiping animation when using button.
+     *
+     * @note next page selected
+     */
+    void goNextPage(uint8_t duration = 20);
+
+    /**
+     * Go to previous page with animation
+     *
+     * @param duration duration of the swiping animation when using button.
+     *
+     * @note previous page selected
+     */
+    void goPreviousPage(uint8_t duration = 20);
+
+    /**
+     * Gets the animation duration for swiping with button.
+     *
+     * @return the animation's duration
+     *
+     * @see setAnimationDuration
+     */
+    uint8_t getAnimationDuration() const;
+
+    /**
+     * Sets the animation duration for swiping with button.
+     *
+     * @param newDuration duration of the swiping animation when using button.
+     *
+     * @see getAnimationDuration
+     */
+    void setAnimationDuration(uint8_t newDuration);
+
+    /**
+     * Go to the indicated page with animation
+     *
+     * @param page the page to go to.
+     * @param duration duration of the swiping animation when using button.
+     *
+     * @note previous page selected
+     */
+    void goToPage(uint8_t page, uint8_t duration = 20);
+
 private:
     static const int16_t DRAG_CANCEL_THRESHOLD = 3;
 
@@ -178,6 +224,9 @@ private:
         ANIMATE_SWIPE_CANCELLED_RIGHT,
         ANIMATE_LEFT,
         ANIMATE_RIGHT,
+        ANIMATE_LEFT_WITH_BUTTON,
+        ANIMATE_RIGHT_WITH_BUTTON,
+        ANIMATE_TO_PAGE,
         NO_ANIMATION
     } currentState;
 
@@ -187,7 +236,8 @@ private:
     int16_t animateDistance;
     int16_t startX;
     uint16_t endElasticWidth;
-
+    uint8_t animationDuration;
+    int8_t pageDelta;
     ListLayout pages;
 
     void adjustPages();
@@ -196,6 +246,9 @@ private:
     void animateSwipeCancelledRight();
     void animateLeft();
     void animateRight();
+    void animateLeftWithButton();
+    void animateRightWithButton();
+    void animateToPage();
 
     class PageIndicator : public Container
     {

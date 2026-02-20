@@ -1,8 +1,16 @@
 #include <gui/containers/StereoChain.hpp>
 
+const U8 StereoChain::MODULE_X_POSITIONS[4] =
+{
+	182,
+	124,
+	66,
+	8
+};
+
 StereoChain::StereoChain()
 {
-	eSelectedModule = STEREO_CHAIN_MODULE_1;
+	eSelectedModuleNumber = CHAIN_MODULE_1;
 }
 
 void StereoChain::initialize()
@@ -10,39 +18,26 @@ void StereoChain::initialize()
     StereoChainBase::initialize();
 }
 
-void StereoChain::select(StereoChainModules eModuleNum)
+void StereoChain::select(ChainModuleNumber eModuleNum)
 {
+	eSelectedModuleName = aCurrentState[eModuleNum];
+	eSelectedModuleNumber = eModuleNum;
+
 	switch(eModuleNum)
 	{
-	case STEREO_CHAIN_MODULE_1:
-		eSelectedModule = STEREO_CHAIN_MODULE_1;
+	case CHAIN_MODULE_1:
 		emptyModuleStereo1.select();
-		emptyModuleStereo2.deselect();
-		emptyModuleStereo3.deselect();
-		emptyModuleStereo4.deselect();
 		break;
 
-	case STEREO_CHAIN_MODULE_2:
-		eSelectedModule = STEREO_CHAIN_MODULE_2;
-		emptyModuleStereo1.deselect();
+	case CHAIN_MODULE_2:
 		emptyModuleStereo2.select();
-		emptyModuleStereo3.deselect();
-		emptyModuleStereo4.deselect();
 		break;
 
-	case STEREO_CHAIN_MODULE_3:
-		eSelectedModule = STEREO_CHAIN_MODULE_3;
-		emptyModuleStereo1.deselect();
-		emptyModuleStereo2.deselect();
+	case CHAIN_MODULE_3:
 		emptyModuleStereo3.select();
-		emptyModuleStereo4.deselect();
 		break;
 
-	case STEREO_CHAIN_MODULE_4:
-		eSelectedModule = STEREO_CHAIN_MODULE_4;
-		emptyModuleStereo1.deselect();
-		emptyModuleStereo2.deselect();
-		emptyModuleStereo3.deselect();
+	case CHAIN_MODULE_4:
 		emptyModuleStereo4.select();
 		break;
 
@@ -51,15 +46,94 @@ void StereoChain::select(StereoChainModules eModuleNum)
 	}
 }
 
-void StereoChain::deselect()
+void StereoChain::deselect(ChainModuleNumber eModuleNum)
 {
-	emptyModuleStereo1.deselect();
-	emptyModuleStereo2.deselect();
-	emptyModuleStereo3.deselect();
-	emptyModuleStereo4.deselect();
+	switch(eModuleNum)
+	{
+	case CHAIN_MODULE_1:
+		emptyModuleStereo1.deselect();
+		break;
+
+	case CHAIN_MODULE_2:
+		emptyModuleStereo2.deselect();
+		break;
+
+	case CHAIN_MODULE_3:
+		emptyModuleStereo3.deselect();
+		break;
+
+	case CHAIN_MODULE_4:
+		emptyModuleStereo4.deselect();
+		break;
+
+	default:
+		break;
+	}
 }
 
-StereoChainModules StereoChain::getSelectedModule()
+void StereoChain::addModule(ChainModuleNumber eModuleNum, ModuleName eModuleName)
 {
-	return eSelectedModule;
+	aCurrentState[eModuleNum] = eModuleName;
+	eSelectedModuleName = eModuleName;
+
+	switch(eModuleName)
+	{
+	case MODULE_FX:
+		fXModule.setXY(MODULE_X_POSITIONS[eModuleNum], MODULE_Y_POS);
+		fXModule.setVisible(true);
+		break;
+	case MODULE_REC:
+		recModule.setXY(MODULE_X_POSITIONS[eModuleNum], MODULE_Y_POS);
+		recModule.setVisible(true);
+		break;
+	case MODULE_LOOP:
+		loopModule.setXY(MODULE_X_POSITIONS[eModuleNum], MODULE_Y_POS);
+		loopModule.setVisible(true);
+		break;
+	default:
+		break;
+	}
+}
+
+
+void StereoChain::deleteSelectedModule()
+{
+	switch(eSelectedModuleName)
+	{
+	case MODULE_FX:
+		fXModule.setVisible(false);
+		fXModule.invalidate();
+		break;
+	case MODULE_REC:
+		recModule.setVisible(false);
+		recModule.invalidate();
+		break;
+	case MODULE_LOOP:
+		loopModule.setVisible(false);
+		loopModule.invalidate();
+		break;
+	default:
+		break;
+	}
+
+	aCurrentState[eSelectedModuleNumber] = MODULE_NONE;
+	eSelectedModuleName = MODULE_NONE;
+}
+
+
+ChainModuleNumber StereoChain::getSelectedModuleNumber()
+{
+	return eSelectedModuleNumber;
+}
+
+
+ModuleName StereoChain::getSelectedModuleName()
+{
+	return eSelectedModuleName;
+}
+
+
+ModuleName StereoChain::getModuleName(ChainModuleNumber eModuleNumber)
+{
+	return aCurrentState[eModuleNumber];
 }

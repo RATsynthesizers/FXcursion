@@ -9,6 +9,10 @@
 #include <touchgfx/hal/HAL.hpp>
 #include <touchgfx/lcd/LCD.hpp>
 #include <texts/TypedTextDatabase.hpp>
+<% if copy_translations? %>
+#include <touchgfx/hal/FlashDataReader.hpp>
+#include <fonts/ApplicationFontProvider.hpp>
+<% end %>
 
 uint16_t touchgfx::Font::getStringWidth(const touchgfx::Unicode::UnicodeChar* text, ...) const
 {
@@ -84,12 +88,12 @@ KEEP extern const touchgfx::Unicode::UnicodeChar texts_all_languages[] TEXT_LOCA
 
 <%   end %>
 <%   get_capitalized_languages.each do |lang| %>
-TEXT_LOCATION_FLASH_PRAGMA
-KEEP extern const uint32_t indices<%= lang %>[] TEXT_LOCATION_FLASH_ATTRIBUTE;
+<%= get_pragma %>
+KEEP extern const uint32_t indices<%= lang %>[]<%= get_attribute%>;
 
 <%     if !remap_global? %>
-TEXT_LOCATION_FLASH_PRAGMA
-KEEP extern const touchgfx::Unicode::UnicodeChar texts<%= lang %>[] TEXT_LOCATION_FLASH_ATTRIBUTE;
+<%= get_pragma %>
+KEEP extern const touchgfx::Unicode::UnicodeChar texts<%= lang %>[]<%= get_attribute%>;
 
 <%      end %>
 <%   end %>
@@ -134,6 +138,16 @@ static const touchgfx::Unicode::UnicodeChar* const staticLanguageTexts[] = {
 };
 <%   end %>
 <% end %>
+<% if copy_translations? %>
+static const uint32_t staticLanguageSizes[] = {
+<%       get_capitalized_languages.each_with_index do |lang, index| %>
+    <%= language_length(index) %><%= (index == get_number_of_languages - 1) ? '': ',' %>
+<%       end %>
+};
+
+static const uint32_t maxStaticLanguageSize = <%= get_max_language_length %>;
+static touchgfx::Unicode::UnicodeChar translationBuffer[maxStaticLanguageSize];
+<% end %>
 
 touchgfx::LanguageId touchgfx::Texts::currentLanguage = static_cast<touchgfx::LanguageId>(0);
 static const touchgfx::Unicode::UnicodeChar* currentLanguagePtr = 0;
@@ -168,7 +182,22 @@ void touchgfx::Texts::setLanguage(touchgfx::LanguageId id)
             currentLanguagePtr = texts_all_languages;
             currentLanguageIndices = staticLanguageIndices[id];
 <% else %>
+<% if not copy_translations? %>
             currentLanguagePtr = staticLanguageTexts[id];
+<% else %>
+            // Read translations from unmapped flash
+#ifdef SIMULATOR
+            memcpy(translationBuffer, staticLanguageTexts[id], staticLanguageSizes[id] * 2);
+#else
+            touchgfx::FlashDataReader* const flashReader = ApplicationFontProvider::getFlashReader();
+            if (flashReader)
+            {
+                flashReader->copyData(staticLanguageTexts[id], translationBuffer, staticLanguageSizes[id] * 2);
+            }
+#endif
+
+            currentLanguagePtr = translationBuffer;
+<% end %>
             currentLanguageIndices = staticLanguageIndices[id];
 <% end %>
             currentLanguageTypedText = typedTextDatabaseArray[id];

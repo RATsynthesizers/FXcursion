@@ -15,10 +15,10 @@ public:
         model = m;
     }
 
-    virtual void btnYesUpdate(void) = 0;
-    virtual void btnNoUpdate(void) = 0;
-    virtual void btnUpUpdate(void) = 0;
-    virtual void btnDownUpdate(void) = 0;
+    virtual void btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed) = 0;
+    virtual void btnNoUpdate(S8 nValue, BOOLEAN bIsFuncPressed) = 0;
+    virtual void btnUpUpdate(BOOLEAN bIsFuncPressed) = 0;
+    virtual void btnDownUpdate(BOOLEAN bIsFuncPressed) = 0;
     virtual void btnFootUpdate(U8 nID) = 0;
 
     virtual void encMenuUpdate(S8 nValue) = 0;

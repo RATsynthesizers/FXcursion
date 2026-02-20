@@ -13,23 +13,40 @@ StatusBarBase::StatusBarBase()
     background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     add(background);
 
+    moveBox.setPosition(0, 0, 320, 34);
+    moveBox.setColor(touchgfx::Color::getColorFromRGB(21, 0, 255));
+    moveBox.setVisible(false);
+    add(moveBox);
+
+    recBox.setPosition(0, 0, 320, 34);
+    recBox.setColor(touchgfx::Color::getColorFromRGB(255, 0, 0));
+    recBox.setVisible(false);
+    add(recBox);
+
     bpmText.setXY(12, 8);
     bpmText.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
     bpmText.setLinespacing(0);
+    bpmTextBuffer[0] = 0;
+    bpmText.setWildcard(bpmTextBuffer);
+    bpmText.resizeToCurrentText();
     bpmText.setTypedText(touchgfx::TypedText(T___SINGLEUSE_FYCR));
     add(bpmText);
 
-    batText.setXY(249, 7);
+    batText.setPosition(271, 7, 37, 21);
     batText.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
     batText.setLinespacing(0);
+    batTextBuffer[0] = 0;
+    batText.setWildcard(batTextBuffer);
     batText.setTypedText(touchgfx::TypedText(T___SINGLEUSE_VRO4));
     add(batText);
 
-    textArea1.setPosition(0, 0, 320, 28);
-    textArea1.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
-    textArea1.setLinespacing(0);
-    textArea1.setTypedText(touchgfx::TypedText(T___SINGLEUSE_9PU7));
-    add(textArea1);
+    nameText.setPosition(0, 0, 320, 28);
+    nameText.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
+    nameText.setLinespacing(0);
+    nameTextBuffer[0] = 0;
+    nameText.setWildcard(nameTextBuffer);
+    nameText.setTypedText(touchgfx::TypedText(T___SINGLEUSE_9PU7));
+    add(nameText);
 }
 
 StatusBarBase::~StatusBarBase()

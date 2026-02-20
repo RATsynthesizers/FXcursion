@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -134,12 +134,13 @@ bool AbstractDataGraph::getNearestIndexForScreenXY(int16_t x, int16_t y, int16_t
 
 bool AbstractDataGraph::getNearestIndexForScreenX(int16_t x, int16_t& index) const
 {
+    index = 0;
     if (usedCapacity == 0)
     {
         return false;
     }
-    uint32_t bestDist = 0xFFFFFFFF;
-    for (int16_t ix = 0; ix < usedCapacity; ix++)
+    uint32_t bestDist = abs(indexToScreenX(index) - x);
+    for (int16_t ix = 1; ix < usedCapacity; ix++)
     {
         const uint32_t dist = abs(indexToScreenX(ix) - x);
         if (dist < bestDist)
@@ -165,7 +166,7 @@ void AbstractDataGraph::handleClickEvent(const ClickEvent& event)
         {
             if (clickAction && clickAction->isValid())
             {
-                GraphClickEvent graphClickEvent(index, event);
+                const GraphClickEvent graphClickEvent(index, event);
                 clickAction->execute(*this, graphClickEvent);
             }
         }
@@ -182,7 +183,7 @@ void AbstractDataGraph::handleDragEvent(const DragEvent& event)
         {
             if (dragAction && dragAction->isValid())
             {
-                GraphDragEvent graphDragEvent(index, event);
+                const GraphDragEvent graphDragEvent(index, event);
                 dragAction->execute(*this, graphDragEvent);
             }
         }
@@ -328,8 +329,8 @@ void DynamicDataGraph::setGraphRangeYAutoScaled(bool showXaxis, int margin)
     {
         return;
     }
-    int indexMin = getGraphRangeXMin();
-    int indexMax = getGraphRangeXMax();
+    int16_t indexMin = (int16_t)getGraphRangeXMin();
+    int16_t indexMax = (int16_t)getGraphRangeXMax();
     if (indexMin > indexMax)
     {
         const int tmp = indexMin;
@@ -344,7 +345,7 @@ void DynamicDataGraph::setGraphRangeYAutoScaled(bool showXaxis, int margin)
         int yMax = showXaxis ? -margin : yValues[indexMin];
         for (int i = indexMin; i < indexMax; i++)
         {
-            int y = yValues[i];
+            const int y = yValues[i];
             if (yMin > y)
             {
                 yMin = y;
@@ -505,7 +506,7 @@ void StaticDataGraph::setGraphRangeYAutoScaled(bool showXaxis /*= true*/, int ma
     // Go through all points where x is in the visible range
     while (xValues[index] < xValueMax && index < usedCapacity)
     {
-        int y = yValues[index++];
+        const int y = yValues[index++];
         yMin = MIN(yMin, y);
         yMax = MAX(yMax, y);
     }

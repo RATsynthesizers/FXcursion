@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -321,13 +321,12 @@ public:
     TOUCHGFX_DEPRECATED("Please use getBaseline() instead.", virtual uint16_t getFontHeight() const);
 
     /**
-     * Returns the position of the baseline of this font. The returned value corresponds to the
-     * maximum height occupied by a character in the font.
+     * Returns the position of the baseline of this font in pixels from the top of the line.
      *
-     * @return The height in pixels of this font.
+     * @return The baseline position.
      *
      * @note It is not sufficient to allocate text areas with this height. Use
-     *       getMinimumTextHeight for this.
+     *       getHeight for this.
      */
     FORCE_INLINE_FUNCTION virtual uint16_t getBaseline() const
     {
@@ -460,6 +459,26 @@ public:
      * @return The FontContextualFormsTable or null if the font has no table.
      */
     virtual const FontContextualFormsTable* getContextualFormsTable() const
+    {
+        return 0;
+    }
+
+    /**
+     * Returns true if this Font is vector based. Default is false.
+     *
+     * @return True if this Font is vector based.
+     */
+    virtual bool isVectorBasedFont() const
+    {
+        return false;
+    }
+
+    /**
+     * Returns the scale factor
+     *
+     * @return The scale factor
+     */
+    virtual float getScaleFactor() const
     {
         return 0;
     }

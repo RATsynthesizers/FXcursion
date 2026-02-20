@@ -27,14 +27,110 @@ public:
 
     virtual ~SystemPresenter() {}
 
-    void btnYesUpdate(void);
-    void btnNoUpdate(void);
-    void btnUpUpdate(void);
-    void btnDownUpdate(void);
+    void btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed);
+    void btnNoUpdate(S8 nValue, BOOLEAN bIsFuncPressed);
+    void btnUpUpdate(BOOLEAN bIsFuncPressed);
+    void btnDownUpdate(BOOLEAN bIsFuncPressed);
     void btnFootUpdate(U8 nID);
 
     void encMenuUpdate(S8 nValue);
     void encParamUpdate(U8 nID, S8 nValue);
+
+	void saveInputIsStereo1(BOOLEAN inputIsStereo)
+	{
+		model->saveInputIsStereo1(inputIsStereo);
+	}
+	BOOLEAN getInputIsStereo1()
+	{
+		return model->getInputIsStereo1();
+	}
+
+	void saveInputIsStereo2(BOOLEAN inputIsStereo)
+	{
+		model->saveInputIsStereo2(inputIsStereo);
+	}
+	BOOLEAN getInputIsStereo2()
+	{
+		return model->getInputIsStereo2();
+	}
+
+	void saveMixerPosition(S8 mixerPosition)
+	{
+		model->saveMixerPosition(mixerPosition);
+	}
+	S8 getMixerPosition()
+	{
+		return model->getMixerPosition();
+	}
+
+	void saveSelectedModule(ModuleSelectType selectedModule)
+	{
+		model->saveSelectedModule(selectedModule);
+	}
+	ModuleSelectType getSelectedModule()
+	{
+		return model->getSelectedModule();
+	}
+
+	void savePrevSelectedModule(ModuleSelectType prevSelectedModule)
+	{
+		model->savePrevSelectedModule(prevSelectedModule);
+	}
+	ModuleSelectType getPrevSelectedModule()
+	{
+		return model->getPrevSelectedModule();
+	}
+
+	void saveSelectedChainModule(ChainModuleNumber selectedChainModule)
+	{
+		model->saveSelectedChainModule(selectedChainModule);
+	}
+	ChainModuleNumber getSelectedChainModule()
+	{
+		return model->getSelectedChainModule();
+	}
+
+	void saveSelectedFootSwitch(FootSwitches selectedFootSwitch)
+	{
+		model->saveSelectedFootSwitch(selectedFootSwitch);
+	}
+	FootSwitches getSelectedFootSwitch()
+	{
+		return model->getSelectedFootSwitch();
+	}
+
+	void saveMonoModulePosition(ModuleName moduleName, U8 monoChainNumber, U8 chainModuleNumber)
+	{
+		model->saveMonoModulePosition(moduleName, monoChainNumber, chainModuleNumber);
+	}
+	ModuleName getMonoModuleInPosition(U8 monoChainNumber, U8 chainModuleNumber)
+	{
+		return model->getMonoModuleInPosition(monoChainNumber, chainModuleNumber);
+	}
+
+	void saveStereoModulePosition(ModuleName moduleName, U8 stereoChainNumber, U8 chainModuleNumber)
+	{
+		model->saveStereoModulePosition(moduleName, stereoChainNumber, chainModuleNumber);
+	}
+	ModuleName getStereoModuleInPosition(U8 stereoChainNumber, U8 chainModuleNumber)
+	{
+		return model->getStereoModuleInPosition(stereoChainNumber, chainModuleNumber);
+	}
+
+	void saveSelectedChannel(ChannelType channelType)
+	{
+		model->saveSelectedChannel(channelType);
+	}
+	ChannelType getSelectedChannel()
+	{
+		return model->getSelectedChannel();
+	}
+
+	void clearFXChain(ChannelType channel)
+	{
+		model->clearFXChain(channel);
+	}
+
 
 private:
     SystemPresenter();

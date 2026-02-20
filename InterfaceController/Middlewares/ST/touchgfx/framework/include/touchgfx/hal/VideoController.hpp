@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -210,6 +210,13 @@ public:
      * @return  Returns true if the video is playing.
      */
     virtual bool getIsPlaying(const Handle handle) = 0;
+
+    /**
+     * Allow skipping of video frames to compensate for long decoding times.
+     *
+     * @param   allow  true if compensation is allowed.
+     */
+    virtual void setVideoFrameRateCompensation(bool allow) = 0;
 };
 
 } // namespace touchgfx

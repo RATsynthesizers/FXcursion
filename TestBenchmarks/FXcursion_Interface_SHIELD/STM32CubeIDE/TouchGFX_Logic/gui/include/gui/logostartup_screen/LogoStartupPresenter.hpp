@@ -27,10 +27,10 @@ public:
 
     virtual ~LogoStartupPresenter() {}
 
-    void btnYesUpdate(void);
-    void btnNoUpdate(void);
-    void btnUpUpdate(void);
-    void btnDownUpdate(void);
+    void btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed);
+    void btnNoUpdate(S8 nValue, BOOLEAN bIsFuncPressed);
+    void btnUpUpdate(BOOLEAN bIsFuncPressed);
+    void btnDownUpdate(BOOLEAN bIsFuncPressed);
     void btnFootUpdate(U8 nID);
 
     void encMenuUpdate(S8 nValue);

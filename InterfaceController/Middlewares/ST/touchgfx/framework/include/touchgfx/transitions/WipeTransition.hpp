@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -47,7 +47,7 @@ public:
           animationSteps(transitionSteps),
           animationCounter(0),
           calculatedValue(0),
-          solid()
+          prevCalculatedValue(0)
     {
         switch (templateDirection)
         {
@@ -60,9 +60,6 @@ public:
             targetValue = HAL::DISPLAY_HEIGHT;
             break;
         }
-
-        // Ensure that the solid area covers the entire screen
-        solid.setPosition(0, 0, HAL::DISPLAY_WIDTH, HAL::DISPLAY_HEIGHT);
     }
 
     /**
@@ -95,59 +92,44 @@ public:
 
         // calculatedValue is the width/height of the visible area
 
+        Rect rect;
         switch (templateDirection)
         {
         case EAST:
             {
-                // Cover must have width of remaining part
-                const uint16_t prevSolidWidth = solid.getWidth();
-                solid.setWidth(HAL::DISPLAY_WIDTH - calculatedValue);
-
-                // Invalidate the uncovered part
-                const uint16_t delta = prevSolidWidth - solid.getWidth();
-                Rect r(solid.getWidth(), 0, delta, HAL::DISPLAY_HEIGHT);
-                screenContainer->invalidateRect(r);
+                rect.x = HAL::DISPLAY_WIDTH - calculatedValue;
+                rect.y = 0;
+                rect.width = calculatedValue - prevCalculatedValue;
+                rect.height = HAL::DISPLAY_HEIGHT;
                 break;
             }
         case WEST:
             {
-                // Cover must have width of remaining part and start after uncovered
-                const uint16_t prevSolidPos = solid.getX();
-                solid.setWidth(HAL::DISPLAY_WIDTH - calculatedValue);
-                solid.setX(calculatedValue);
-
-                // Invalidate the uncovered part
-                const uint16_t delta = calculatedValue - prevSolidPos;
-                Rect r(prevSolidPos, 0, delta, HAL::DISPLAY_HEIGHT);
-                screenContainer->invalidateRect(r);
+                rect.x = prevCalculatedValue;
+                rect.y = 0;
+                rect.width = calculatedValue - prevCalculatedValue;
+                rect.height = HAL::DISPLAY_HEIGHT;
                 break;
             }
         case NORTH:
             {
-                // Cover must have height of remaining part and start after uncovered
-                const uint16_t prevSolidPos = solid.getY();
-                solid.setHeight(HAL::DISPLAY_HEIGHT - calculatedValue);
-                solid.setY(calculatedValue);
-
-                // Invalidate the uncovered part
-                const uint16_t delta = calculatedValue - prevSolidPos;
-                Rect r(0, prevSolidPos, HAL::DISPLAY_WIDTH, delta);
-                screenContainer->invalidateRect(r);
+                rect.x = 0;
+                rect.y = prevCalculatedValue;
+                rect.width = HAL::DISPLAY_WIDTH;
+                rect.height = calculatedValue - prevCalculatedValue;
                 break;
             }
         case SOUTH:
             {
-                // Cover must have height of remaining part
-                const uint16_t prevSolidHeight = solid.getHeight();
-                solid.setHeight(HAL::DISPLAY_HEIGHT - calculatedValue);
-
-                // Invalidate the uncovered part
-                const uint16_t delta = prevSolidHeight - solid.getHeight();
-                Rect r(0, solid.getHeight(), HAL::DISPLAY_WIDTH, delta);
-                screenContainer->invalidateRect(r);
+                rect.x = 0;
+                rect.y = HAL::DISPLAY_HEIGHT - calculatedValue;
+                rect.width = HAL::DISPLAY_WIDTH;
+                rect.height = calculatedValue - prevCalculatedValue;
                 break;
             }
         }
+        prevCalculatedValue = calculatedValue;
+        Application::getInstance()->invalidateArea(rect);
 
         // The WipeTransition only draws to parts of the non-TFT
         // framebuffer. To avoid glitches in Double buffering mode
@@ -159,24 +141,18 @@ public:
         }
     }
 
-    virtual void tearDown()
-    {
-        screenContainer->remove(solid);
-    }
-
     virtual void init()
     {
         Transition::init();
-        // Add the solid (and not-drawing-anything) widget on top to cover the other widgets
-        screenContainer->add(solid);
     }
 
-    /**
-     * Wipe transition does not require an invalidation. Invalidation
-     * is handled by the class. Do no invalidation initially.
-     */
     virtual void invalidate()
     {
+        // The last step when finalizing a transition (see MVPApplication::finalizeTransition)
+        // is to call invalidate on the transition. For the WipeTransition we want to erase any
+        // invalidated areas that might have been added when setting up the new screen, which
+        // is the first step of finalizing a transition (see MVPApplication::finalizeTransition).
+        Application::getInstance()->clearCachedAreas();
     }
 
 private:
@@ -184,7 +160,7 @@ private:
     uint8_t animationCounter;     ///< Current step in the transition animation.
     int16_t targetValue;          ///< The target value for the transition animation.
     int16_t calculatedValue;      ///< The calculated X or Y value to move the snapshot and the children.
-    FullSolidRect solid;          ///< A solid rect that covers the entire screen to avoid copying elements outside
+    int16_t prevCalculatedValue;  ///< The previous calculated value.
 };
 
 } // namespace touchgfx

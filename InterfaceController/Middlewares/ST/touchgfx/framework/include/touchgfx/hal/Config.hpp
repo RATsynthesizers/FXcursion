@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -33,10 +33,11 @@
 #ifdef SIMULATOR
 
 #define LOCATION_PRAGMA(name)
+#define LOCATION_PRAGMA_32(name)
 #define LOCATION_PRAGMA_NOLOAD(name)
 #define LOCATION_ATTRIBUTE(name)
+#define LOCATION_ATTRIBUTE_32(name)
 #define LOCATION_ATTRIBUTE_NOLOAD(name)
-#define LOCATION_ALIGN_8BYTES(buf)
 #define FORCE_INLINE_FUNCTION inline
 #if defined(__GNUC__)
 #define TOUCHGFX_DEPRECATED(message, decl) decl __attribute__((deprecated(message)))
@@ -51,10 +52,11 @@
 
 // xgcc
 #define LOCATION_PRAGMA(name)
+#define LOCATION_PRAGMA_32(name)
 #define LOCATION_PRAGMA_NOLOAD(name)
 #define LOCATION_ATTRIBUTE(name) __attribute__((section(STR(name)))) __attribute__((aligned(4)))
+#define LOCATION_ATTRIBUTE_32(name) __attribute__((section(STR(name)))) __attribute__((aligned(32)))
 #define LOCATION_ATTRIBUTE_NOLOAD(name) __attribute__((section(STR(name)))) __attribute__((aligned(4)))
-#define LOCATION_ALIGN_8BYTES(buf) buf __attribute__((aligned(8)))
 #define FORCE_INLINE_FUNCTION __attribute__((always_inline)) inline
 #define TOUCHGFX_DEPRECATED(message, decl) [[deprecated(message)]] decl
 
@@ -62,10 +64,11 @@
 
 // IAR
 #define LOCATION_PRAGMA(name) _Pragma(STR(location = name))
+#define LOCATION_PRAGMA_32(name) _Pragma(STR(location = name)) _Pragma("data_alignment=32")
 #define LOCATION_PRAGMA_NOLOAD(name) _Pragma(STR(location = name))
 #define LOCATION_ATTRIBUTE(name)
+#define LOCATION_ATTRIBUTE_32(name)
 #define LOCATION_ATTRIBUTE_NOLOAD(name)
-#define LOCATION_ALIGN_8BYTES(buf) _Pragma(STR(data_alignment = 8)) buf
 #define FORCE_INLINE_FUNCTION _Pragma("inline=forced")
 #if __IAR_SYSTEMS_ICC__ >= 9
 #define TOUCHGFX_DEPRECATED(message, decl) [[deprecated(message)]] decl
@@ -78,10 +81,15 @@
 
 // Keil
 #define LOCATION_PRAGMA(name)
+#define LOCATION_PRAGMA_32(name)
 #define LOCATION_PRAGMA_NOLOAD(name)
 #define LOCATION_ATTRIBUTE(name) __attribute__((section(name))) __attribute__((aligned(4)))
+#define LOCATION_ATTRIBUTE_32(name) __attribute__((section(name))) __attribute__((aligned(32)))
+#if __ARMCC_VERSION >= 6000000
+#define LOCATION_ATTRIBUTE_NOLOAD(name) __attribute__((section(".bss." name))) __attribute__((aligned(4)))
+#else
 #define LOCATION_ATTRIBUTE_NOLOAD(name) __attribute__((section(name), zero_init)) __attribute__((aligned(4)))
-#define LOCATION_ALIGN_8BYTES(buf) buf __attribute__((aligned(8)))
+#endif
 #define FORCE_INLINE_FUNCTION inline
 #if __ARMCC_VERSION >= 6000000
 // Only newer Keil support message to be given
@@ -94,10 +102,11 @@
 
 // Other/Unknown
 #define LOCATION_PRAGMA(name)
+#define LOCATION_PRAGMA_32(name)
 #define LOCATION_PRAGMA_NOLOAD(name)
 #define LOCATION_ATTRIBUTE(name)
+#define LOCATION_ATTRIBUTE_32(name)
 #define LOCATION_ATTRIBUTE_NOLOAD(name)
-#define LOCATION_ALIGN_8BYTES(buf)
 #define FORCE_INLINE_FUNCTION
 #define TOUCHGFX_DEPRECATED(message, decl) decl
 

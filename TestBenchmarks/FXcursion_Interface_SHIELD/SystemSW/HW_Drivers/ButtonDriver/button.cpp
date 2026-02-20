@@ -19,48 +19,66 @@ Button btnUp(BTN_UP_GPIO_Port,
 Button btnDown(BTN_DOWN_GPIO_Port,
 			   BTN_DOWN_Pin);
 
-Button btnFoot(MY_FOOT1_GPIO_Port,
-			   MY_FOOT1_Pin);
+Button btnFunc(BTN_FUNC_GPIO_Port,
+			   BTN_FUNC_Pin);
 
-void Button::update(void) {
+void Button::update(void)
+{
 
 	ButtonState prevState = state;
+	U32 currentTick = HAL_GetTick(); // Get the current time once
 
 	// Read the raw pin value
 	BOOLEAN currentRaw = (BOOLEAN) HAL_GPIO_ReadPin(buttonPort, buttonPin);
 
-	// 1. Check if the pin state has changed
+	// --- 1. Debouncing Logic (Detecting stable transition) ---
 	if (currentRaw != rawPinState)
 	{
-		// Pin state changed: reset the timer and update the raw state
-		stateChangeTime = HAL_GetTick();
+		// Pin state changed: reset the debounce timer and update the raw state
+		stateChangeTime = currentTick;
 		rawPinState = currentRaw;
 	}
-	// 2. Check if the pin state has been stable long enough
 	else
 	{
-		if ((HAL_GetTick() - stateChangeTime) >= DEBOUNCE_TIME)
+		// Pin is stable: check if the debounce time has passed
+		if ((currentTick - stateChangeTime) >= DEBOUNCE_TIME)
 		{
-			// The pin has been stable for 50ms. Update the debounced state.
-			if (GPIO_PIN_SET == currentRaw)
-			{
-				state = BTN_RELEASED;
-			}
-			else
-			{
-				state = BTN_PRESSED;
-			}
-			// Important: stateChangeTime is NOT reset here. It only resets when
-			// the raw pin value changes again, which handles bounce.
+			// The pin is stable and debounced. Determine the stable state.
+			ButtonState stableState = (GPIO_PIN_SET == currentRaw) ? BTN_RELEASED : BTN_PRESSED;
 
-			if (state != prevState)
+			// --- 2. State Transition Logic ---
+			if (stableState != state)
 			{
+				// A stable change (RELEASE -> PRESSED OR PRESSED -> RELEASE)
+				state = stableState;
 				bWasChanged = TRUE;
+
+				if (state == BTN_PRESSED)
+				{
+					// Button just entered the stable PRESSED state. Start the long press timer.
+					pressStartTime = currentTick;
+				}
+			}
+			// --- 3. Long Press Logic (Only check if currently in PRESSED state) ---
+			else if (state == BTN_PRESSED)
+			{
+				if ((currentTick - pressStartTime) >= LONG_PRESS_TIME)
+				{
+					// Time elapsed! Transition to LONG_PRESS state
+					state = BTN_LONG_PRESS;
+					bWasChanged = TRUE;
+
+					// NOTE: We don't reset pressStartTime. The button will stay in
+					// BTN_LONG_PRESS until physically released.
+				}
 			}
 		}
 	}
-}
 
+	// Ensure that state == BTN_LONG_PRESS is not accidentally marked as changed
+	// unless the button actually transitioned to it (handled above).
+	// The flag bWasChanged is already set inside the state transition checks.
+}
 
 
 

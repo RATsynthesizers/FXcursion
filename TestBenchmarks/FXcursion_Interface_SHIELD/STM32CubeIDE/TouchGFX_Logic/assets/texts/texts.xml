@@ -5,7 +5,87 @@
     <Language Id="RU" />
   </Languages>
   <Texts>
-    <TextGroup Id="OverviewScreenTexts">
+    <TextGroup Id="PlaceholderParameters">
+      <Text Id="ResourceId1" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">param1</Translation>
+        <Translation Language="RU">param1</Translation>
+      </Text>
+      <Text Id="ResourceId2" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">param2</Translation>
+        <Translation Language="RU">param2</Translation>
+      </Text>
+      <Text Id="ResourceId3" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">param3</Translation>
+        <Translation Language="RU">param3</Translation>
+      </Text>
+      <Text Id="ResourceId4" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">param4</Translation>
+        <Translation Language="RU">param4</Translation>
+      </Text>
+      <Text Id="ResourceId5" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">param5</Translation>
+        <Translation Language="RU">param5</Translation>
+      </Text>
+      <Text Id="ResourceId6" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">param6</Translation>
+        <Translation Language="RU">param6</Translation>
+      </Text>
+      <Text Id="ResourceId7" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">param7</Translation>
+        <Translation Language="RU">param7</Translation>
+      </Text>
+      <Text Id="ResourceId8" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">param8</Translation>
+        <Translation Language="RU">param8</Translation>
+      </Text>
+    </TextGroup>
+    <TextGroup Id="EffectNames">
+      <Text Id="EmptyEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Empty</Translation>
+        <Translation Language="RU">Empty</Translation>
+      </Text>
+      <Text Id="ChorusEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Chorus</Translation>
+        <Translation Language="RU">Chorus</Translation>
+      </Text>
+      <Text Id="CompressorEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Compressor</Translation>
+        <Translation Language="RU">Compressor</Translation>
+      </Text>
+      <Text Id="DelayEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Delay</Translation>
+        <Translation Language="RU">Delay</Translation>
+      </Text>
+      <Text Id="DistortionEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Distortion</Translation>
+        <Translation Language="RU">Distortion</Translation>
+      </Text>
+      <Text Id="FlangerEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Flanger</Translation>
+        <Translation Language="RU">Flanger</Translation>
+      </Text>
+      <Text Id="OverdriveEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Overdrive</Translation>
+        <Translation Language="RU">Overdrive</Translation>
+      </Text>
+      <Text Id="PhaserEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Phaser</Translation>
+        <Translation Language="RU">Phaser</Translation>
+      </Text>
+      <Text Id="ReverbEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Reverb</Translation>
+        <Translation Language="RU">Reverb</Translation>
+      </Text>
+      <Text Id="TremoloEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Tremolo</Translation>
+        <Translation Language="RU">Tremolo</Translation>
+      </Text>
+      <Text Id="VibratoEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Vibrato</Translation>
+        <Translation Language="RU">Vibrato</Translation>
+      </Text>
+    </TextGroup>
+    <TextGroup Id="MainScreenTexts">
       <Text Id="InputTextID" Alignment="Center" TypographyId="Small">
         <Translation Language="GB">IN</Translation>
         <Translation Language="RU">IN</Translation>
@@ -32,35 +112,119 @@
       </Text>
     </TextGroup>
     <TextGroup Id="Unsorted">
+      <Text Id="__SingleUse_UH7J" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">N</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_RFHF" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">Y</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="RemoveEffect" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Delete&#10;&lt;effectName&gt;?</Translation>
+        <Translation Language="RU">&lt;effectName&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_HZU6" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">STOMP SCREEN</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_52HZ" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">OUTPUT SCREEN</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_WK96" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">INPUT SCREEN</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_7HQ8" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">RECORDER SCREEN</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_F2SQ" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">LOOPER SCREEN</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_G2RL" Alignment="Left" TypographyId="Default">
+        <Translation Language="GB">MIXER SCREEN</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_SGCQ" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+        <Translation Language="RU">New Text&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_SS4Q" Alignment="Center" TypographyId="Small">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+        <Translation Language="RU">New Text&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_TU7Y" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+        <Translation Language="RU">New Text&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_IHIL" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">&lt;effectName&gt;</Translation>
+        <Translation Language="RU">New Text&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_0XPH" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">&lt;effectName&gt;</Translation>
+        <Translation Language="RU">New Text&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_48V6" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Select Effect</Translation>
+        <Translation Language="RU">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_BSL3" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">&lt;effectName&gt;</Translation>
+        <Translation Language="RU">New Text&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="ChannelFX" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">FX chain | &lt;channel&gt;</Translation>
+        <Translation Language="RU">New Text&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_BC37" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Mixer</Translation>
+        <Translation Language="RU">FX</Translation>
+      </Text>
+      <Text Id="__SingleUse_JXM1" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Looper</Translation>
+        <Translation Language="RU">FX</Translation>
+      </Text>
+      <Text Id="__SingleUse_MSRV" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Recorder</Translation>
+        <Translation Language="RU">FX</Translation>
+      </Text>
+      <Text Id="__SingleUse_09A0" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Effect Chain</Translation>
+        <Translation Language="RU">FX</Translation>
+      </Text>
       <Text Id="__SingleUse_LHUE" Alignment="Left" TypographyId="Small">
-        <Translation Language="GB">Stomp 1</Translation>
+        <Translation Language="GB">STOMP 1</Translation>
         <Translation Language="RU">New Text</Translation>
       </Text>
       <Text Id="__SingleUse_C009" Alignment="Left" TypographyId="Small">
-        <Translation Language="GB">Stomp 2</Translation>
+        <Translation Language="GB">STOMP 2</Translation>
         <Translation Language="RU">New Text</Translation>
       </Text>
       <Text Id="__SingleUse_U75P" Alignment="Left" TypographyId="Small">
-        <Translation Language="GB">Stomp 3</Translation>
+        <Translation Language="GB">STOMP 3</Translation>
         <Translation Language="RU">New Text</Translation>
       </Text>
       <Text Id="__SingleUse_VRO4" Alignment="Left" TypographyId="Small">
-        <Translation Language="GB">bat_stat</Translation>
-        <Translation Language="RU">bat_stat</Translation>
+        <Translation Language="GB">&lt;value&gt;%</Translation>
+        <Translation Language="RU">bat_stat&lt;value&gt;</Translation>
       </Text>
       <Text Id="__SingleUse_9PU7" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB">project-name</Translation>
-        <Translation Language="RU">project-name</Translation>
+        <Translation Language="GB">&lt;value&gt;</Translation>
+        <Translation Language="RU">project-name&lt;value&gt;</Translation>
       </Text>
       <Text Id="__SingleUse_FYCR" Alignment="Left" TypographyId="Small">
-        <Translation Language="GB">BPM &lt;bpmValue&gt;140</Translation>
+        <Translation Language="GB">BPM &lt;bpmValue&gt;</Translation>
         <Translation Language="RU">BPM &lt;bpmValue&gt;140</Translation>
       </Text>
     </TextGroup>
   </Texts>
   <Typographies>
-    <Typography Id="Default" Font="PixelizerBold.ttf" Size="22" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" />
+    <Typography Id="Default" Font="PixelizerBold.ttf" Size="22" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacters="-,+, ,/" WildcardCharacterRanges="0-9,a-z,A-Z" />
     <Typography Id="Large" Font="verdana.ttf" Size="40" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" />
-    <Typography Id="Small" Font="PixelizerBold.ttf" Size="16" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" />
+    <Typography Id="Small" Font="PixelizerBold.ttf" Size="16" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?" WildcardCharacterRanges="0-9,a-z,A-Z" />
   </Typographies>
 </TextDatabase>

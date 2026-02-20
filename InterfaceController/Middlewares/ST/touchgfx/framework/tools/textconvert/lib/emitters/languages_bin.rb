@@ -1,7 +1,7 @@
-# Copyright (c) 2018(-2023) STMicroelectronics.
+# Copyright (c) 2018(-2025) STMicroelectronics.
 # All rights reserved.
 #
-# This file is part of the TouchGFX 4.21.3 distribution.
+# This file is part of the TouchGFX 4.25.0 distribution.
 #
 # This software is licensed under terms that can be found in the LICENSE file in
 # the root directory of this software component.
@@ -107,7 +107,7 @@ class LanguageXxBin < Template
   end
 
   def fonts
-    typographies.map{ |t| Typography.new("", t.font_file, t.font_size, t.bpp) }.uniq.collect do |t|
+    typographies.map{ |t| Typography.new("", t.font_file, t.font_size, t.bpp, t.is_vector) }.uniq.collect do |t|
       get_getFont_name(t)
     end
   end

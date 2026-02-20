@@ -3,15 +3,6 @@
 
 #include <gui_generated/containers/MonoChainBase.hpp>
 
-typedef enum enMonoChainModules
-{
-	MONO_CHAIN_MODULE_1 = 0,
-	MONO_CHAIN_MODULE_2 = 1,
-	MONO_CHAIN_MODULE_3 = 2,
-	MONO_CHAIN_MODULE_4 = 3,
-
-} MonoChainModules;
-
 class MonoChain : public MonoChainBase
 {
 public:
@@ -20,12 +11,24 @@ public:
 
     virtual void initialize();
 
-    void select(MonoChainModules eModuleNum);
-    void deselect();
-    MonoChainModules getSelectedModule();
+    void select(ChainModuleNumber eModuleNum);
+    void deselect(ChainModuleNumber eModuleNum);
+    void addModule(ChainModuleNumber eModuleNum, ModuleName eModuleName);
+    void deleteSelectedModule();
+
+    ChainModuleNumber getSelectedModuleNumber();
+    ModuleName getSelectedModuleName();
+    ModuleName getModuleName(ChainModuleNumber eModuleNumber);
+
 protected:
 
-    MonoChainModules eSelectedModule;
+    static const U8 MODULE_Y_POS = 4;
+    static const U8 MODULE_X_POSITIONS[4];
+
+    ModuleName aCurrentState[4] = {};
+
+    ChainModuleNumber eSelectedModuleNumber;
+    ModuleName		 eSelectedModuleName;
 };
 
 #endif // MONOCHAIN_HPP

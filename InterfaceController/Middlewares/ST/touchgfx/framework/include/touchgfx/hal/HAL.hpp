@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -71,6 +71,7 @@ public:
           frameBufferUpdatedThisFrame(false),
           auxiliaryLCD(0),
           partialFrameBufferRect(),
+          useAuxiliaryLCD(false),
           listener(0),
           lastX(0),
           lastY(0),
@@ -86,9 +87,13 @@ public:
           cc_begin(0),
           requestedOrientation(ORIENTATION_LANDSCAPE),
           displayOrientationChangeRequested(false),
-          useAuxiliaryLCD(false),
           useDMAAcceleration(true),
-          lastRenderMethod(HARDWARE)
+          lastRenderMethod(HARDWARE),
+          isFrontPorchEntered(false),
+          numberOfBlocks(4),
+          maxDrawingHeight(height / numberOfBlocks), // Best guess based on testing (but not ideal in all cases)
+          minDrawingHeight(maxDrawingHeight / 3),    // Best guess based on testing (but not ideal in all cases)
+          maxBlockLines(20)
     {
         instance = this;
         FRAME_BUFFER_WIDTH = DISPLAY_WIDTH = width;
@@ -209,10 +214,32 @@ public:
     void frontPorchEntered()
     {
         allowDMATransfers();
+        isFrontPorchEntered = true;
+    }
+
+    /**
+     * @brief Get the front porch entered flag.
+     *
+     * @return True if the front porch has been entered, false otherwise.
+     */
+    bool getFrontPorchEntered() const
+    {
+        return isFrontPorchEntered;
     }
 
     /** This function blocks until the DMA queue (containing BlitOps) is empty. */
     virtual void flushDMA();
+
+    /**
+     * This function can be used to explicitly submit any GPU2D operations that
+     * might be queued in the command list. Can be called if e.g. the task is
+     * about to sleep, to ensure GPU2D operations are running in the background.
+     *
+     * Only implemented on systems with the GPU2D IP.
+     */
+    virtual void submitGPU2D()
+    {
+    }
 
     /**
      * Waits for the framebuffer to become available for use (i.e. not
@@ -254,6 +281,19 @@ public:
     virtual void unlockFrameBuffer();
 
     /**
+     * Locks and unlocks the frame buffer.
+     *
+     * This method is used to wait for any hardware based drawing is
+     * complete when you don't need the frame buffer pointer for
+     * drawing.
+     */
+    void lockUnlockFrameBuffer()
+    {
+        lockFrameBuffer();
+        unlockFrameBuffer();
+    }
+
+    /**
      * Gets the framebuffer address used by the TFT controller.
      *
      * @return The address of the framebuffer currently being displayed on the TFT.
@@ -278,18 +318,14 @@ public:
      * Function to set whether the DMA transfers are locked to the TFT update cycle. If
      * locked, DMA transfer will not begin until the TFT controller has finished updating
      * the display. If not locked, DMA transfers will begin as soon as possible. Default is
-     * true (DMA is locked with TFT).
+     * false (DMA is not locked with TFT).
      *
-     * Disabling the lock will in most cases significantly increase rendering performance.
-     * It is therefore strongly recommended to disable it. Depending on platform this may in
-     * rare cases cause rendering problems (visible tearing on display). Please see the
-     * chapter "Optimizing DMA During TFT Controller Access" for details on this setting.
+     * Enabling the lock will in most cases decrease rendering performance. But for single-
+     * buffering, it is recommended to enable the lock, to avoid tearing on the display, i.e.
+     * lock the DMA to avoid modifying the framebuffer while the display is being updated.
      *
-     * @param  enableLock True to lock DMA transfers to the front porch signal. Conservative,
-     *                    default setting. False to disable, which will normally yield
-     *                    substantial performance improvement.
-     *
-     * @note This setting only has effect when using double buffering.
+     * @param  enableLock True to lock DMA transfers to the front porch signal. Default
+     *                    disabled, which will normally yield performance improvement.
      */
     void lockDMAToFrontPorch(bool enableLock)
     {
@@ -628,11 +664,20 @@ public:
     void vSync()
     {
         vSyncCnt++;
+        isFrontPorchEntered = false;
     }
 
     /**
-     * Has to be called from within the LCD IRQ rutine when the Back Porch Exit is reached.
+     * Get current VSync count.
      *
+     * @return The current VSync count.
+     */
+    uint8_t getVSyncCount() const
+    {
+        return vSyncCnt;
+    }
+
+    /**
      * Has to be called from within the LCD IRQ rutine when the Back Porch Exit is reached.
      */
     virtual void backPorchExited()
@@ -753,6 +798,28 @@ public:
      * @return The height of the block allocated.
      */
     virtual uint16_t configurePartialFrameBuffer(const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height);
+
+    /**
+     * Adjusts the framebuffer pointer to match the current logical block. This function
+     * is only used on LTDC systems and when the partial framebuffer strategy is enabled.
+     *
+     * @param  currentBlock The current block on the screen.
+     *
+     */
+    virtual void configurePartialFrameBufferLTDC(int16_t currentBlock);
+
+    /**
+     * This function causes the task to wait on a semaphore until the LTDC has
+     * progressed the specified number of lines.
+     *
+     * Only applicable on LTDC systems and when the partial framebuffer strategy is
+     * enabled.
+     *
+     * @param numberOfLines Number of lines to wait.
+     */
+    virtual void waitForLTDCLines(uint16_t numberOfLines)
+    {
+    }
 
     /**
      * Sets the number of ticks between each touch screen sample.
@@ -924,6 +991,7 @@ public:
     {
         REFRESH_STRATEGY_DEFAULT,                      ///< If not explicitly set, this strategy is used.
         REFRESH_STRATEGY_OPTIM_SINGLE_BUFFER_TFT_CTRL, ///< Strategy optimized for single framebuffer on systems with TFT controller.
+        REFRESH_STRATEGY_PARTIAL_BUFFER_TFT_CTRL,      ///< Strategy using less than a full framebuffer on systems with TFT controller.
         REFRESH_STRATEGY_PARTIAL_FRAMEBUFFER           ///< Strategy using less than a full framebuffer.
     };
 
@@ -969,6 +1037,18 @@ public:
             //   - a TFT controller (+ an impl of getTFTCurrentLine())
             //   - single buffering
             if (taskDelayFunc != 0 && getTFTCurrentLine() != 0xFFFF && !USE_DOUBLE_BUFFERING)
+            {
+                refreshStrategy = s;
+                return true;
+            }
+            return false;
+        }
+        if (s == REFRESH_STRATEGY_PARTIAL_BUFFER_TFT_CTRL)
+        {
+            // Perform sanity checks. This strategy requires
+            //   - a TFT controller (+ an impl of getTFTCurrentLine())
+            //   - single buffering
+            if (getTFTCurrentLine() != 0xFFFF && !USE_DOUBLE_BUFFERING)
             {
                 refreshStrategy = s;
                 return true;
@@ -1112,6 +1192,105 @@ public:
      */
     void setRenderingMethod(RenderingMethod method);
 
+    /**
+     * Set number of blocks to be used for partial framebuffer strategy on LTDC systems.
+     * Both minDrawingHeight and maxDrawingHeight will be updated according to the new
+     * number of blocks.
+     * Note: The number must be divisible by the framebuffer height.
+     *
+     * @see setMinDrawingHeight, setMaxDrawingHeight
+     *
+     * @param blocks The number of blocks to be used.
+     */
+    void setNumberOfBlocks(uint8_t blocks)
+    {
+        numberOfBlocks = blocks;
+        maxDrawingHeight = FRAME_BUFFER_HEIGHT / numberOfBlocks;
+        minDrawingHeight = maxDrawingHeight / 3;
+    }
+
+    /**
+     * Get number of blocks used for partial framebuffer strategy on LTDC systems.
+     *
+     * @return The number of blocks used.
+     */
+    uint8_t getNumberOfBlocks() const
+    {
+        return numberOfBlocks;
+    }
+
+    /**
+     * Set maximum drawing height used for partial framebuffer strategy on LTDC systems.
+     *
+     * @param maxHeight The maximum drawing height to be used.
+     */
+    void setMaxDrawingHeight(uint16_t maxHeight)
+    {
+        maxDrawingHeight = maxHeight;
+    }
+
+    /**
+     * Get maximum drawing height used for partial framebuffer strategy on LTDC systems.
+     *
+     * @return The maximum drawing height used.
+     */
+    uint16_t getMaxDrawingHeight() const
+    {
+        return maxDrawingHeight;
+    }
+
+    /**
+     * Set minimum drawing height used for partial framebuffer strategy on LTDC systems.
+     *
+     * @param minHeight The minimum drawing height to be used.
+     */
+    void setMinDrawingHeight(uint16_t minHeight)
+    {
+        minDrawingHeight = minHeight;
+    }
+
+    /**
+     * Get minimum drawing height used for partial framebuffer strategy on LTDC systems.
+     *
+     * @return The minimum drawing height used.
+     */
+    uint16_t getMinDrawingHeight() const
+    {
+        return minDrawingHeight;
+    }
+
+    /**
+     * Set maximum number of block lines used for partial framebuffer strategy on GRAM systems.
+     *
+     * @param blockLines The maximum number of block lines to be used.
+     */
+    void setMaxBlockLines(int16_t blockLines)
+    {
+        maxBlockLines = blockLines;
+    }
+
+    /**
+     * Get maximum number of block lines used for partial framebuffer strategy on GRAM systems.
+     *
+     * @return The maximum number of block lines.
+     */
+    int16_t getMaxBlockLines() const
+    {
+        return maxBlockLines;
+    }
+
+    /**
+     * Called by the framework if it detects a draw operation took too long to complete
+     * when using the partial LTDC frame refresh strategy.
+     * This occurrence will lead to tearing on the display.
+     *
+     * This empty function can be overridden to e.g. output this error condition
+     * on a pin.
+     */
+    virtual void partialLTDCDeadlineMissed()
+    {
+    }
+
 protected:
     /** This function is called at each timer tick, depending on platform implementation. */
     virtual void tick();
@@ -1200,6 +1379,16 @@ protected:
     {
     }
 
+    /**
+     * Invalidate texture cache(s).
+     *
+     * Called on every tick before drawing into the framebuffer to enable
+     * invalidation of any caches that may be incoherent with main memory.
+     */
+    virtual void InvalidateTextureCache()
+    {
+    }
+
     DMA_Interface& dma;                          ///< A reference to the DMA interface.
     LCD& lcdRef;                                 ///< A reference to the LCD.
     TouchController& touchController;            ///< A reference to the touch controller.
@@ -1219,6 +1408,7 @@ protected:
     bool frameBufferUpdatedThisFrame;            ///< True if something was drawn in the current frame.
     LCD* auxiliaryLCD;                           ///< Auxiliary LCD class used to render Drawables into dynamic bitmaps.
     Rect partialFrameBufferRect;                 ///< The region of the screen covered by the partial framebuffer.
+    bool useAuxiliaryLCD;                        ///< True if using another LCD than the hardware framebuffer
 
 private:
     UIEventListener* listener;
@@ -1237,9 +1427,13 @@ private:
     uint32_t cc_begin;
     DisplayOrientation requestedOrientation;
     bool displayOrientationChangeRequested;
-    bool useAuxiliaryLCD;
     bool useDMAAcceleration;
     RenderingMethod lastRenderMethod;
+    bool isFrontPorchEntered;
+    uint8_t numberOfBlocks;
+    uint16_t maxDrawingHeight;
+    uint16_t minDrawingHeight;
+    int16_t maxBlockLines;
 
     uint16_t* getDstAddress(uint16_t x, uint16_t y, uint16_t* startAddress, uint16_t dstWidth, Bitmap::BitmapFormat dstFormat) const;
     uint16_t* getDstAddress(uint16_t x, uint16_t y, uint16_t* startAddress) const;

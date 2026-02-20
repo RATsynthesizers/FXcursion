@@ -86,8 +86,6 @@ void __attribute__((optimize("O0"))) lcdInit(void) {
 			MemoryAccessControlNormalOrder);	// horizontalRefreshOrder
 
 	lcdReset();
-	uint16_t tmpid = lcdGetControllerID();
-	tmpid = lcdGetControllerID();
 
 	lcdWriteCommand(0xCB);  //Power Control A
 	lcdWriteData(0x39);
@@ -147,11 +145,11 @@ void __attribute__((optimize("O0"))) lcdInit(void) {
 	ili9341_DelayMicro(10);
 	lcdWriteCommand(0xB1);
 	lcdWriteData(0x00);
-	lcdWriteData(0x1B);     // FPS 70
+	lcdWriteData(0x1F);     // FPS 60
 	ili9341_DelayMicro(10);
 	lcdWriteCommand(0xB6);  // Display Function Control
 	lcdWriteData(0x0A); // 08
-	lcdWriteData(0xA2); //
+	lcdWriteData(0xAF); //
 	ili9341_DelayMicro(10);
 	lcdWriteCommand(0xF6);
 	lcdWriteData(0x01);
@@ -941,8 +939,11 @@ void lcdSetCursor(unsigned short x, unsigned short y) {
 
 #include "cmsis_os.h"
 
+bool logoFinished = false;
+
 void lcdSetWindow(unsigned short x0, unsigned short y0, unsigned short x1,
 		unsigned short y1) {
+	osDelay(2);
 	lcdWriteCommand(ILI9341_COLADDRSET);
 	lcdWriteData((x0 >> 8) & 0xFF);
 	lcdWriteData(x0 & 0xFF);
@@ -953,7 +954,6 @@ void lcdSetWindow(unsigned short x0, unsigned short y0, unsigned short x1,
 	lcdWriteData(y0 & 0xFF);
 	lcdWriteData((y1 >> 8) & 0xFF);
 	lcdWriteData(y1 & 0xFF);
-	osDelay(5);
 	lcdWriteCommand(ILI9341_MEMORYWRITE);
 }
 
@@ -1119,3 +1119,11 @@ bool horizontalRefreshOrder) {
 	return value;
 }
 
+
+// Wait for VBlank start (blocking, with timeout)
+void waitForVBlank()
+{
+    while (HAL_GPIO_ReadPin(TE_PORT, TE_PIN) != GPIO_PIN_SET) {
+        __NOP(); // Tight loop - no RTOS delay needed
+    }
+}

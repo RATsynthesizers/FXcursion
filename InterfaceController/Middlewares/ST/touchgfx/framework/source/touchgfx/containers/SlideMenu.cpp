@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -101,7 +101,7 @@ void SlideMenu::setup(ExpandDirection newExpandDirection, const Bitmap& backgrou
     background.setBitmap(backgroundBMP);
     background.setXY(backgroundX, backgroundY);
 
-    Rect boundingRect = background.getRect();
+    const Rect boundingRect = background.getRect();
     // boundingRect.expandToFit(background.getRect());
 
     menuContainer.setWidth(boundingRect.right());
@@ -297,6 +297,10 @@ void SlideMenu::handleTickEvent()
         if (expandedStateTimer > expandedStateTimeout)
         {
             animateToState(COLLAPSED);
+            if ((stateChangedCallback != 0) && stateChangedCallback->isValid())
+            {
+                stateChangedCallback->execute(*this);
+            }
         }
     }
 }

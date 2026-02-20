@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -18,7 +18,9 @@
 #ifndef TOUCHGFX_PAINTRGB565IMPL_HPP
 #define TOUCHGFX_PAINTRGB565IMPL_HPP
 
+#include <touchgfx/Color.hpp>
 #include <touchgfx/hal/Paint.hpp>
+#include <touchgfx/hal/PaintImpl.hpp>
 
 namespace touchgfx
 {
@@ -48,9 +50,35 @@ const uint16_t BMASK = 0x001F; // Mask for blue  (0000000000011111)
 FORCE_INLINE_FUNCTION uint16_t alphaBlend(uint16_t R, uint16_t G, uint16_t B, uint16_t bufpix, uint8_t alpha)
 {
     const uint8_t ialpha = 0xFF - alpha;
+
     return (((R * alpha + (bufpix & RMASK) * ialpha) / 255) & RMASK) |
            (((G * alpha + (bufpix & GMASK) * ialpha) / 255) & GMASK) |
            (((B * alpha + (bufpix & BMASK) * ialpha) / 255) & BMASK);
+}
+
+/**
+ * Mix colors from 5/6/5-bit R,G,B and a buffer pixel with the given alpha applied to the
+ * new RGB, and the inverse alpha applied to the buffer pixel.
+ *
+ * @param  R      The red color RRRRR000.
+ * @param  G      The green color GGGGGG00.
+ * @param  B      The blue color BBBBB000.
+ * @param  bufpix The buffer pixel value.
+ * @param  alpha  The alpha of the R,G,B.
+ *
+ * @return The result of blending the two colors into a new color.
+ */
+FORCE_INLINE_FUNCTION uint16_t alphaBlend24bit(uint8_t R, uint8_t G, uint8_t B, uint16_t bufpix, uint8_t alpha)
+{
+    // Expand 565 colors to 8 bit individual
+    const uint8_t ialpha = 0xFF - alpha;
+    const uint8_t fbred = Color::getRedFromRGB565(bufpix);
+    const uint8_t fbgreen = Color::getGreenFromRGB565(bufpix);
+    const uint8_t fbblue = Color::getBlueFromRGB565(bufpix);
+
+    return ((((R * alpha + fbred * ialpha) / 255) << 8) & RMASK) |
+           ((((G * alpha + fbgreen * ialpha) / 255) << 3) & GMASK) |
+           ((((B * alpha + fbblue * ialpha) / 255) >> 3) & BMASK);
 }
 
 /**
@@ -78,6 +106,20 @@ FORCE_INLINE_FUNCTION uint16_t alphaBlend(uint16_t newpix, uint16_t bufpix, uint
 FORCE_INLINE_FUNCTION uint16_t getNativeColor(colortype color)
 {
     return ((color >> 8) & 0xF800) | ((color >> 5) & 0x07E0) | ((color >> 3) & 0x001F);
+}
+
+/**
+ * Generates a color representation to be used on the LCD, based on 24 bit RGB values.
+ *
+ * @param  red   Value of the red part (0-255).
+ * @param  green Value of the green part (0-255).
+ * @param  blue  Value of the blue part (0-255).
+ *
+ * @return The color representation depending on LCD color format.
+ */
+FORCE_INLINE_FUNCTION static uint16_t getNativeColorFromRGB(uint8_t red, uint8_t green, uint8_t blue)
+{
+    return ((red << 8) & 0xF800) | ((green << 3) & 0x07E0) | ((blue >> 3) & 0x001F);
 }
 
 void lineFromColor(uint16_t* const ptr, const unsigned count, const uint32_t color, const uint8_t alpha, const uint32_t color565)
@@ -138,7 +180,7 @@ void lineFromARGB8888(uint16_t* const ptr, const uint32_t* const data, const uns
         else if (a)
         {
             const uint32_t newpix = *bitmapPointer;
-            *framebuffer = alphaBlend((newpix >> 8) & RMASK, (newpix >> 5) & GMASK, (newpix >> 3) & BMASK, *framebuffer, a);
+            *framebuffer = alphaBlend24bit((newpix >> 16), (newpix >> 8), (newpix), *framebuffer, a);
         }
         bitmapPointer++;
     } while (++framebuffer < chunkend);

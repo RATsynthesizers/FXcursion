@@ -41,6 +41,7 @@ EffectsListContainerBase::EffectsListContainerBase() :
     scrollEffects.setDragAcceleration(10);
     scrollEffects.setNumberOfItems(10);
     scrollEffects.setSelectedItemOffset(0);
+    scrollEffects.setOvershootPercentage(0);
     scrollEffects.setSelectedItemExtraSize(0, 0);
     scrollEffects.setSelectedItemMargin(0, 0);
     scrollEffects.setDrawableSize(40, 0);

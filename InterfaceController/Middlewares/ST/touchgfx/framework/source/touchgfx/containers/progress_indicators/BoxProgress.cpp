@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -63,36 +63,36 @@ void BoxProgress::setValue(int value)
     {
     case RIGHT:
         {
-            int16_t oldWidth = box.getWidth();
+            const int16_t oldWidth = box.getWidth();
             box.setPosition(0, 0, progress, progressIndicatorContainer.getHeight());
-            int16_t newWidth = box.getWidth();
+            const int16_t newWidth = box.getWidth();
             Rect r(MIN(oldWidth, newWidth), 0, abs(oldWidth - newWidth), box.getHeight());
             progressIndicatorContainer.invalidateRect(r);
             break;
         }
     case LEFT:
         {
-            int16_t oldX = box.getX();
+            const int16_t oldX = box.getX();
             box.setPosition(getWidth() - progress, 0, progress, progressIndicatorContainer.getHeight());
-            int16_t newX = box.getX();
+            const int16_t newX = box.getX();
             Rect r(MIN(oldX, newX), 0, abs(oldX - newX), box.getHeight());
             progressIndicatorContainer.invalidateRect(r);
             break;
         }
     case DOWN:
         {
-            int16_t oldHeight = box.getHeight();
+            const int16_t oldHeight = box.getHeight();
             box.setPosition(0, 0, progressIndicatorContainer.getWidth(), progress);
-            int16_t newHeight = box.getHeight();
+            const int16_t newHeight = box.getHeight();
             Rect r(0, MIN(oldHeight, newHeight), box.getWidth(), abs(oldHeight - newHeight));
             progressIndicatorContainer.invalidateRect(r);
             break;
         }
     case UP:
         {
-            int16_t oldY = box.getY();
+            const int16_t oldY = box.getY();
             box.setPosition(0, progressIndicatorContainer.getHeight() - progress, progressIndicatorContainer.getWidth(), progress);
-            int16_t newY = box.getY();
+            const int16_t newY = box.getY();
             Rect r(0, MIN(oldY, newY), box.getWidth(), abs(oldY - newY));
             progressIndicatorContainer.invalidateRect(r);
             break;

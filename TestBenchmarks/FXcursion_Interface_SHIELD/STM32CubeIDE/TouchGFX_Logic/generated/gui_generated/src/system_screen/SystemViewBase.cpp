@@ -14,7 +14,7 @@ SystemViewBase::SystemViewBase()
     add(__background);
 
     background.setPosition(0, 0, 320, 240);
-    background.setColor(touchgfx::Color::getColorFromRGB(72, 90, 219));
+    background.setColor(touchgfx::Color::getColorFromRGB(143, 205, 255));
     add(background);
 
     statusBar.setXY(0, 0);
@@ -48,6 +48,18 @@ SystemViewBase::SystemViewBase()
 
     monoChain1.setXY(40, 40);
     add(monoChain1);
+
+    mixModule.setXY(218, 40);
+    mixModule.setVisible(false);
+    add(mixModule);
+
+    addModuleWindow.setXY(0, 0);
+    addModuleWindow.setVisible(false);
+    add(addModuleWindow);
+
+    modalWindowDelete.setXY(0, 0);
+    modalWindowDelete.setVisible(false);
+    add(modalWindowDelete);
 }
 
 SystemViewBase::~SystemViewBase()
@@ -67,4 +79,7 @@ void SystemViewBase::setupScreen()
     monoChain3.initialize();
     monoChain2.initialize();
     monoChain1.initialize();
+    mixModule.initialize();
+    addModuleWindow.initialize();
+    modalWindowDelete.initialize();
 }

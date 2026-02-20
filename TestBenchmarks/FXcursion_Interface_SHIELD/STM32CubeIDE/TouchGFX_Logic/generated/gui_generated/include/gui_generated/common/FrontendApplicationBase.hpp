@@ -24,7 +24,31 @@ public:
     void gotoLogoStartupScreenNoTransition();
 
     // System
-    void gotoSystemScreenCoverTransitionEast();
+    void gotoSystemScreenNoTransition();
+
+    // FXChain
+    void gotoFXChainScreenNoTransition();
+
+    // EffectSettings
+    void gotoEffectSettingsScreenNoTransition();
+
+    // Recorder
+    void gotoRecorderScreenNoTransition();
+
+    // Looper
+    void gotoLooperScreenNoTransition();
+
+    // Mixer
+    void gotoMixerScreenNoTransition();
+
+    // Input
+    void gotoInputScreenNoTransition();
+
+    // Output
+    void gotoOutputScreenNoTransition();
+
+    // Stomp
+    void gotoStompScreenNoTransition();
 
 protected:
     touchgfx::Callback<FrontendApplicationBase> transitionCallback;
@@ -35,7 +59,31 @@ protected:
     void gotoLogoStartupScreenNoTransitionImpl();
 
     // System
-    void gotoSystemScreenCoverTransitionEastImpl();
+    void gotoSystemScreenNoTransitionImpl();
+
+    // FXChain
+    void gotoFXChainScreenNoTransitionImpl();
+
+    // EffectSettings
+    void gotoEffectSettingsScreenNoTransitionImpl();
+
+    // Recorder
+    void gotoRecorderScreenNoTransitionImpl();
+
+    // Looper
+    void gotoLooperScreenNoTransitionImpl();
+
+    // Mixer
+    void gotoMixerScreenNoTransitionImpl();
+
+    // Input
+    void gotoInputScreenNoTransitionImpl();
+
+    // Output
+    void gotoOutputScreenNoTransitionImpl();
+
+    // Stomp
+    void gotoStompScreenNoTransitionImpl();
 };
 
 #endif // FRONTENDAPPLICATIONBASE_HPP

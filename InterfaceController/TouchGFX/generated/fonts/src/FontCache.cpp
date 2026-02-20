@@ -28,7 +28,7 @@ void FontCache::clear(bool keepGsubOrContextTable /* = false */)
         gsubStart = memory + memorySize;
 
         // Round down to 32bit address
-        gsubStart = (uint8_t*)((uintptr_t)gsubStart & ~(uintptr_t)0x3);
+        gsubStart = (uint8_t*)((uintptr_t)gsubStart & ~(sizeof(void*) - 1));
     }
 }
 
@@ -100,13 +100,11 @@ void FontCache::initializeCachedFont(TypedText t, CachedFont* font, bool loadGsu
 
         if (top + sizeOfGSUB < gsubStart) // Room for this GSUB table
         {
-            uint8_t* const gsubPosition = gsubStart - sizeOfGSUB;
+            // Round down to aligned address
+            uint8_t* const gsubPosition = (uint8_t*)((uintptr_t)(gsubStart - sizeOfGSUB) & ~(sizeof(void*) - 1));
             readData(gsubPosition, sizeOfGSUB);
             font->setGSUBTable(reinterpret_cast<uint16_t*>(gsubPosition));
-            gsubStart -= sizeOfGSUB;
-
-            // Round down to 32bit address
-            gsubStart = (uint8_t*)((uintptr_t)gsubStart & ~(uintptr_t)0x3);
+            gsubStart = gsubPosition;
         }
         else
         {
@@ -125,7 +123,7 @@ void FontCache::initializeCachedFont(TypedText t, CachedFont* font, bool loadGsu
             // Allocate FontContextualFormsTable first
             gsubStart -= sizeof(FontContextualFormsTable);
             // Round down to 32bit address
-            gsubStart = (uint8_t*)((uintptr_t)gsubStart & ~(uintptr_t)0x3);
+            gsubStart = (uint8_t*)((uintptr_t)gsubStart & ~(sizeof(void*) - 1));
 
             FontContextualFormsTable* table = (FontContextualFormsTable*)gsubStart;
             font->setContextualFormsTable(table);
@@ -194,7 +192,8 @@ bool FontCache::cacheSortedString(TypedText t)
     readData(&numGlyphs, sizeof(uint16_t));       // numberOfGlyphs
 
     FontId fontId = t.getFontId();                 // Get font index from typed text
-    uint32_t bpp = t.getFont()->getBitsPerPixel(); // Get BPP from standard font
+    bpp = t.getFont()->getBitsPerPixel();          // Get BPP from standard font
+    byteAlignRow = t.getFont()->getByteAlignRow(); // Get ByteAlign from font
 
     setPosition(glyphNodeOffset); // Go to glyph nodes for font
     currentFileGlyphNumber = 0;
@@ -211,7 +210,7 @@ bool FontCache::cacheSortedString(TypedText t)
         {
             if (!contains(ch, fontId))
             {
-                insert(ch, fontId, bpp, outOfMemory);
+                insert(ch, fontId, outOfMemory);
                 if (outOfMemory)
                 {
                     break;
@@ -226,7 +225,7 @@ bool FontCache::cacheSortedString(TypedText t)
         string++;
     }
 
-    cacheData(bpp, firstNewGlyph);
+    cacheData(firstNewGlyph);
     return !outOfMemory;
 }
 
@@ -245,11 +244,11 @@ bool FontCache::contains(Unicode::UnicodeChar unicode, FontId font) const
     return false;
 }
 
-void FontCache::insert(Unicode::UnicodeChar unicode, FontId font, uint32_t bpp, bool& outOfMemory)
+void FontCache::insert(Unicode::UnicodeChar unicode, FontId font, bool& outOfMemory)
 {
     // Insert new glyphnode and glyph after last for font.
     uint8_t* oldTop = top;
-    top = copyGlyph(top, unicode, font, bpp, outOfMemory);
+    top = copyGlyph(top, unicode, font, outOfMemory);
 
     if (top == oldTop)
     {
@@ -273,7 +272,7 @@ void FontCache::insert(Unicode::UnicodeChar unicode, FontId font, uint32_t bpp, 
     }
 }
 
-uint8_t* FontCache::copyGlyph(uint8_t* top, Unicode::UnicodeChar unicode, FontId font, uint32_t bpp, bool& outOfMemory)
+uint8_t* FontCache::copyGlyph(uint8_t* top, Unicode::UnicodeChar unicode, FontId font, bool& outOfMemory)
 {
     while (currentFileGlyphNumber < numGlyphs && currentFileGlyphNode.unicode < unicode)
     {
@@ -287,9 +286,10 @@ uint8_t* FontCache::copyGlyph(uint8_t* top, Unicode::UnicodeChar unicode, FontId
     }
 
     // GlyphNode found
-    uint32_t glyphSize = ((currentFileGlyphNode.width() + 1) & ~1) * currentFileGlyphNode.height() * bpp / 8;
-    glyphSize = (glyphSize + 3) & ~0x03;
-    uint32_t requiredMem = SizeGlyphNode + 4 + glyphSize; // GlyphNode + next ptr + glyph
+    uint32_t glyphSize = getGlyphSize(&currentFileGlyphNode);
+    const int alignment = sizeof(void*);
+    glyphSize = (glyphSize + (alignment - 1)) & ~(alignment - 1);
+    uint32_t requiredMem = SizeGlyphNode + sizeof(void*) + glyphSize; // GlyphNode + next ptr + glyph
 
     // Is space available before sortedString
     if (top + requiredMem > (uint8_t*)sortedString)
@@ -307,7 +307,7 @@ uint8_t* FontCache::copyGlyph(uint8_t* top, Unicode::UnicodeChar unicode, FontId
     return top;
 }
 
-void FontCache::cacheData(uint32_t bpp, GlyphNode* first)
+void FontCache::cacheData(GlyphNode* first)
 {
     GlyphNode* gn = first;
     while (gn)
@@ -317,12 +317,11 @@ void FontCache::cacheData(uint32_t bpp, GlyphNode* first)
         {
             p += SizeGlyphNode;
             // Next pointer
-            p += 4;
+            p += sizeof(void*);
 
             // Seek and copy
             setPosition(glyphDataOffset + gn->dataOffset);
-            uint32_t glyphSize = ((gn->width() + 1) & ~1) * gn->height() * bpp / 8;
-            readData(p, glyphSize);
+            readData(p, getGlyphSize(gn));
 
             // Mark glyphNode as cached
             gn->dataOffset = 0xFFFFFFFF;

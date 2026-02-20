@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -26,8 +26,8 @@ ModalWindow::ModalWindow()
 {
     ModalWindow::setWidthHeight(HAL::DISPLAY_WIDTH, HAL::DISPLAY_HEIGHT);
 
-    int defaultShadeAlpha = 96;
-    colortype defaultShadeColor = Color::getColorFromRGB(0x0, 0x0, 0x0);
+    const int defaultShadeAlpha = 96;
+    const colortype defaultShadeColor = Color::getColorFromRGB(0x0, 0x0, 0x0);
 
     backgroundShade.setPosition(0, 0, getWidth(), getHeight());
     backgroundShade.setColor(defaultShadeColor);

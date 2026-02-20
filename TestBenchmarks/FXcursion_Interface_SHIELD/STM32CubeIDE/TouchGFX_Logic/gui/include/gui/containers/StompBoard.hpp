@@ -3,14 +3,6 @@
 
 #include <gui_generated/containers/StompBoardBase.hpp>
 
-typedef enum enFootSwitches
-{
-	FOOT_SWITCH_1 = 0,
-	FOOT_SWITCH_2 = 1,
-	FOOT_SWITCH_3 = 2,
-
-} FootSwitches;
-
 class StompBoard : public StompBoardBase
 {
 public:

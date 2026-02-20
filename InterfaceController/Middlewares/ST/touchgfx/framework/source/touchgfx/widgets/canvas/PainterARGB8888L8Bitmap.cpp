@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -11,6 +11,7 @@
 *******************************************************************************/
 
 #include <touchgfx/Color.hpp>
+#include <touchgfx/hal/Paint.hpp>
 #include <touchgfx/lcd/LCD.hpp>
 #include <touchgfx/transforms/DisplayTransformation.hpp>
 #include <touchgfx/widgets/canvas/PainterARGB8888L8Bitmap.hpp>
@@ -87,35 +88,9 @@ void PainterARGB8888L8Bitmap::paint(uint8_t* destination, int16_t offset, int16_
         do
         {
             const int16_t length = MIN(bitmapAvailable, count);
-            const uint8_t* const chunkend = framebuffer + length * 4;
             count -= length;
-            if (alpha == 0xFF)
-            {
-                do
-                {
-                    const uint8_t* src = bitmapCLUT + *bitmapPointer++ * 3;
-                    *framebuffer++ = *src++;
-                    *framebuffer++ = *src++;
-                    *framebuffer++ = *src;
-                    *framebuffer++ = 0xFF;
-                } while (framebuffer < chunkend);
-            }
-            else
-            {
-                do
-                {
-                    const uint8_t* src = bitmapCLUT + *bitmapPointer++ * 3;
-                    const uint8_t ialpha = 0xFF - alpha;
-                    *framebuffer = LCD::div255(*src++ * alpha + *framebuffer * ialpha);
-                    framebuffer++;
-                    *framebuffer = LCD::div255(*src++ * alpha + *framebuffer * ialpha);
-                    framebuffer++;
-                    *framebuffer = LCD::div255(*src * alpha + *framebuffer * ialpha);
-                    framebuffer++;
-                    *framebuffer = *framebuffer + alpha - LCD::div255(*framebuffer * alpha);
-                    framebuffer++;
-                } while (framebuffer < chunkend);
-            }
+            paint::argb8888::lineFromL8RGB888(framebuffer, bitmapPointer, length, alpha);
+            framebuffer += length * 4;
             bitmapPointer = bitmapLineStart;
             bitmapAvailable = bitmapRect.width;
         } while (framebuffer < lineEnd);
@@ -125,36 +100,32 @@ void PainterARGB8888L8Bitmap::paint(uint8_t* destination, int16_t offset, int16_
         do
         {
             const int16_t length = MIN(bitmapAvailable, count);
-            const uint8_t* const chunkend = framebuffer + length * 4;
             count -= length;
-            do
-            {
-                uint32_t src = reinterpret_cast<const uint32_t*>(bitmapCLUT)[*bitmapPointer++];
-                const uint8_t srcAlpha = src >> 24;
-                const uint8_t a = LCD::div255(alpha * srcAlpha);
-                if (a == 0xFF)
-                {
-                    *framebuffer++ = src;       // Blue
-                    *framebuffer++ = src >> 8;  // Green
-                    *framebuffer++ = src >> 16; // Red
-                    *framebuffer++ = 0xFF;      // Alpha
-                }
-                else
-                {
-                    const uint8_t ialpha = 0xFF - a;
-                    *framebuffer = LCD::div255((src & 0xFF) * a + *framebuffer * ialpha);
-                    framebuffer++;
-                    *framebuffer = LCD::div255(((src >> 8) & 0xFF) * a + *framebuffer * ialpha);
-                    framebuffer++;
-                    *framebuffer = LCD::div255(((src >> 16) & 0xFF) * a + *framebuffer * ialpha);
-                    framebuffer++;
-                    *framebuffer = *framebuffer + a - LCD::div255(*framebuffer * a);
-                    framebuffer++;
-                }
-            } while (framebuffer < chunkend);
+            paint::argb8888::lineFromL8ARGB8888(framebuffer, bitmapPointer, length, alpha);
+            framebuffer += length * 4;
             bitmapPointer = bitmapLineStart;
             bitmapAvailable = bitmapRect.width;
         } while (framebuffer < lineEnd);
     }
+}
+
+bool PainterARGB8888L8Bitmap::setup(const Rect& widgetRect) const
+{
+    if (!AbstractPainterARGB8888::setup(widgetRect))
+    {
+        return false;
+    }
+    updateBitmapOffsets(widgetWidth);
+    if (bitmap.getId() != BITMAP_INVALID)
+    {
+        paint::setL8Palette(bitmapCLUT);
+        return true;
+    }
+    return false;
+}
+
+void PainterARGB8888L8Bitmap::tearDown() const
+{
+    paint::tearDown();
 }
 } // namespace touchgfx

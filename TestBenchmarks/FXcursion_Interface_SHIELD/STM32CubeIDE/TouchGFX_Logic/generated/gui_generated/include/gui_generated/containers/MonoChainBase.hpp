@@ -9,6 +9,9 @@
 #include <touchgfx/widgets/canvas/Line.hpp>
 #include <touchgfx/widgets/canvas/PainterRGB565.hpp>
 #include <gui/containers/EmptyModuleMono.hpp>
+#include <gui/containers/RecModuleMono.hpp>
+#include <gui/containers/FXModuleMono.hpp>
+#include <gui/containers/LoopModuleMono.hpp>
 
 class MonoChainBase : public touchgfx::Container
 {
@@ -31,6 +34,9 @@ protected:
     EmptyModuleMono emptyModuleMono3;
     EmptyModuleMono emptyModuleMono2;
     EmptyModuleMono emptyModuleMono1;
+    RecModuleMono recModule;
+    FXModuleMono fXModule;
+    LoopModuleMono loopModule;
 
 private:
 

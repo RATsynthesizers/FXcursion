@@ -13,6 +13,22 @@
 #include <gui/logostartup_screen/LogoStartupPresenter.hpp>
 #include <gui/system_screen/SystemView.hpp>
 #include <gui/system_screen/SystemPresenter.hpp>
+#include <gui/fxchain_screen/FXChainView.hpp>
+#include <gui/fxchain_screen/FXChainPresenter.hpp>
+#include <gui/effectsettings_screen/EffectSettingsView.hpp>
+#include <gui/effectsettings_screen/EffectSettingsPresenter.hpp>
+#include <gui/recorder_screen/RecorderView.hpp>
+#include <gui/recorder_screen/RecorderPresenter.hpp>
+#include <gui/looper_screen/LooperView.hpp>
+#include <gui/looper_screen/LooperPresenter.hpp>
+#include <gui/mixer_screen/MixerView.hpp>
+#include <gui/mixer_screen/MixerPresenter.hpp>
+#include <gui/input_screen/InputView.hpp>
+#include <gui/input_screen/InputPresenter.hpp>
+#include <gui/output_screen/OutputView.hpp>
+#include <gui/output_screen/OutputPresenter.hpp>
+#include <gui/stomp_screen/StompView.hpp>
+#include <gui/stomp_screen/StompPresenter.hpp>
 
 using namespace touchgfx;
 
@@ -48,13 +64,117 @@ void FrontendApplicationBase::gotoLogoStartupScreenNoTransitionImpl()
 
 // System
 
-void FrontendApplicationBase::gotoSystemScreenCoverTransitionEast()
+void FrontendApplicationBase::gotoSystemScreenNoTransition()
 {
-    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoSystemScreenCoverTransitionEastImpl);
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoSystemScreenNoTransitionImpl);
     pendingScreenTransitionCallback = &transitionCallback;
 }
 
-void FrontendApplicationBase::gotoSystemScreenCoverTransitionEastImpl()
+void FrontendApplicationBase::gotoSystemScreenNoTransitionImpl()
 {
-    touchgfx::makeTransition<SystemView, SystemPresenter, touchgfx::CoverTransition<EAST>, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+    touchgfx::makeTransition<SystemView, SystemPresenter, touchgfx::NoTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+}
+
+// FXChain
+
+void FrontendApplicationBase::gotoFXChainScreenNoTransition()
+{
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoFXChainScreenNoTransitionImpl);
+    pendingScreenTransitionCallback = &transitionCallback;
+}
+
+void FrontendApplicationBase::gotoFXChainScreenNoTransitionImpl()
+{
+    touchgfx::makeTransition<FXChainView, FXChainPresenter, touchgfx::NoTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+}
+
+// EffectSettings
+
+void FrontendApplicationBase::gotoEffectSettingsScreenNoTransition()
+{
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoEffectSettingsScreenNoTransitionImpl);
+    pendingScreenTransitionCallback = &transitionCallback;
+}
+
+void FrontendApplicationBase::gotoEffectSettingsScreenNoTransitionImpl()
+{
+    touchgfx::makeTransition<EffectSettingsView, EffectSettingsPresenter, touchgfx::NoTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+}
+
+// Recorder
+
+void FrontendApplicationBase::gotoRecorderScreenNoTransition()
+{
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoRecorderScreenNoTransitionImpl);
+    pendingScreenTransitionCallback = &transitionCallback;
+}
+
+void FrontendApplicationBase::gotoRecorderScreenNoTransitionImpl()
+{
+    touchgfx::makeTransition<RecorderView, RecorderPresenter, touchgfx::NoTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+}
+
+// Looper
+
+void FrontendApplicationBase::gotoLooperScreenNoTransition()
+{
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoLooperScreenNoTransitionImpl);
+    pendingScreenTransitionCallback = &transitionCallback;
+}
+
+void FrontendApplicationBase::gotoLooperScreenNoTransitionImpl()
+{
+    touchgfx::makeTransition<LooperView, LooperPresenter, touchgfx::NoTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+}
+
+// Mixer
+
+void FrontendApplicationBase::gotoMixerScreenNoTransition()
+{
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoMixerScreenNoTransitionImpl);
+    pendingScreenTransitionCallback = &transitionCallback;
+}
+
+void FrontendApplicationBase::gotoMixerScreenNoTransitionImpl()
+{
+    touchgfx::makeTransition<MixerView, MixerPresenter, touchgfx::NoTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+}
+
+// Input
+
+void FrontendApplicationBase::gotoInputScreenNoTransition()
+{
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoInputScreenNoTransitionImpl);
+    pendingScreenTransitionCallback = &transitionCallback;
+}
+
+void FrontendApplicationBase::gotoInputScreenNoTransitionImpl()
+{
+    touchgfx::makeTransition<InputView, InputPresenter, touchgfx::NoTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+}
+
+// Output
+
+void FrontendApplicationBase::gotoOutputScreenNoTransition()
+{
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoOutputScreenNoTransitionImpl);
+    pendingScreenTransitionCallback = &transitionCallback;
+}
+
+void FrontendApplicationBase::gotoOutputScreenNoTransitionImpl()
+{
+    touchgfx::makeTransition<OutputView, OutputPresenter, touchgfx::NoTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+}
+
+// Stomp
+
+void FrontendApplicationBase::gotoStompScreenNoTransition()
+{
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoStompScreenNoTransitionImpl);
+    pendingScreenTransitionCallback = &transitionCallback;
+}
+
+void FrontendApplicationBase::gotoStompScreenNoTransitionImpl()
+{
+    touchgfx::makeTransition<StompView, StompPresenter, touchgfx::NoTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
 }

@@ -59,6 +59,18 @@
       <xs:maxInclusive value="1000"/>
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="isVector" final="restriction" >
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="yes" />
+      <xs:enumeration value="no" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="isCompressed" final="restriction" >
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="yes" />
+      <xs:enumeration value="no" />
+    </xs:restriction>
+  </xs:simpleType>
 
   <!--TextDatabase specification-->
   <xs:element name="TextDatabase">
@@ -121,7 +133,9 @@
                         <xs:attribute name="Font" type="xs:string" use="required" />
                         <xs:attribute name="Size" type="fontSize" use="required" />
                         <xs:attribute name="Bpp" type="bpp" use="required" />
+                        <xs:attribute name="IsVector" type="isVector" use="required" />
                         <xs:attribute name="Direction" type="direction" use="required" />
+                        <xs:attribute name="IsCompressed" type="isCompressed" use="optional" />
                         <xs:attribute name="FallbackCharacter" type="fallbackCharacter" use="optional" />
                         <xs:attribute name="WildcardCharacters" type="xs:string" use="optional" />
                         <xs:attribute name="WidgetWildcardCharacters" type="xs:string" use="optional" />
@@ -134,7 +148,9 @@
                   <xs:attribute name="Font" type="xs:string" use="required" />
                   <xs:attribute name="Size" type="fontSize" use="required" />
                   <xs:attribute name="Bpp" type="bpp" use="required" />
+                  <xs:attribute name="IsVector" type="isVector" use="required" />
                   <xs:attribute name="Direction" type="direction" use="required" />
+                  <xs:attribute name="IsCompressed" type="isCompressed" use="optional" />
                   <xs:attribute name="FallbackCharacter" type="fallbackCharacter" use="optional" />
                   <xs:attribute name="WildcardCharacters" type="xs:string" use="optional" />
                   <xs:attribute name="WidgetWildcardCharacters" type="xs:string" use="optional" />

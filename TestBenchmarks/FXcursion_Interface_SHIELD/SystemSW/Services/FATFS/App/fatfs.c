@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -31,6 +31,8 @@ void MX_FATFS_Init(void)
 {
   /*## FatFS: Link the SD driver ###########################*/
   retSD = FATFS_LinkDriver(&SD_Driver, SDPath);
+  memset(&SDFatFS, 0, sizeof(FATFS));
+  f_mount(&SDFatFS, (const TCHAR*) "0:", 1);
 
   /* USER CODE BEGIN Init */
   /* additional user code for init */

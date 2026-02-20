@@ -1,7 +1,7 @@
-# Copyright (c) 2018(-2023) STMicroelectronics.
+# Copyright (c) 2018(-2025) STMicroelectronics.
 # All rights reserved.
 #
-# This file is part of the TouchGFX 4.21.3 distribution.
+# This file is part of the TouchGFX 4.25.0 distribution.
 #
 # This software is licensed under terms that can be found in the LICENSE file in
 # the root directory of this software component.
@@ -148,13 +148,17 @@ class TranslationIO
             # Find the language with the correct capitalization
             orig_lang = existing_languages.find { |l| l.upcase == lang_upcase }
             # Fail if all languages should be imported AND the language from the spreadsheet is illegal
-            fail "ERROR: Text Database does not contain language \"#{lang_cell}\", create the language in the TouchGFX Designer" if languages.empty? && !orig_lang
+            fail "ERROR: Text Database does not contain language \"#{lang_cell}\", create the language in the TouchGFX Designer" if languages.empty? && !orig_lang && text_id_column
             # if no languages specified, import all. Otherwise only import if language is wanted
             if languages.empty? || languages.any? { |l| l.upcase == lang_upcase }
               import_columns += [ column ]
             end
             fail "ERROR: Multiple columns contain translations for language \"#{orig_lang}\"" if header.include?(orig_lang)
-            header << orig_lang
+            if not orig_lang.nil?
+              header << orig_lang # Append language name to header array
+            else
+              header << "#{column}" # Append unique number otherwise, will not be used, but keeps length of header array correct
+            end
           end
         end
       end

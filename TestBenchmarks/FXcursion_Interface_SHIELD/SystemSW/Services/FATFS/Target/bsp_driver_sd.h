@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -56,6 +56,17 @@
 
 /* USER CODE BEGIN BSP_H_CODE */
 #define SD_DetectIRQHandler()             HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8)
+
+#define QUEUE_SIZE         ((uint32_t) 10)
+#define READ_CPLT_MSG      ((uint32_t) 1)
+#define WRITE_CPLT_MSG     ((uint32_t) 2)
+#define RW_ABORT_MSG       ((uint32_t) 3)
+
+typedef enum {
+	SD_OWNER_NONE,
+	SD_OWNER_FATFS,
+	SD_OWNER_USB
+} SD_OwnerTypeDef;
 
 /* Exported functions --------------------------------------------------------*/
 uint8_t BSP_SD_Init(void);

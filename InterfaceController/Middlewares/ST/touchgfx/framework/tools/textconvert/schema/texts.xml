@@ -17,7 +17,7 @@
     </TextGroup>
   </Texts>
   <Typographies>
-    <Typography Id="Default" Font="verdana.ttf" Size="20" Bpp="4" Direction="LTR" FallbackCharacter="?">
+    <Typography Id="Default" Font="verdana.ttf" Size="20" Bpp="4" IsVector="no" Direction="LTR" FallbackCharacter="?">
       <LanguageSetting Language="AR" Font="helvetica.ttf" Size="14" Bpp="4" Direction="RTL" />
     </Typography>
   </Typographies>

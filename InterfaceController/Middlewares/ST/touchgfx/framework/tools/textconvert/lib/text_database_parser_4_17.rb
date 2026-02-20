@@ -1,7 +1,7 @@
-# Copyright (c) 2018(-2023) STMicroelectronics.
+# Copyright (c) 2018(-2025) STMicroelectronics.
 # All rights reserved.
 #
-# This file is part of the TouchGFX 4.21.3 distribution.
+# This file is part of the TouchGFX 4.25.0 distribution.
 #
 # This software is licensed under terms that can be found in the LICENSE file in
 # the root directory of this software component.
@@ -72,7 +72,7 @@ class TypographyParser_4_17
       ellipsis_character = ellipsis_character.strip if ellipsis_character
 
       if name && font && size && bpp
-        typographies.push Typography.new(name, font, size.to_i, bpp.to_i, fallback_character, ellipsis_character, wildcard_characters, widget_wildcard_characters, wildcard_ranges)
+        typographies.push Typography.new(name, font, size.to_i, bpp.to_i, false, false, fallback_character, ellipsis_character, wildcard_characters, widget_wildcard_characters, wildcard_ranges)
       end
     end
     typographies

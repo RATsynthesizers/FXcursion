@@ -48,4 +48,5 @@ void LogoStartupViewBase::logoFadeInteractionEndedCallbackHandler(const touchgfx
     //When LogoFadeInteraction completed change screen to ProjectSettings
     //Go to ProjectSettings with block transition
     application().gotoProjectSettingsScreenBlockTransition();
+
 }

@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -177,6 +177,28 @@ public:
         return isAllowed;
     }
 
+    /**
+     * Sets whether or not a DMA operation is reserved by rendering. Used to allow/disallow
+     * other users of DMA2D whom are drawing into the framebuffer, e.g. video thread.
+     *
+     * @param  reserved true if DMA is reserved by rendering.
+     */
+    void setReserved(bool reserved)
+    {
+        isReserved = reserved;
+    }
+
+    /**
+     * Gets whether a DMA operation is reserved by rendering. Used to allow/disallow
+     * other users of DMA2D whom are drawing into the framebuffer, e.g. video thread.
+     *
+     * @return true if DMA is reserved by rendering, false if not.
+     */
+    bool getReserved() const
+    {
+        return isReserved;
+    }
+
     /** Signals that DMA transfers can start. If any elements are in the queue, start it. */
     virtual void start();
 
@@ -282,9 +304,10 @@ protected:
      */
     virtual void waitForFrameBufferSemaphore();
 
-    DMA_Queue& queue;        ///< Reference to the DMA queue
-    bool isRunning;          ///< true if a DMA transfer is currently ongoing.
-    volatile bool isAllowed; ///< true if DMA transfers are currently allowed.
+    DMA_Queue& queue;         ///< Reference to the DMA queue
+    bool isRunning;           ///< true if a DMA transfer is currently ongoing.
+    volatile bool isAllowed;  ///< true if DMA transfers are currently allowed.
+    volatile bool isReserved; ///< true if DMA is reserved for for HW rendering
 };
 
 } // namespace touchgfx

@@ -67,6 +67,7 @@ extern I2C_HandleTypeDef hi2c2;
 extern I2C_HandleTypeDef hi2c4;
 extern JPEG_HandleTypeDef hjpeg;
 extern MDMA_HandleTypeDef hmdma_mdma_channel0_sw_0;
+extern MDMA_HandleTypeDef hmdma_mdma_channel1_sdmmc1_end_data_0;
 extern QSPI_HandleTypeDef hqspi;
 extern SD_HandleTypeDef hsd1;
 extern DMA_HandleTypeDef hdma_spi1_rx;
@@ -87,7 +88,8 @@ extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim17;
 
 /* USER CODE BEGIN EV */
-
+extern osSemaphoreId vSyncAllowedSemHandle;
+extern osThreadId usbThreadHandle;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -650,42 +652,20 @@ void I2C4_ER_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles USB On The Go FS End Point 1 Out global interrupt.
-  */
-void OTG_FS_EP1_OUT_IRQHandler(void)
-{
-  /* USER CODE BEGIN OTG_FS_EP1_OUT_IRQn 0 */
-
-  /* USER CODE END OTG_FS_EP1_OUT_IRQn 0 */
-  HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);
-  /* USER CODE BEGIN OTG_FS_EP1_OUT_IRQn 1 */
-
-  /* USER CODE END OTG_FS_EP1_OUT_IRQn 1 */
-}
-
-/**
-  * @brief This function handles USB On The Go FS End Point 1 In global interrupt.
-  */
-void OTG_FS_EP1_IN_IRQHandler(void)
-{
-  /* USER CODE BEGIN OTG_FS_EP1_IN_IRQn 0 */
-
-  /* USER CODE END OTG_FS_EP1_IN_IRQn 0 */
-  HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);
-  /* USER CODE BEGIN OTG_FS_EP1_IN_IRQn 1 */
-
-  /* USER CODE END OTG_FS_EP1_IN_IRQn 1 */
-}
-
-/**
   * @brief This function handles USB On The Go FS global interrupt.
   */
 void OTG_FS_IRQHandler(void)
 {
   /* USER CODE BEGIN OTG_FS_IRQn 0 */
+	if(osKernelRunning())
+	{
+		// 1. Tell the NVIC to stop triggering this interrupt for now
+		HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
 
+		osSignalSet(usbThreadHandle, 0x01);
+	}
   /* USER CODE END OTG_FS_IRQn 0 */
-  HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);
+
   /* USER CODE BEGIN OTG_FS_IRQn 1 */
 
   /* USER CODE END OTG_FS_IRQn 1 */
@@ -749,13 +729,16 @@ void HSEM1_IRQHandler(void)
 
 /* USER CODE BEGIN 1 */
 
-extern uint8_t flag;
-
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if (GPIO_Pin == GPIO_PIN_2 && 1 == flag)
+	if (GPIO_Pin == GPIO_PIN_2)
 	{
-		OSWrappers_signalVSync();
+		if(NULL != vSyncAllowedSemHandle
+		   && osOK == osSemaphoreWait(vSyncAllowedSemHandle, 0))
+		{
+			osSemaphoreRelease(vSyncAllowedSemHandle);
+			OSWrappers_signalVSync();
+		}
 	}
 }
 /* USER CODE END 1 */

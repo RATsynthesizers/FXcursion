@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -147,13 +147,19 @@ protected:
     virtual void setupDrawChain(const Rect& invalidatedArea, Drawable** nextPreviousElement);
 
     /**
-     * A CachedImage is a specialized Image object that exposes the setupDrawChain() method.
+     * A CachedImage is a specialized Image object that exposes the
+     * setupDrawChain() and setParent methods.
      *
      * @see CacheableContainer, Image
      */
     class CachedImage : public Image
     {
     public:
+        void setParent(Drawable* p)
+        {
+            parent = p;
+        }
+
         virtual void setupDrawChain(const Rect& invalidatedArea, Drawable** nextPreviousElement)
         {
             Drawable::setupDrawChain(invalidatedArea, nextPreviousElement);

@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -45,8 +45,8 @@ void PainterBWBitmap::paint(uint8_t* destination, int16_t offset, int16_t widget
             count -= length;
             do
             {
-                uint32_t bw_length = bw_rle.getLength();
-                uint32_t bitsToDraw = MIN(bw_length, length);
+                const uint32_t bw_length = bw_rle.getLength();
+                const uint32_t bitsToDraw = MIN(bw_length, length);
 
                 fillBits(destination, offset, 0, 0 /* not used */, bitsToDraw, bw_rle.getColor());
                 offset += bitsToDraw;
@@ -68,8 +68,8 @@ void PainterBWBitmap::paint(uint8_t* destination, int16_t offset, int16_t widget
 
             const uint8_t* src = bitmapPointer + widgetX / 8;
             uint8_t* RESTRICT dst = destination + (offset / 8);
-            uint16_t srcBitX = widgetX % 8; // & 7
-            uint16_t dstBitX = offset % 8;  // & 7
+            uint16_t srcBitX = widgetX % 8;      // & 7
+            const uint16_t dstBitX = offset % 8; // & 7
 
             uint16_t remainingBits = length;
 
@@ -115,7 +115,7 @@ void PainterBWBitmap::paint(uint8_t* destination, int16_t offset, int16_t widget
             // dstX is now word aligned (or we have transferred everything of a narrow image and remainingBits==0)
             if (remainingBits >= 8)
             {
-                uint16_t bytesPerLine = remainingBits / 8;
+                const uint16_t bytesPerLine = remainingBits / 8;
                 if (srcBitX == 0)
                 {
                     HAL::getInstance()->blockCopy(dst, src, bytesPerLine);
@@ -124,7 +124,7 @@ void PainterBWBitmap::paint(uint8_t* destination, int16_t offset, int16_t widget
                 }
                 else
                 {
-                    uint16_t _remainingBits = remainingBits;
+                    const uint16_t _remainingBits = remainingBits;
 
                     remainingBits = _remainingBits;
                     while (remainingBits >= 8)

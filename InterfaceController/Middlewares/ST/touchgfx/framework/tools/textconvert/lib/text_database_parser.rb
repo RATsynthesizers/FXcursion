@@ -1,7 +1,7 @@
-# Copyright (c) 2018(-2023) STMicroelectronics.
+# Copyright (c) 2018(-2025) STMicroelectronics.
 # All rights reserved.
 #
-# This file is part of the TouchGFX 4.21.3 distribution.
+# This file is part of the TouchGFX 4.25.0 distribution.
 #
 # This software is licensed under terms that can be found in the LICENSE file in
 # the root directory of this software component.
@@ -19,7 +19,12 @@ class ParserBase
 
 protected
   def empty_to_nil(str)
-    str ? str.strip.empty? ? nil : str.strip : nil
+    str ? str.empty? ? nil : str : nil
+  end
+
+  def yes_to_true(str)
+    empty_to_nil(str)
+    !str.nil? && str.downcase == "yes" ? true : false
   end
 end
 
@@ -63,6 +68,8 @@ class TypographyParser < ParserBase
       size = empty_to_nil(typo_node["Size"])
       bpp = empty_to_nil(typo_node["Bpp"])
       direction = empty_to_nil(typo_node["Direction"])
+      is_vector = yes_to_true(typo_node["IsVector"])
+      is_compressed = yes_to_true(typo_node["IsCompressed"])
       fallback_character = empty_to_nil(typo_node["FallbackCharacter"])
       wildcard_characters = empty_to_nil(typo_node["WildcardCharacters"])
       wildcard_widget_characters = empty_to_nil(typo_node["WidgetWildcardCharacters"])
@@ -74,12 +81,14 @@ class TypographyParser < ParserBase
       fail "ERROR: Attribute 'Size' not specified in line #{typo_node.line} for <Typography Id=\"#{typo_id}\">" if size.nil?
       fail "ERROR: Attribute 'Bpp' not specified in line #{typo_node.line} for <Typography Id=\"#{typo_id}\">" if bpp.nil?
       fail "ERROR: Attribute 'Direction' not specified in line #{typo_node.line} for <Typography Id=\"#{typo_id}\">" if direction.nil?
+      fail "ERROR: Attribute 'IsVector' not specified in line #{typo_node.line} for <Typography Id=\"#{typo_id}\">" if is_vector.nil?
+      fail "ERROR: Attribute 'IsVector' and Attribute 'IsCompressed' can not both be true for <Typography Id=\"#{typo_id}\">" if is_vector and is_compressed
       if !typo_id.match(/^([0-9a-zA-Z_])*$/)
         fail "ERROR: Illegal characters found in line #{typo_node.line} for <Typography Id=\"#{typo_id}\">"
       end
 
       # Default typography
-      @typographies.add(typo_id, "", font, size, bpp, fallback_character, ellipsis_character, wildcard_characters, wildcard_widget_characters, wildcard_character_ranges, direction)
+      @typographies.add(typo_id, "", font, size, bpp, is_vector, is_compressed, fallback_character, ellipsis_character, wildcard_characters, wildcard_widget_characters, wildcard_character_ranges, direction)
 
       typo_node.xpath('./LanguageSetting').each do |language_setting|
         language = empty_to_nil(language_setting["Language"])
@@ -87,6 +96,8 @@ class TypographyParser < ParserBase
         size = empty_to_nil(language_setting["Size"])
         bpp = empty_to_nil(language_setting["Bpp"])
         direction = empty_to_nil(language_setting["Direction"])
+        is_vector = yes_to_true(language_setting["IsVector"])
+        is_compressed = yes_to_true(typo_node["IsCompressed"])
         fallback_character = empty_to_nil(language_setting["FallbackCharacter"])
         wildcard_characters = empty_to_nil(language_setting["WildcardCharacters"])
         wildcard_widget_characters = empty_to_nil(language_setting["WidgetWildcardCharacters"])
@@ -104,7 +115,14 @@ class TypographyParser < ParserBase
         fail "ERROR: Unknown language '#{language}'" if !@languages.include?(language)
 
         # Language specific typography
-        @typographies.add(typo_id, language, font, size, bpp, fallback_character, ellipsis_character, wildcard_characters, wildcard_widget_characters, wildcard_character_ranges, direction)
+        @typographies.add(typo_id, language, font, size, bpp, is_vector, is_compressed, fallback_character, ellipsis_character, wildcard_characters, wildcard_widget_characters, wildcard_character_ranges, direction)
+      end
+    end
+    # See if we have the same font file and size with both 4bpp and 4bpp-compressed. This is not legal!
+    @typographies.get_typographies.select{|t| not t.is_vector and t.bpp==4}.group_by{|t| t.font_file+t.font_size.to_s}.each do |k, a|
+      if a.count{|t|t.is_compressed}>0 and a.count{|t|not t.is_compressed}>0
+        t = a[0]
+        fail "ERROR: Font file #{t.font_file} is used in size #{t.font_size} in both 4Bpp and 4Bpp Compressed. This is not supported!"
       end
     end
     return @typographies

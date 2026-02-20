@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -263,14 +263,14 @@ private:
 
         uint8_t getNextHalfByte()
         {
+            assert(data != 0 && "class bwRLEdata not properly initialized");
             if (firstHalfByte) // Start of new byte, read data from BW_RLE stream
             {
-                assert(data);
                 rleByte = *data++;
             }
-            uint8_t len = rleByte & 0xF;    // Read lower half
-            rleByte >>= 4;                  // Shift upper half down to make it ready
-            firstHalfByte = !firstHalfByte; // Toggle 'start of byte'
+            const uint8_t len = rleByte & 0xF; // Read lower half
+            rleByte >>= 4;                     // Shift upper half down to make it ready
+            firstHalfByte = !firstHalfByte;    // Toggle 'start of byte'
             return len;
         }
 

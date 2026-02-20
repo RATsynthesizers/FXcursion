@@ -49,6 +49,7 @@ public:
     virtual int8_t getKerning(Unicode::UnicodeChar prevChar, const GlyphNode* glyph) const;
 
     void setFontCache(FontCache& cache);
+
     FontId getFontId() const
     {
         return fontId;

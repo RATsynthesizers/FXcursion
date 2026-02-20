@@ -1,7 +1,7 @@
-# Copyright (c) 2018(-2023) STMicroelectronics.
+# Copyright (c) 2018(-2025) STMicroelectronics.
 # All rights reserved.
 #
-# This file is part of the TouchGFX 4.21.3 distribution.
+# This file is part of the TouchGFX 4.25.0 distribution.
 #
 # This software is licensed under terms that can be found in the LICENSE file in
 # the root directory of this software component.
@@ -11,10 +11,11 @@
 require 'lib/string_collector'
 
 class TextsCpp < Template
-  def initialize(characters, text_entries, typographies, languages, output_directory, remap_global, generate_binary_translations)
+  def initialize(characters, text_entries, typographies, languages, output_directory, remap_global, generate_binary_translations, copy_translations_to_ram)
     @characters = characters # one array (per language, or all at index 0 if global remapping) of the needed strings in optimal order
     @remap_global = remap_global
     @generate_binary_translations = generate_binary_translations
+    @copy_translations_to_ram = copy_translations_to_ram
     super(text_entries, typographies, languages, output_directory)
     @cache = {}
   end
@@ -36,6 +37,14 @@ class TextsCpp < Template
     @cache["languages"] = get_capitalized_languages
     if @remap_global=="yes"
       @cache["characters"] = @characters.flatten
+    end
+    @cache["copy_translations_to_ram"] = @copy_translations_to_ram
+    if @copy_translations_to_ram=="yes"
+      lengths = {}
+      @languages.each_with_index do |l, i|
+        lengths[l] = language_length(i)
+      end
+      @cache["lengths"] = lengths
     end
 
     new_cache_file = false
@@ -84,5 +93,25 @@ class TextsCpp < Template
 
   def get_substrings_and_offsets
     unicode_array_to_hex_offset_comment(@characters.flatten)
+  end
+
+  def language_length(l)
+    @characters[l].length
+  end
+
+  def get_max_language_length
+    @characters.inject(0){|m,c| c.length > m ? c.length : m }
+  end
+
+  def copy_translations?
+    @copy_translations_to_ram=="yes"
+  end
+
+  def get_pragma
+    @pragma ||= @copy_translations_to_ram=="yes" ? "" : "TEXT_LOCATION_FLASH_PRAGMA\r\n"
+  end
+
+  def get_attribute
+    @attribute ||= @copy_translations_to_ram=="yes" ? "" : " TEXT_LOCATION_FLASH_ATTRIBUTE"
   end
 end

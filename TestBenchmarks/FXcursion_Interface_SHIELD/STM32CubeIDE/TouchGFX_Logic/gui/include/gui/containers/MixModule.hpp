@@ -10,6 +10,9 @@ public:
     virtual ~MixModule() {}
 
     virtual void initialize();
+
+    void select();
+    void deselect();
 protected:
 };
 

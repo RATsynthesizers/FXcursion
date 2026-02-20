@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -618,13 +618,6 @@ public:
         }
     }
 
-protected:
-    /**
-     * Transform the bitmap using the supplied origo, scale, rotation and camera. This
-     * method is called by all the methods that manipulate origo, scale, rotation and camera.
-     */
-    void applyTransformation();
-
     /**
      * Gets bounding rectangle of the transformed bitmap. This is the smallest possible
      * rectangle which covers the image of the bitmap after applying scale and rotation.
@@ -632,6 +625,13 @@ protected:
      * @return The bounding rectangle.
      */
     Rect getBoundingRect() const;
+
+protected:
+    /**
+     * Transform the bitmap using the supplied origo, scale, rotation and camera. This
+     * method is called by all the methods that manipulate origo, scale, rotation and camera.
+     */
+    void applyTransformation();
 
     /**
      * The TextureMapper will draw the transformed bitmap by drawing one transformed quad.

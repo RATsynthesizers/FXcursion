@@ -8,6 +8,9 @@
 #include <touchgfx/containers/Container.hpp>
 #include <gui/containers/StereoCable.hpp>
 #include <gui/containers/EmptyModuleStereo.hpp>
+#include <gui/containers/FXModuleStereo.hpp>
+#include <gui/containers/LoopModuleStereo.hpp>
+#include <gui/containers/RecModuleStereo.hpp>
 
 class StereoChainBase : public touchgfx::Container
 {
@@ -29,6 +32,9 @@ protected:
     EmptyModuleStereo emptyModuleStereo3;
     EmptyModuleStereo emptyModuleStereo2;
     EmptyModuleStereo emptyModuleStereo1;
+    FXModuleStereo fXModule;
+    LoopModuleStereo loopModule;
+    RecModuleStereo recModule;
 
 private:
 

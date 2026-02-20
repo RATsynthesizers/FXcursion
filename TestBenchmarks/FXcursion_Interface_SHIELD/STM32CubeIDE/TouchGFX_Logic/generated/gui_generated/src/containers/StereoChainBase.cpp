@@ -21,6 +21,18 @@ StereoChainBase::StereoChainBase()
 
     emptyModuleStereo1.setXY(174, 0);
     add(emptyModuleStereo1);
+
+    fXModule.setXY(8, 4);
+    fXModule.setVisible(false);
+    add(fXModule);
+
+    loopModule.setXY(66, 4);
+    loopModule.setVisible(false);
+    add(loopModule);
+
+    recModule.setXY(124, 4);
+    recModule.setVisible(false);
+    add(recModule);
 }
 
 StereoChainBase::~StereoChainBase()
@@ -35,4 +47,7 @@ void StereoChainBase::initialize()
     emptyModuleStereo3.initialize();
     emptyModuleStereo2.initialize();
     emptyModuleStereo1.initialize();
+    fXModule.initialize();
+    loopModule.initialize();
+    recModule.initialize();
 }

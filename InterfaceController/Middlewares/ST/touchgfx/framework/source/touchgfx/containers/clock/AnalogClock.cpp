@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -99,7 +99,7 @@ void AnalogClock::initializeTime24Hour(uint8_t hour, uint8_t minute, uint8_t sec
     lastSecond = 255;
 
     // Disable animation and set time
-    uint16_t tempAnimationDuration = animationDuration;
+    const uint16_t tempAnimationDuration = animationDuration;
     animationDuration = 1;
     setTime24Hour(hour, minute, second);
 
@@ -126,26 +126,35 @@ uint8_t AnalogClock::getAlpha() const
 
 void AnalogClock::updateClock()
 {
-    // Make sure that animating to 0 will move from left to right
-    if (lastHour != 0 && currentHour == 0)
-    {
-        hourHand.updateZAngle(hourHand.getZAngle() - (2 * PI));
-    }
-    if (lastMinute != 0 && currentMinute == 0)
-    {
-        minuteHand.updateZAngle(minuteHand.getZAngle() - (2 * PI));
-    }
-    if (lastSecond != 0 && currentSecond == 0)
-    {
-        secondHand.updateZAngle(secondHand.getZAngle() - (2 * PI));
-    }
-
     float newHandAngle;
+    float oldHandAngle;
+    int16_t diff;
 
     // Move hour hand
-    if (hourHand.isVisible() && ((currentHour != lastHour) || (hourHandMinuteCorrectionActive && (currentMinute != lastMinute))))
+    if (hourHand.isVisible() && ((currentHour % 12 != lastHour % 12) || (hourHandMinuteCorrectionActive && (currentMinute != lastMinute))))
     {
-        newHandAngle = convertHandValueToAngle(12, currentHour, hourHandMinuteCorrectionActive ? currentMinute : 0);
+        newHandAngle = convertHandValueToAngle(12, currentHour % 12, hourHandMinuteCorrectionActive ? currentMinute : 0);
+
+        // check if sign of absolute angles difference matches sign of normalized difference of angles
+        oldHandAngle = hourHand.getZAngle();
+        diff = (((int16_t)currentHour - (int16_t)lastHour + 24 + 6) % 12) - 6;
+        if (diff > 0 && newHandAngle < oldHandAngle)
+        {
+            while (newHandAngle < oldHandAngle) // correct old angle to force clockwise rotation
+            {
+                oldHandAngle -= (2 * PI);
+            }
+            hourHand.updateZAngle(oldHandAngle);
+        }
+        else if (diff < 0 && newHandAngle > oldHandAngle)
+        {
+            while (newHandAngle > oldHandAngle) // correct old angle to force counterclockwise rotation
+            {
+                oldHandAngle += (2 * PI);
+            }
+            hourHand.updateZAngle(oldHandAngle);
+        }
+
         if (animationEnabled() && !hourHand.isTextureMapperAnimationRunning())
         {
             hourHand.setupAnimation(AnimationTextureMapper::Z_ROTATION, newHandAngle, animationDuration, 0, animationEquation);
@@ -165,6 +174,27 @@ void AnalogClock::updateClock()
     if (minuteHand.isVisible() && ((currentMinute != lastMinute) || (minuteHandSecondCorrectionActive && (currentSecond != lastSecond))))
     {
         newHandAngle = convertHandValueToAngle(60, currentMinute, minuteHandSecondCorrectionActive ? currentSecond : 0);
+
+        // check if sign of absolute angles difference matches sign of normalized difference of angles
+        oldHandAngle = minuteHand.getZAngle();
+        diff = (((int16_t)currentMinute - (int16_t)lastMinute + 60 + 30) % 60) - 30;
+        if (diff > 0 && newHandAngle < oldHandAngle)
+        {
+            while (newHandAngle < oldHandAngle) // correct old angle to force clockwise rotation
+            {
+                oldHandAngle -= (2 * PI);
+            }
+            minuteHand.updateZAngle(oldHandAngle);
+        }
+        else if (diff < 0 && newHandAngle > oldHandAngle)
+        {
+            while (newHandAngle > oldHandAngle) // correct old angle to force counterclockwise rotation
+            {
+                oldHandAngle += (2 * PI);
+            }
+            minuteHand.updateZAngle(oldHandAngle);
+        }
+
         if (animationEnabled() && !minuteHand.isTextureMapperAnimationRunning())
         {
             minuteHand.setupAnimation(AnimationTextureMapper::Z_ROTATION, newHandAngle, animationDuration, 0, animationEquation);
@@ -184,6 +214,27 @@ void AnalogClock::updateClock()
     if (secondHand.isVisible() && (currentSecond != lastSecond))
     {
         newHandAngle = convertHandValueToAngle(60, currentSecond);
+
+        // check if sign of absolute angles difference matches sign of normalized difference of angles
+        oldHandAngle = secondHand.getZAngle();
+        diff = (((int16_t)currentSecond - (int16_t)lastSecond + 60 + 30) % 60) - 30;
+        if (diff > 0 && newHandAngle < oldHandAngle)
+        {
+            while (newHandAngle < oldHandAngle) // correct old angle to force clockwise rotation
+            {
+                oldHandAngle -= (2 * PI);
+            }
+            secondHand.updateZAngle(oldHandAngle);
+        }
+        else if (diff < 0 && newHandAngle > oldHandAngle)
+        {
+            while (newHandAngle > oldHandAngle) // correct old angle to force counterclockwise rotation
+            {
+                oldHandAngle += (2 * PI);
+            }
+            secondHand.updateZAngle(oldHandAngle);
+        }
+
         if (animationEnabled() && !secondHand.isTextureMapperAnimationRunning())
         {
             secondHand.setupAnimation(AnimationTextureMapper::Z_ROTATION, newHandAngle, animationDuration, 0, animationEquation);

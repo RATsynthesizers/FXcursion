@@ -86,7 +86,7 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : ENC_PARAM_B_Pin ENC_PARAM_A_Pin MY_FOOT1_Pin BTN_UP_Pin
                            BTN_DOWN_Pin */
-  GPIO_InitStruct.Pin = ENC_PARAM_B_Pin|ENC_PARAM_A_Pin|MY_FOOT1_Pin|BTN_UP_Pin
+  GPIO_InitStruct.Pin = ENC_PARAM_B_Pin|ENC_PARAM_A_Pin|BTN_FUNC_Pin|BTN_UP_Pin
                           |BTN_DOWN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;

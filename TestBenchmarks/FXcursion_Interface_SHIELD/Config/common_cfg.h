@@ -50,9 +50,10 @@ typedef enum enUIObjectType
 	BTN_PLAY	= 7,
 	BTN_STOP	= 8,
 	BTN_REC		= 9,
+	BTN_MENU	= 10,
 
-	ENC_MENU	= 10,
-	ENC_PARAM	= 11,
+	ENC_MENU	= 11,
+	ENC_PARAM	= 12,
 
 } UIObjectType;
 

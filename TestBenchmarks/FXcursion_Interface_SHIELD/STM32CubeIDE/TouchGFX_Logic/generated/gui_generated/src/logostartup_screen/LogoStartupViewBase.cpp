@@ -35,10 +35,10 @@ void LogoStartupViewBase::afterTransition()
 {
     //LogoFade
     //When screen transition ends fade logoImage
-    //Fade logoImage to alpha:0 with CubicInOut easing in 3000 ms (180 Ticks)
+    //Fade logoImage to alpha:0 with LinearIn easing in 3000 ms (180 Ticks)
     logoImage.clearFadeAnimationEndedAction();
-    logoImage.setFadeAnimationDelay(120);
-    logoImage.startFadeAnimation(0, 180, touchgfx::EasingEquations::cubicEaseInOut);
+    logoImage.setFadeAnimationDelay(60);
+    logoImage.startFadeAnimation(0, 180, touchgfx::EasingEquations::linearEaseIn);
     logoImage.setFadeAnimationEndedAction(logoFadeEndedCallback);
 }
 
@@ -46,7 +46,7 @@ void LogoStartupViewBase::logoFadeEndedCallbackHandler(const touchgfx::FadeAnima
 {
     //SetupEnded
     //When LogoFade completed change screen to System
-    //Go to System with screen transition towards East
-    application().gotoSystemScreenCoverTransitionEast();
+    //Go to System with no screen transition
+    application().gotoSystemScreenNoTransition();
 
 }

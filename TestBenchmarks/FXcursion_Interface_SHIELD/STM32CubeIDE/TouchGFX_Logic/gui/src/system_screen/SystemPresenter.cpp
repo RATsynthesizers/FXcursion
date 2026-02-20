@@ -27,24 +27,24 @@ void SystemPresenter::encParamUpdate(U8 nID, S8 nValue)
 
 }
 
-void SystemPresenter::btnYesUpdate(void)
+void SystemPresenter::btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 {
-
+	view.btnYesUpdate(nValue, bIsFuncPressed);
 }
 
-void SystemPresenter::btnNoUpdate(void)
+void SystemPresenter::btnNoUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 {
-
+	view.btnNoUpdate(nValue, bIsFuncPressed);
 }
 
-void SystemPresenter::btnUpUpdate(void)
+void SystemPresenter::btnUpUpdate(BOOLEAN bIsFuncPressed)
 {
-	view.btnUpUpdate();
+	view.btnUpUpdate(bIsFuncPressed);
 }
 
-void SystemPresenter::btnDownUpdate(void)
+void SystemPresenter::btnDownUpdate(BOOLEAN bIsFuncPressed)
 {
-	view.btnDownUpdate();
+	view.btnDownUpdate(bIsFuncPressed);
 }
 
 void SystemPresenter::btnFootUpdate(U8 nID)

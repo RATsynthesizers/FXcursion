@@ -1,7 +1,7 @@
-# Copyright (c) 2018(-2023) STMicroelectronics.
+# Copyright (c) 2018(-2025) STMicroelectronics.
 # All rights reserved.
 #
-# This file is part of the TouchGFX 4.21.3 distribution.
+# This file is part of the TouchGFX 4.25.0 distribution.
 #
 # This software is licensed under terms that can be found in the LICENSE file in
 # the root directory of this software component.
@@ -16,18 +16,23 @@ class UnicodesTxt
     @output_directory = output_directory
   end
   def run
-    unique_typographies = @typographies.map{ |t| Typography.new("", t.font_file, t.font_size, t.bpp) }.uniq.sort_by { |t| sprintf("%s %04d %d",t.font_file,t.font_size,t.bpp) }
+    #write UnicodeList for non-vector typographies
+    unique_typographies = @typographies.select{ |t| not t.is_vector}.map{ |t| Typography.new("", t.font_file, t.font_size, t.bpp, t.is_vector) }.uniq.sort_by { |t| sprintf("%s %04d %d",t.font_file,t.font_size,t.bpp) }
     unique_typographies.each do |unique_typography|
-      UnicodeForTypographyTxt.new(@text_entries, @typographies, unique_typography, @output_directory).run
+      UnicodeForTypographyTxt.new(@text_entries, @typographies, @output_directory).run_bitmap(unique_typography)
+    end
+    #write UnicodeList for vector fonts
+    unique_fonts = @typographies.select{ |t| t.is_vector}.map{|t| t.font_file}.uniq.sort
+    unique_fonts.each do |font|
+      UnicodeForTypographyTxt.new(@text_entries, @typographies, @output_directory).run_vector(font)
     end
   end
 end
 
 class UnicodeForTypographyTxt
-  def initialize(text_entries, typographies, unique_typography, output_directory)
+  def initialize(text_entries, typographies, output_directory)
     @text_entries = text_entries
     @typographies = typographies
-    @unique_typography = unique_typography
     @output_directory = output_directory
   end
 
@@ -437,45 +442,42 @@ class UnicodeForTypographyTxt
     result
   end
 
-  def run
-    typographies_identical = @typographies.select{ |t| t.font_file == @unique_typography.font_file &&
-                                                   t.font_size == @unique_typography.font_size &&
-                                                   t.bpp == @unique_typography.bpp }
-    typography_names = typographies_identical.map(&:name).uniq
+  def calculate_unicodes(typographies_input)
+    typography_names = typographies_input.map(&:name).uniq
 
     # Find a typography with a fallback character
-    typography_with_fallback_character = typographies_identical.find { |t| t.fallback_character }
+    typography_with_fallback_character = typographies_input.find { |t| t.fallback_character }
     if typography_with_fallback_character
       # Now get the actual fallback character (or 'skip')
       typography_fallback_character = typography_with_fallback_character.fallback_character
       # Check to see if one of the other typographes has a different fallback character
-      index = typographies_identical.find_index{ |t| t.fallback_character && t.fallback_character != typography_fallback_character }
+      index = typographies_input.find_index{ |t| t.fallback_character && t.fallback_character != typography_fallback_character }
       if index
-        abort "The fallback character differs for typography \"#{typography_with_fallback_character.name}\" and typography \"#{typographies_identical[index].name}\""
+        abort "The fallback character differs for typography \"#{typography_with_fallback_character.name}\" and typography \"#{typographies_input[index].name}\""
       end
       # set all fallback characters to the same character
-      typographies_identical.each { |t| t.fallback_character = typography_fallback_character }
+      typographies_input.each { |t| t.fallback_character = typography_fallback_character }
     end
 
     # Find a typography with a ellipsis character
-    typography_with_ellipsis_character = typographies_identical.find { |t| t.ellipsis_character }
+    typography_with_ellipsis_character = typographies_input.find { |t| t.ellipsis_character }
     if typography_with_ellipsis_character
       # Now get the actual ellipsis character (or 'skip')
       typography_ellipsis_character = typography_with_ellipsis_character.ellipsis_character
       # Check to see if one of the other typographes has a different ellipsis character
-      index = typographies_identical.find_index{ |t| t.ellipsis_character && t.ellipsis_character != typography_ellipsis_character }
+      index = typographies_input.find_index{ |t| t.ellipsis_character && t.ellipsis_character != typography_ellipsis_character }
       if index
-        abort "The ellipsis character differs for typography \"#{typography_with_ellipsis_character.name}\" and typography \"#{typographies_identical[index].name}\""
+        abort "The ellipsis character differs for typography \"#{typography_with_ellipsis_character.name}\" and typography \"#{typographies_input[index].name}\""
       end
       # set all ellipsis characters to the same character
-      typographies_identical.each { |t| t.ellipsis_character = typography_ellipsis_character }
+      typographies_input.each { |t| t.ellipsis_character = typography_ellipsis_character }
     end
 
     all_translations = typography_names.map{ |typography_name| @text_entries.collect{ |entry| entry.translations_with_typography(typography_name) }.flatten }.flatten
 
     unicodes = all_translations.map(&:unicodes).flatten.uniq.sort
 
-    typographies_identical.each do |t|
+    typographies_input.each do |t|
       fbc = t.fallback_character
       fbcUnicode = 0
       if fbc
@@ -510,7 +512,7 @@ class UnicodeForTypographyTxt
       end
       t.ellipsis_character = tecUnicode
     end
-    typographies_identical.each{ |t|
+    typographies_input.each{ |t|
       if t.wildcard_characters
         t.wildcard_characters.to_s.split('').each { |c|
           unicodes += [ c[0].ord ]
@@ -539,6 +541,23 @@ class UnicodeForTypographyTxt
 
     check_for_rtl(unicodes)
 
-    FileIO.write_file_silent(File.join(@output_directory, "UnicodeList#{@unique_typography.cpp_name}_#{@unique_typography.font_size}_#{@unique_typography.bpp}.txt"), unicodes.join(LINE_ENDINGS) )
+    #return the unicodes
+    unicodes
+  end
+
+  def run_bitmap(unique_typography)
+    typographies_identical = @typographies.select{ |t| t.font_file == unique_typography.font_file &&
+                                                   t.font_size == unique_typography.font_size &&
+                                                   t.bpp == unique_typography.bpp &&
+                                                   t.is_vector == false}
+    unicodes = calculate_unicodes(typographies_identical)
+    FileIO.write_file_silent(File.join(@output_directory, "UnicodeList#{unique_typography.cpp_name}_#{unique_typography.font_size}_#{unique_typography.bpp}.txt"), unicodes.join(LINE_ENDINGS) )
+  end
+
+  def run_vector(font_file)
+    typographies_font = @typographies.select{ |t| t.font_file == font_file && t.is_vector }
+    unicodes = calculate_unicodes(typographies_font)
+    font_cpp_name = font_file.gsub(/\.ttf$/,"").gsub(/[^0-9a-zA-Z]/, "_")
+    FileIO.write_file_silent(File.join(@output_directory, "VectorUnicodeList#{font_cpp_name}.txt"), unicodes.join(LINE_ENDINGS) )
   end
 end

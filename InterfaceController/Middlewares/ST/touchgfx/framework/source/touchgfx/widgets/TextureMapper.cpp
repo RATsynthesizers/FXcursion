@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -63,10 +63,10 @@ void TextureMapper::applyTransformation()
 {
     const uint8_t n = 4;
 
-    int imgWidth = Bitmap(bitmap).getWidth() + 1;
-    int imgHeight = Bitmap(bitmap).getHeight() + 1;
+    const int imgWidth = Bitmap(bitmap).getWidth() + 1;
+    const int imgHeight = Bitmap(bitmap).getHeight() + 1;
 
-    Point4 vertices[n] = {
+    const Point4 vertices[n] = {
         Point4(xBitmapPosition - 1, yBitmapPosition - 1, cameraDistance),
         Point4((xBitmapPosition - 1) + imgWidth, yBitmapPosition - 1, cameraDistance),
         Point4((xBitmapPosition - 1) + imgWidth, (yBitmapPosition - 1) + imgHeight, cameraDistance),
@@ -74,7 +74,7 @@ void TextureMapper::applyTransformation()
     };
     Point4 transformed[n];
 
-    Vector4 tm_center(xOrigo, yOrigo, zOrigo);
+    const Vector4 tm_center(xOrigo, yOrigo, zOrigo);
 
     Matrix4x4 translateToCenter;
     translateToCenter.concatenateXTranslation(-tm_center.getX()).concatenateYTranslation(-tm_center.getY()).concatenateZTranslation(-tm_center.getZ());
@@ -130,7 +130,7 @@ Rect TextureMapper::getBoundingRect() const
     float minXf = MIN(imageX0, imageX1);
     minXf = MIN(minXf, imageX2);
     minXf = floorf(MIN(minXf, imageX3));
-    int16_t minX = (int16_t)(MAX(0, minXf));
+    const int16_t minX = (int16_t)(MAX(0, minXf));
 
     float maxXf = MAX(imageX0, imageX1);
     maxXf = MAX(maxXf, imageX2);
@@ -141,7 +141,7 @@ Rect TextureMapper::getBoundingRect() const
     float minYf = MIN(imageY0, imageY1);
     minYf = MIN(minYf, imageY2);
     minYf = floorf(MIN(minYf, imageY3));
-    int16_t minY = (int16_t)(MAX(0, minYf));
+    const int16_t minY = (int16_t)(MAX(0, minYf));
 
     float maxYf = MAX(imageY0, imageY1);
     maxYf = MAX(maxYf, imageY2);
@@ -197,8 +197,8 @@ void TextureMapper::draw(const Rect& invalidatedArea) const
     uint16_t* fb = 0;
 
     // Setup texture coordinates
-    float right = (float)(bitmap.getWidth());
-    float bottom = (float)(bitmap.getHeight());
+    const float right = (float)(bitmap.getWidth());
+    const float bottom = (float)(bitmap.getHeight());
     float textureU0 = -1.0f;
     float textureV0 = -1.0f;
     float textureU1 = right;
@@ -227,8 +227,8 @@ void TextureMapper::draw(const Rect& invalidatedArea) const
 
     // Determine winding order
     Vector4 zeroToOne(imageX1 - imageX0, imageY1 - imageY0, imageZ1 - imageZ0);
-    Vector4 zeroToTwo(imageX2 - imageX0, imageY2 - imageY0, imageZ2 - imageZ0);
-    Vector4 normal = zeroToOne.crossProduct(zeroToTwo);
+    const Vector4 zeroToTwo(imageX2 - imageX0, imageY2 - imageY0, imageZ2 - imageZ0);
+    const Vector4 normal = zeroToOne.crossProduct(zeroToTwo);
 
     if (normal.getZ() > 0)
     {
@@ -289,7 +289,7 @@ void TextureMapper::drawQuad(const Rect& invalidatedArea, uint16_t* fb, const fl
     Rect dirtyArea = Rect(0, 0, getWidth(), getHeight()) & invalidatedArea;
 
     // Absolute position of the TextureMapper.
-    Rect dirtyAreaAbsolute = dirtyArea;
+    Rect dirtyAreaAbsolute = dirtyArea & getBoundingRect();
     translateRectToAbsolute(dirtyAreaAbsolute);
 
     Rect absoluteRect = getAbsoluteRect();
@@ -328,8 +328,8 @@ void TextureMapper::drawQuad(const Rect& invalidatedArea, uint16_t* fb, const fl
 
     const Point3D vertices[4] = { point0, point1, point2, point3 };
 
-    DrawingSurface dest = { fb, HAL::FRAME_BUFFER_WIDTH };
-    TextureSurface src = { textmap, bitmap.getExtraData(), bitmap.getWidth(), bitmap.getHeight(), bitmap.getWidth() };
+    const DrawingSurface dest = { fb, HAL::FRAME_BUFFER_WIDTH };
+    const TextureSurface src = { textmap, bitmap.getExtraData(), bitmap.getWidth(), bitmap.getHeight(), bitmap.getWidth() };
 
     uint16_t subDivs = subDivisionSize;
     if (point0.Z == point1.Z && point1.Z == point2.Z) //lint !e777

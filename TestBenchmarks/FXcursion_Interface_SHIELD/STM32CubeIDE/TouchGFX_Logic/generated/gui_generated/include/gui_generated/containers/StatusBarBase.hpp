@@ -8,7 +8,6 @@
 #include <touchgfx/containers/Container.hpp>
 #include <touchgfx/widgets/Box.hpp>
 #include <touchgfx/widgets/TextAreaWithWildcard.hpp>
-#include <touchgfx/widgets/TextArea.hpp>
 
 class StatusBarBase : public touchgfx::Container
 {
@@ -26,9 +25,21 @@ protected:
      * Member Declarations
      */
     touchgfx::Box background;
+    touchgfx::Box moveBox;
+    touchgfx::Box recBox;
     touchgfx::TextAreaWithOneWildcard bpmText;
-    touchgfx::TextArea batText;
-    touchgfx::TextArea textArea1;
+    touchgfx::TextAreaWithOneWildcard batText;
+    touchgfx::TextAreaWithOneWildcard nameText;
+
+    /*
+     * Wildcard Buffers
+     */
+    static const uint16_t BPMTEXT_SIZE = 4;
+    touchgfx::Unicode::UnicodeChar bpmTextBuffer[BPMTEXT_SIZE];
+    static const uint16_t BATTEXT_SIZE = 4;
+    touchgfx::Unicode::UnicodeChar batTextBuffer[BATTEXT_SIZE];
+    static const uint16_t NAMETEXT_SIZE = 20;
+    touchgfx::Unicode::UnicodeChar nameTextBuffer[NAMETEXT_SIZE];
 
 private:
 

@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -70,7 +70,7 @@ void ScrollList::setWindowSize(int16_t items)
 
 void ScrollList::setPadding(int16_t paddingBefore, int16_t paddingAfter)
 {
-    int32_t currentOffset = getOffset();
+    const int32_t currentOffset = getOffset();
     distanceBeforeAlignedItem = paddingBefore;
     paddingAfterLastItem = paddingAfter;
     setOffset(currentOffset);
@@ -103,12 +103,12 @@ bool ScrollList::getSnapping() const
 
 int32_t ScrollList::getPositionForItem(int16_t itemIndex)
 {
-    int32_t currentOffset = getNormalizedOffset(getOffset());
+    const int32_t currentOffset = getNormalizedOffset(getOffset());
     if (itemIndex < 0 || itemIndex >= list.getNumberOfItems() || itemSize == 0)
     {
         return currentOffset;
     }
-    int32_t itemOffset = -itemIndex * itemSize;
+    const int32_t itemOffset = -itemIndex * itemSize;
     // Get the visible size
     const int16_t widgetSize = getHorizontal() ? getWidth() : getHeight();
     const int16_t activeWidgetSize = widgetSize - (distanceBeforeAlignedItem + paddingAfterLastItem);
@@ -118,20 +118,20 @@ int32_t ScrollList::getPositionForItem(int16_t itemIndex)
         // Important this is a do-while of visibleSize < itemSize in which case we need to check at least one time
         do
         {
-            int16_t i = (-getNormalizedOffset(offset)) / itemSize; // Item index of first
+            const int16_t i = (-getNormalizedOffset(offset)) / itemSize; // Item index of first
             if (itemIndex == i)
             {
                 return currentOffset;
             }
             offset -= itemSize;
         } while (offset >= currentOffset - (activeWidgetSize - itemSize));
-        int32_t allItemsSize = list.getNumberOfItems() * itemSize;
+        const int32_t allItemsSize = list.getNumberOfItems() * itemSize;
         // Either scroll left from the first item or right from the last item. Find out which is closest
         int32_t leftScrollDistance = itemOffset - currentOffset;
-        int32_t leftScrollDistance2 = (itemOffset + allItemsSize) - currentOffset;
-        int32_t rightItemOffset = getNormalizedOffset(currentOffset - (activeWidgetSize - itemSize));
+        const int32_t leftScrollDistance2 = (itemOffset + allItemsSize) - currentOffset;
+        const int32_t rightItemOffset = getNormalizedOffset(currentOffset - (activeWidgetSize - itemSize));
         int32_t rightScrollDistance = rightItemOffset - itemOffset;
-        int32_t rightScrollDistance2 = rightItemOffset - (itemOffset - allItemsSize);
+        const int32_t rightScrollDistance2 = rightItemOffset - (itemOffset - allItemsSize);
         if (abs(leftScrollDistance2) < abs(leftScrollDistance))
         {
             leftScrollDistance = leftScrollDistance2;
@@ -176,6 +176,7 @@ void ScrollList::handleClickEvent(const ClickEvent& event)
     ScrollBase::handleClickEvent(event);
     if (event.getType() == ClickEvent::PRESSED)
     {
+        isPressed = true;
         xClick = event.getX();
         yClick = event.getY();
         initialSwipeOffset = getOffset();
@@ -183,9 +184,9 @@ void ScrollList::handleClickEvent(const ClickEvent& event)
         setOffset(getNearestAlignedOffset(initialSwipeOffset));
         if (itemPressedCallback && itemPressedCallback->isValid())
         {
-            int16_t click = (getHorizontal() ? xClick : yClick);
+            const int16_t click = (getHorizontal() ? xClick : yClick);
             int32_t offset = click - getOffset();
-            int32_t listSize = getNumberOfItems() * itemSize;
+            const int32_t listSize = getNumberOfItems() * itemSize;
             if (getCircular())
             {
                 offset += listSize;
@@ -193,7 +194,7 @@ void ScrollList::handleClickEvent(const ClickEvent& event)
             }
             if (offset >= 0 && offset < listSize)
             {
-                int16_t item = offset / itemSize;
+                const int16_t item = offset / itemSize;
                 itemPressedCallback->execute(item);
             }
         }
@@ -206,9 +207,9 @@ void ScrollList::handleClickEvent(const ClickEvent& event)
             setOffset(getNearestAlignedOffset(getOffset()));
             if (itemSelectedCallback && itemSelectedCallback->isValid())
             {
-                int16_t click = (getHorizontal() ? xClick : yClick);
+                const int16_t click = (getHorizontal() ? xClick : yClick);
                 int32_t offset = click - getOffset();
-                int32_t listSize = getNumberOfItems() * itemSize;
+                const int32_t listSize = getNumberOfItems() * itemSize;
                 if (getCircular())
                 {
                     offset += listSize;
@@ -220,7 +221,7 @@ void ScrollList::handleClickEvent(const ClickEvent& event)
                 }
                 if (offset >= 0 && offset < listSize)
                 {
-                    int16_t item = offset / itemSize;
+                    const int16_t item = offset / itemSize;
                     itemSelectedCallback->execute(item);
                 }
             }
@@ -230,7 +231,9 @@ void ScrollList::handleClickEvent(const ClickEvent& event)
             // click + drag + release. Find best Y to scroll to
             animateToPosition(getNearestAlignedOffset(getOffset()));
         }
+        isPressed = false;
     }
+    isScrolling = false;
 }
 
 int32_t ScrollList::getNearestAlignedOffset(int32_t offset) const
@@ -249,7 +252,7 @@ int32_t ScrollList::keepOffsetInsideLimits(int32_t newOffset, int16_t overShoot)
     if (!getCircular())
     {
         newOffset = MIN(newOffset, overShoot);
-        int maxOffToTheStart = windowSize < getNumberOfItems() ? getNumberOfItems() - windowSize : 0;
+        const int maxOffToTheStart = windowSize < getNumberOfItems() ? getNumberOfItems() - windowSize : 0;
         newOffset = MAX(newOffset, -(itemSize * maxOffToTheStart) - overShoot);
     }
     return newOffset;

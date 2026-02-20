@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -513,7 +513,7 @@ struct CWRUtil
 #endif
     static Q5 toQ5(T value)
     {
-        return Q5((int)(value * Rasterizer::POLY_BASE_SIZE));
+        return Q5((int)(value * (int)Rasterizer::POLY_BASE_SIZE));
     }
 
     /**
@@ -534,7 +534,7 @@ struct CWRUtil
 #endif
     static Q10 toQ10(T value)
     {
-        return Q10((int)(value * Rasterizer::POLY_BASE_SIZE * Rasterizer::POLY_BASE_SIZE));
+        return Q10((int)(value * (int)Rasterizer::POLY_BASE_SIZE * (int)Rasterizer::POLY_BASE_SIZE));
     }
 
     /**

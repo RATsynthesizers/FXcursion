@@ -1,7 +1,7 @@
-# Copyright (c) 2018(-2023) STMicroelectronics.
+# Copyright (c) 2018(-2025) STMicroelectronics.
 # All rights reserved.
 #
-# This file is part of the TouchGFX 4.21.3 distribution.
+# This file is part of the TouchGFX 4.25.0 distribution.
 #
 # This software is licensed under terms that can be found in the LICENSE file in
 # the root directory of this software component.
@@ -13,10 +13,10 @@ class Typographies
     @entries = {}
   end
 
-  def add(default_typography, language, font_file, font_size, bpp, fallback_character, ellipsis_character, wildcard_characters, widget_wildcard_characters, wildcard_ranges, direction)
+  def add(default_typography, language, font_file, font_size, bpp, is_vector, is_compressed, fallback_character, ellipsis_character, wildcard_characters, widget_wildcard_characters, wildcard_ranges, direction)
     name = "#{default_typography}"
     name += "_AUTO_GENERATED_FOR_#{language}" if !language.empty?
-    typography = Typography.new(name, font_file, font_size.to_i, bpp.to_i, fallback_character, ellipsis_character, wildcard_characters, widget_wildcard_characters, wildcard_ranges)
+    typography = Typography.new(name, font_file, font_size.to_i, bpp.to_i, is_vector, is_compressed, fallback_character, ellipsis_character, wildcard_characters, widget_wildcard_characters, wildcard_ranges)
 
     index = Index.new(default_typography, language)
     @entries[index] = {:typography => typography, :direction => direction}
@@ -84,7 +84,7 @@ private
   end
 end
 
-class Typography < Struct.new(:name, :font_file, :font_size, :bpp, :fallback_character, :ellipsis_character, :wildcard_characters, :widget_wildcard_characters, :wildcard_ranges)
+class Typography < Struct.new(:name, :font_file, :font_size, :bpp, :is_vector, :is_compressed, :fallback_character, :ellipsis_character, :wildcard_characters, :widget_wildcard_characters, :wildcard_ranges)
   def cpp_name
     font_file.gsub(/\.ttf$/,"").gsub(/[^0-9a-zA-Z]/, "_")
   end

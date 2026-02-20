@@ -10,6 +10,12 @@ public:
     virtual ~StatusBar() {}
 
     virtual void initialize();
+
+    void startMove();
+    void stopMove();
+    void updateProjectName();
+    void updateBattery();
+    void updateBPM();
 protected:
 };
 

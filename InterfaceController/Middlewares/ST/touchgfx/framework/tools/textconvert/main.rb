@@ -1,7 +1,7 @@
-# Copyright (c) 2018(-2023) STMicroelectronics.
+# Copyright (c) 2018(-2025) STMicroelectronics.
 # All rights reserved.
 #
-# This file is part of the TouchGFX 4.21.3 distribution.
+# This file is part of the TouchGFX 4.25.0 distribution.
 #
 # This software is licensed under terms that can be found in the LICENSE file in
 # the root directory of this software component.
@@ -94,11 +94,23 @@ UPGRADE
 
     generate_font_format = "0" # 0 = normal font format, 1 = unmapped_flash_font_format
 
+    korean_fusion_fonts = []
+
+    copy_translations_to_ram = "no"
+    compressed_font_cache_size = 4096
+
     require 'json'
 
     application_config = File.join($calling_path, "application.config")
+    application_config_mod_time = nil
     if File.file?(application_config)
+      application_config_mod_time = [File.mtime(application_config), File.ctime(application_config)].max
       text_conf = JSON.parse(File.read(application_config))["text_configuration"] || {}
+
+      cache_size = text_conf["cache_size"]
+      if cache_size
+        compressed_font_cache_size = cache_size
+      end
 
       remap = text_conf["remap"]
       if remap
@@ -151,6 +163,16 @@ UPGRADE
           puts "Font format #{font_format} not correct, using default: \"0\""
         end
       end
+
+      fusion_fonts = text_conf["korean_fusion_fonts"]
+      if fusion_fonts
+        korean_fusion_fonts = fusion_fonts
+      end
+
+      translations_to_ram = text_conf["copy_translations_to_ram"]
+      if translations_to_ram
+        copy_translations_to_ram = translations_to_ram == "yes" ? "yes" : "no"
+      end
     end
 
     remap_global ||= "no"
@@ -161,12 +183,17 @@ UPGRADE
       remap_global = "no"
     end
 
+    if copy_translations_to_ram == "yes" && remap_global == "yes"
+      puts "Disabling global remapping of identical texts, because translations (a language) are copied to RAM"
+      remap_global = "no"
+    end
+
     begin
       # 0. check text database file extension. Allow texts.xlsx as parameter, but require a texts.xml to be present
       # 1. if text_converter/font_converter is newer than compile_time.cache, remove all files under generated/texts and generated/fonts
       # 1b if generated/fonts/include/fonts/ApplicationFontProvider.hpp is missing, force generation of TextKeysAndLanguages.hpp
       # 1c if generated/texts/cache/options.cache contents differ from supplies arguments, force run
-      # 2. if generated/texts/cache/compile_time.cache is newer than xml file and fonts/ApplicationFontProvider.hpp exists then stop now
+      # 2. if generated/texts/cache/compile_time.cache is newer than (xml file and application.config file) and fonts/ApplicationFontProvider.hpp exists then stop now
       # 3. remove UnicodeList*.txt and CharSizes*.csv
       # 4. create #{@localization_output_path}/include/texts/ and #{@fonts_output_path}/include/fonts/
 
@@ -215,7 +242,8 @@ UPGRADE
                       :binary_translations => generate_binary_translations,
                       :binary_fonts => generate_binary_fonts,
                       :font_format => generate_font_format,
-                      :framebuffer_bpp => framebuffer_bpp }.to_json
+                      :framebuffer_bpp => framebuffer_bpp,
+                      :fusion_fonts => fusion_fonts }.to_json
 
       if (options != new_options)
         force_run = true
@@ -226,13 +254,17 @@ UPGRADE
       # 2:
       if File.exists?("#{@localization_output_path}/cache/compile_time.cache") && !self.missing_files && !force_run
         mod_time = [File.mtime(file_name), File.ctime(file_name)].max
-        if mod_time < File.mtime("#{@localization_output_path}/cache/compile_time.cache")
+        cache_mod_time = File.mtime("#{@localization_output_path}/cache/compile_time.cache")
+        if mod_time < cache_mod_time && (application_config_mod_time.nil? or application_config_mod_time < cache_mod_time)
           exit
         end
       end
 
       # 3:
       Dir["#{@fonts_output_path}/UnicodeList*.txt"].each do |text_file|
+        FileUtils.rm_f(text_file)
+      end
+      Dir["#{@fonts_output_path}/VectorUnicodeList*.txt"].each do |text_file|
         FileUtils.rm_f(text_file)
       end
       Dir["#{@fonts_output_path}/CharSizes*.csv"].each do |text_file|
@@ -246,16 +278,19 @@ UPGRADE
       require 'lib/emitters/fonts_cpp'
       require 'lib/generator'
       FontsCpp.font_convert = font_convert_path
-      Generator.new.run(file_name, @fonts_output_path, @localization_output_path, font_asset_path, data_format, remap_global, autohint_setting, generate_binary_translations, generate_binary_fonts, framebuffer_bpp, generate_font_format)
+      Generator.new.run(file_name, @fonts_output_path, @localization_output_path, font_asset_path, data_format, remap_global, autohint_setting, generate_binary_translations, generate_binary_fonts, framebuffer_bpp, generate_font_format, korean_fusion_fonts, copy_translations_to_ram, compressed_font_cache_size)
       #touch the cache compile time that we rely on in the makefile
       FileUtils.touch "#{@localization_output_path}/cache/compile_time.cache"
 
     rescue SystemExit => e
+      if e.status != 0
+        abort "" #Do not print anything, already done in original abort call
+      end
 
     rescue Exception => e
       STDERR.puts e
       STDERR.puts e.backtrace if ENV['DEBUG']
-      abort "An error occurred during text convertion"
+      abort "An error occurred during text conversion"
     end
   end
 end

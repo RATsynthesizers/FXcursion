@@ -1,8 +1,16 @@
 #include <gui/containers/MonoChain.hpp>
 
+const U8 MonoChain::MODULE_X_POSITIONS[4] =
+{
+	182,
+	124,
+	66,
+	8
+};
+
 MonoChain::MonoChain()
 {
-
+	eSelectedModuleNumber = CHAIN_MODULE_1;
 }
 
 void MonoChain::initialize()
@@ -10,39 +18,26 @@ void MonoChain::initialize()
     MonoChainBase::initialize();
 }
 
-void MonoChain::select(MonoChainModules eModuleNum)
+void MonoChain::select(ChainModuleNumber eModuleNum)
 {
+	eSelectedModuleName = aCurrentState[eModuleNum];
+	eSelectedModuleNumber = eModuleNum;
+
 	switch(eModuleNum)
 	{
-	case MONO_CHAIN_MODULE_1:
-		eSelectedModule = MONO_CHAIN_MODULE_1;
+	case CHAIN_MODULE_1:
 		emptyModuleMono1.select();
-		emptyModuleMono2.deselect();
-		emptyModuleMono3.deselect();
-		emptyModuleMono4.deselect();
 		break;
 
-	case MONO_CHAIN_MODULE_2:
-		eSelectedModule = MONO_CHAIN_MODULE_2;
-		emptyModuleMono1.deselect();
+	case CHAIN_MODULE_2:
 		emptyModuleMono2.select();
-		emptyModuleMono3.deselect();
-		emptyModuleMono4.deselect();
 		break;
 
-	case MONO_CHAIN_MODULE_3:
-		eSelectedModule = MONO_CHAIN_MODULE_3;
-		emptyModuleMono1.deselect();
-		emptyModuleMono2.deselect();
+	case CHAIN_MODULE_3:
 		emptyModuleMono3.select();
-		emptyModuleMono4.deselect();
 		break;
 
-	case MONO_CHAIN_MODULE_4:
-		eSelectedModule = MONO_CHAIN_MODULE_4;
-		emptyModuleMono1.deselect();
-		emptyModuleMono2.deselect();
-		emptyModuleMono3.deselect();
+	case CHAIN_MODULE_4:
 		emptyModuleMono4.select();
 		break;
 
@@ -51,16 +46,93 @@ void MonoChain::select(MonoChainModules eModuleNum)
 	}
 }
 
-void MonoChain::deselect()
+void MonoChain::deselect(ChainModuleNumber eModuleNum)
 {
-	emptyModuleMono1.deselect();
-	emptyModuleMono2.deselect();
-	emptyModuleMono3.deselect();
-	emptyModuleMono4.deselect();
+	switch(eModuleNum)
+	{
+	case CHAIN_MODULE_1:
+		emptyModuleMono1.deselect();
+		break;
+
+	case CHAIN_MODULE_2:
+		emptyModuleMono2.deselect();
+		break;
+
+	case CHAIN_MODULE_3:
+		emptyModuleMono3.deselect();
+		break;
+
+	case CHAIN_MODULE_4:
+		emptyModuleMono4.deselect();
+		break;
+
+	default:
+		break;
+	}
+}
+
+void MonoChain::addModule(ChainModuleNumber eModuleNum, ModuleName eModuleName)
+{
+	aCurrentState[eModuleNum] = eModuleName;
+	eSelectedModuleName = eModuleName;
+
+	switch(eModuleName)
+	{
+	case MODULE_FX:
+		fXModule.setXY(MODULE_X_POSITIONS[eModuleNum], MODULE_Y_POS);
+		fXModule.setVisible(true);
+		break;
+	case MODULE_REC:
+		recModule.setXY(MODULE_X_POSITIONS[eModuleNum], MODULE_Y_POS);
+		recModule.setVisible(true);
+		break;
+	case MODULE_LOOP:
+		loopModule.setXY(MODULE_X_POSITIONS[eModuleNum], MODULE_Y_POS);
+		loopModule.setVisible(true);
+		break;
+	default:
+		break;
+	}
+}
+
+void MonoChain::deleteSelectedModule()
+{
+	switch(eSelectedModuleName)
+	{
+	case MODULE_FX:
+		fXModule.setVisible(false);
+		fXModule.invalidate();
+		break;
+	case MODULE_REC:
+		recModule.setVisible(false);
+		recModule.invalidate();
+		break;
+	case MODULE_LOOP:
+		loopModule.setVisible(false);
+		loopModule.invalidate();
+		break;
+	default:
+		break;
+	}
+
+	aCurrentState[eSelectedModuleNumber] = MODULE_NONE;
+	eSelectedModuleName = MODULE_NONE;
 }
 
 
-MonoChainModules MonoChain::getSelectedModule()
+ChainModuleNumber MonoChain::getSelectedModuleNumber()
 {
-	return eSelectedModule;
+	return eSelectedModuleNumber;
+}
+
+
+ModuleName MonoChain::getSelectedModuleName()
+{
+	return eSelectedModuleName;
+}
+
+
+ModuleName MonoChain::getModuleName(ChainModuleNumber eModuleNumber)
+{
+	return aCurrentState[eModuleNumber];
 }

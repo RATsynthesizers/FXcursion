@@ -93,8 +93,8 @@ void Error_Handler(void);
 #define ENC_PARAM_B_GPIO_Port GPIOG
 #define ENC_PARAM_A_Pin GPIO_PIN_3
 #define ENC_PARAM_A_GPIO_Port GPIOG
-#define MY_FOOT1_Pin GPIO_PIN_7
-#define MY_FOOT1_GPIO_Port GPIOG
+#define BTN_FUNC_Pin GPIO_PIN_7
+#define BTN_FUNC_GPIO_Port GPIOG
 #define MY_LCD_RESET_Pin GPIO_PIN_6
 #define MY_LCD_RESET_GPIO_Port GPIOC
 #define MY_SD_DETECT_Pin GPIO_PIN_10

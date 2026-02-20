@@ -26,6 +26,7 @@
 #include "ili9341.h"
 #include "mdma.h"
 #include "cmsis_os.h"
+#include "touchgfx_wrapper.h"
 
 #define DISPLAY_WIDTH   (HAL::DISPLAY_WIDTH)
 #define FMC_DATA_ADDRESS 0x60800000UL
@@ -33,6 +34,7 @@
 
 extern MDMA_HandleTypeDef hmdma_mdma_channel0_sw_0;
 osSemaphoreId mdmaSemaphoreHandle;
+osSemaphoreId vSyncAllowedSemHandle;
 
 using namespace touchgfx;
 
@@ -51,6 +53,9 @@ void TouchGFXHAL::initialize()
 
 	osSemaphoreDef(mdmaSemaphore);
 	mdmaSemaphoreHandle = osSemaphoreCreate(osSemaphore(mdmaSemaphore), 1);
+
+	osSemaphoreDef(vSyncAllowedSem);
+	vSyncAllowedSemHandle = osSemaphoreCreate(osSemaphore(vSyncAllowedSem), 1);
 
 	HAL_MDMA_RegisterCallback(&hmdma_mdma_channel0_sw_0, HAL_MDMA_XFER_CPLT_CB_ID, HAL_MDMA_XferCpltCallback);
 	HAL_MDMA_RegisterCallback(&hmdma_mdma_channel0_sw_0, HAL_MDMA_XFER_ERROR_CB_ID, HAL_MDMA_XferErrorCallback);
@@ -97,45 +102,82 @@ void TouchGFXHAL::setTFTFrameBuffer(uint16_t* address)
  */
 void TouchGFXHAL::flushFrameBuffer(const touchgfx::Rect& rect)
 {
-    HAL_StatusTypeDef status;
+	static uint16_t framesWithoutChunking = 178;
 
-    // 1. Calculate the starting address of the dirty rectangle in SDRAM (Source)
-    // Address in bytes:
-    uint32_t src_addr = (uint32_t)(getClientFrameBuffer() + (rect.y * DISPLAY_WIDTH + rect.x)); // * 2 for 16-bit pixels
+	// CRITICAL: First transfer = full white background fill
+	// Skip chunking to avoid TE instability during ILI9341 startup
+	if (framesWithoutChunking > 0) {
+		framesWithoutChunking--;
 
-    // 2. Set the window commands (MANDATORY CPU STEP)
-    lcdSetWindow(rect.x, rect.y, rect.x + rect.width - 1, rect.y + rect.height - 1);
+		// SINGLE TRANSFER - no chunking, no TE waits
+		uint32_t src_addr = (uint32_t)(getClientFrameBuffer() +
+						 (rect.y * DISPLAY_WIDTH + rect.x));
 
-    // 3. Configure the 2D parameters (Offsets and Counts) in the MDMA handle
-    hmdma_mdma_channel0_sw_0.Init.BufferTransferLength = rect.width * 2;
-    // Source Block Offset (Pitch): Skips the padding bytes in SDRAM
-    hmdma_mdma_channel0_sw_0.Init.SourceBlockAddressOffset = (DISPLAY_WIDTH - rect.width) * 2;
+        while (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_2) != GPIO_PIN_SET);
 
-    // ******* CRUCIAL: Re-initialize to apply offsets to the TCB *******
-    if (HAL_MDMA_Init(&hmdma_mdma_channel0_sw_0) != HAL_OK)
+		lcdSetWindow(rect.x, rect.y, rect.x + rect.width - 1, rect.y + rect.height - 1);
+
+		hmdma_mdma_channel0_sw_0.Init.BufferTransferLength = rect.width * 2;
+		hmdma_mdma_channel0_sw_0.Init.SourceBlockAddressOffset =
+			(DISPLAY_WIDTH - rect.width) * 2;
+		HAL_MDMA_Init(&hmdma_mdma_channel0_sw_0);
+
+		HAL_MDMA_Start_IT(&hmdma_mdma_channel0_sw_0,
+						  src_addr,
+						  FMC_DATA_ADDRESS,
+						  rect.width * 2,
+						  rect.height);
+
+		osSemaphoreWait(mdmaSemaphoreHandle, osWaitForever);
+		TouchGFXGeneratedHAL::flushFrameBuffer(rect);
+		return;
+	}
+
+    // Split transfer into max 4 chunks (60 lines each for 240px display)
+    const uint32_t MAX_CHUNK_HEIGHT = 120;  // Fits in 1.2ms VBlank @ DataSetup=2
+    uint32_t chunks = (rect.height + MAX_CHUNK_HEIGHT - 1) / MAX_CHUNK_HEIGHT;
+    if (chunks > 2) chunks = 2;  // Enforce max 4 chunks
+
+    uint32_t lines_done = 0;
+
+    // 2. Set window for THIS CHUNK ONLY
+    lcdSetWindow(rect.x,
+                 rect.y,
+                 rect.x + rect.width - 1,
+                 rect.y + rect.height - 1);
+
+    osSemaphoreWait(vSyncAllowedSemHandle, 0);
+
+    for (uint32_t i = 0; i < chunks; i++)
     {
-    	// Handle error: MDMA failed to init
-		__NOP();
+        uint32_t chunk_height = (lines_done + MAX_CHUNK_HEIGHT <= rect.height)
+                              ? MAX_CHUNK_HEIGHT
+                              : (rect.height - lines_done);
+
+        while (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_2) != GPIO_PIN_SET);
+
+        // 3. Start MDMA for THIS CHUNK ONLY
+        uint32_t src_addr = (uint32_t)(getClientFrameBuffer() +
+                         (rect.y + lines_done) * DISPLAY_WIDTH + rect.x);
+
+        hmdma_mdma_channel0_sw_0.Init.BufferTransferLength = rect.width * 2;
+        hmdma_mdma_channel0_sw_0.Init.SourceBlockAddressOffset = (DISPLAY_WIDTH - rect.width) * 2;
+        HAL_MDMA_Init(&hmdma_mdma_channel0_sw_0);
+
+        HAL_MDMA_Start_IT(&hmdma_mdma_channel0_sw_0,
+                          src_addr,
+                          FMC_DATA_ADDRESS,
+                          rect.width * 2,
+                          chunk_height);
+
+        osSemaphoreWait(mdmaSemaphoreHandle, osWaitForever);
+
+        lines_done += chunk_height;
     }
 
-    // We pass the total pixel count as BlockDataLength and 1 as BlockCount,
-    // BUT the MDMA uses the pitch/offset settings configured above
-    // combined with the internal TCB mechanism to execute the 2D transfer.
-    status = HAL_MDMA_Start_IT(&hmdma_mdma_channel0_sw_0,
-                               src_addr,
-                               FMC_DATA_ADDRESS,
-                               rect.width * 2,      // BlockDataLength (TDC, width)
-                               rect.height);		// BlockCount (TBC, height)
+    osSemaphoreRelease(vSyncAllowedSemHandle);
 
-    if (status != HAL_OK)
-    {
-        // Handle error: MDMA failed to start
-        __NOP();
-    }
-
-    osSemaphoreWait(mdmaSemaphoreHandle, osWaitForever);
-
-    // 6. Notify TouchGFX
+    // 4. Notify TouchGFX after ALL chunks complete
     TouchGFXGeneratedHAL::flushFrameBuffer(rect);
 }
 

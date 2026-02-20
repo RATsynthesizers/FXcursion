@@ -1,7 +1,7 @@
-# Copyright (c) 2018(-2023) STMicroelectronics.
+# Copyright (c) 2018(-2025) STMicroelectronics.
 # All rights reserved.
 #
-# This file is part of the TouchGFX 4.21.3 distribution.
+# This file is part of the TouchGFX 4.25.0 distribution.
 #
 # This software is licensed under terms that can be found in the LICENSE file in
 # the root directory of this software component.
@@ -9,6 +9,7 @@
 #
 ###############################################################################/
 require 'fileutils'
+require 'nokogiri'
 
 def root_dir
   # Get the dirname of this (videoconvert.rb) file:
@@ -38,6 +39,27 @@ BANNER
     end
   end
 
+  def self.check_compiler(project_file, dual_core)
+    project_file_contents = File.read(project_file, :encoding=>'utf-8')
+    project_file_xml ||= Nokogiri::XML(project_file_contents) do |config|
+      config.default_xml.noblanks
+    end
+    project_node = project_file_xml.at_xpath('./Project')
+
+    #Check compiler version
+    ac6_node = project_node.xpath("//uAC6")
+    armclang_enabled = 0
+
+    armclang_enabled = ac6_node.first.inner_html.to_i if !ac6_node.nil? && !ac6_node.empty?
+    if dual_core && armclang_enabled != 1
+      armclang_enabled = ac6_node[1].inner_html.to_i if !ac6_node.nil? && !ac6_node.empty?
+    end
+    if armclang_enabled == 1
+      return "ARMCLANG"
+    else
+      return "ARMCC"
+    end
+  end
 
   def self.bin_to_obj(bin, out_dir)
 
@@ -141,6 +163,95 @@ BANNER
       end
     end
 
+    # Locate .ioc file
+    project_file = Dir['../*.ioc'].first
+    if project_file.nil? # search in next parent directory if .ioc file not found
+      project_file = Dir['../../*.ioc'].first
+    end
+
+    # Determine if keil is toolchain and structure of project
+    compiler = "ARMCC"
+    project_name_suffix = ""
+    sub_folder = ""
+    prefix = ".."
+    keil_project_file = ""
+    touchgfx_folder_path = "../TouchGFX"
+    toolchain_is_keil = false # Assume it is not Keil
+    dual_core = false # Assume it is not dual core
+    context_enabled = false # Assume not context enabled
+    trust_zone = false # Assume not trust zone
+    if project_file
+      # From cubemx_project_selector.rb in touchgfx-cli:
+      content = File.read(project_file, :encoding=>'utf-8')
+      target_toolchain = content.match(/ProjectManager.TargetToolchain=([\w\s\d\.\-]+)/) || abort("Unable to parse #{File.expand_path(@project_file)}")
+      toolchain = target_toolchain.captures.first
+      toolchain_is_keil = toolchain.match(/MDK-ARM/) # "ProjectManager.TargetToolchain=MDK-ARM..." is Keil
+
+      # Determine if dual core
+      # From cubemx_project_selector.rb in touchgfx-cli:
+      content = File.read(project_file, :encoding=>'utf-8')
+      dual_core = content.match(/Mcu.ThirdParty\d+_Instance=STMicroelectronics.X-CUBE-TOUCHGFX.\d+.\d+.\d+_M(\d+)/)
+      if dual_core then
+        touchgfx_folder_path = "../CM#{$1}/TouchGFX"
+        prefix = "../.."
+      end
+
+      # Determine if context enabled project
+      # From cubemx_project_selector.rb in touchgfx-cli:
+      content = File.read(project_file, :encoding=>'utf-8')
+      context_enabled = content.match(/Mcu.ThirdParty\d+_Instance=STMicroelectronics.X-CUBE-TOUCHGFX.\d+.\d+.\d+_App/)
+      if context_enabled then
+        touchgfx_folder_path = "../../Appli/TouchGFX"
+        prefix = "../.."
+        project_name_suffix << "Appli"
+        sub_folder << "Appli"
+      end
+
+      # Determine if trust zone (non secure only) project
+      # From cubemx_project_selector.rb in touchgfx-cli:
+      content = File.read(project_file, :encoding=>'utf-8')
+      trust_zone = content.match(/Mcu.ThirdParty\d+_Instance=STMicroelectronics.X-CUBE-TOUCHGFX.\d+.\d+.\d+_(M\d+NS|M\d+S|AppNS|AppS)/)
+      if trust_zone
+        # match expression is for dual is also true for trust zone, so we must disable dual core
+        dual_core = false
+        prefix = "../.."
+        if content.match(/Mcu.ThirdParty\d+_Instance=STMicroelectronics.X-CUBE-TOUCHGFX.\d+.\d+.\d+_AppNS/)
+          touchgfx_folder_path = "../../AppliNonSecure/TouchGFX"
+          project_name_suffix << "NonSecure"
+          sub_folder << "NonSecure"
+        end
+
+        if content.match(/Mcu.ThirdParty\d+_Instance=STMicroelectronics.X-CUBE-TOUCHGFX.\d+.\d+.\d+_AppS/)
+          touchgfx_folder_path = "../../AppliSecure/TouchGFX"
+          project_name_suffix << "Secure"
+          sub_folder << "Secure"
+        end
+
+        if content.match(/Mcu.ThirdParty\d+_Instance=STMicroelectronics.X-CUBE-TOUCHGFX.\d+.\d+.\d+_M\d+NS/)
+          touchgfx_folder_path = "../NonSecure/TouchGFX"
+          project_name_suffix << "NS"
+        end
+
+        if content.match(/Mcu.ThirdParty\d+_Instance=STMicroelectronics.X-CUBE-TOUCHGFX.\d+.\d+.\d+_M\d+S/)
+          touchgfx_folder_path = "../Secure/TouchGFX"
+          project_name_suffix << "S"
+        end
+      end
+      sub_folder.prepend("/") if sub_folder != ""
+  
+      if toolchain_is_keil
+        if context_enabled
+          keil_project_file = "#{prefix}/MDK-ARM#{sub_folder}/#{File.basename(project_file, ".ioc")}_#{project_name_suffix}.uvprojx"
+        elsif trust_zone
+          keil_project_file = "#{prefix}/MDK-ARM/#{File.basename(project_file, ".ioc")}_#{project_name_suffix}.uvprojx"
+        else
+          keil_project_file = "#{prefix}/MDK-ARM/#{File.basename(project_file, ".ioc")}.uvprojx"
+        end
+
+        compiler = check_compiler(keil_project_file, dual_core)
+      end
+    end
+
     # Generate header file
     hpp_content = ""
     keil_export = ""
@@ -161,8 +272,13 @@ BANNER
       hpp_content += "extern const uint8_t #{start_symbol}[];\n"
       hpp_content += "#endif\n\n"
 
-      keil_export += "\tEXPORT\t#{start_symbol}\n"
-      keil_incbin += "\n#{start_symbol}\n\tINCBIN\t../TouchGFX/#{bin}\n"
+      if compiler == "ARMCLANG"
+        keil_export += ".global #{start_symbol}\n"
+        keil_incbin += "\n#{start_symbol}:\n\t.incbin \"#{touchgfx_folder_path}/#{bin}\"\n"
+      else
+        keil_export += "\tEXPORT\t#{start_symbol}\n"
+        keil_incbin += "\n#{start_symbol}\n\tINCBIN\t#{touchgfx_folder_path}/#{bin}\n"
+      end
     end
 
     hpp_file = File.join(out_dir, 'include', 'videos', 'VideoDatabase.hpp')
@@ -173,16 +289,6 @@ BANNER
                "\n#include <touchgfx/hal/Types.hpp>\n\n"+
                hpp_content+
                "#endif // TOUCHGFX_VIDEODATABASE_HPP\n")
-
-    project_file = Dir['../*.ioc'].first
-    toolchain_is_keil = false # Assume it is not Keil
-    if project_file
-      # From cubemx_project_selector.rb in touchgfx-cli:
-      content = File.read(project_file, :encoding=>'utf-8')
-      target_toolchain = content.match(/ProjectManager.TargetToolchain=([\w\s\d\.\-]+)/) || abort("Unable to parse #{File.expand_path(@project_file)}")
-      toolchain = target_toolchain.captures.first
-      toolchain_is_keil = toolchain.match(/MDK-ARM/) # "ProjectManager.TargetToolchain=MDK-ARM..." is Keil
-    end
 
     keil_path = [out_dir, 'src', 'keil', 'Videos.s']
     keil_file = File.join(keil_path)
@@ -199,12 +305,20 @@ BANNER
       end
     else
       # There are videos and we are on Keil. Generate Videos.s
-      write_file(keil_file,
-                 "; Generated by videoconvert. Please, do not edit!\n\n"+
-                 "\tAREA\tExtFlashSection, DATA, READONLY\n\n"+
-                 keil_export+
-                 keil_incbin+
-                 "\n\tEND\n")
+      if compiler == "ARMCLANG"
+        write_file(keil_file,
+                  "/* Generated by videoconvert. Please, do not edit! */\n\n"+
+                  ".section ExtFlashSection, \"a\"\n\n"+
+                  keil_export+
+                  keil_incbin)
+      else
+        write_file(keil_file,
+                  "; Generated by videoconvert. Please, do not edit!\n\n"+
+                  "\tAREA\tExtFlashSection, DATA, READONLY\n\n"+
+                  keil_export+
+                  keil_incbin+
+                  "\n\tEND\n")
+      end
     end
   end
 end

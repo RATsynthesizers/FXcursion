@@ -19,7 +19,7 @@ InModuleBase::InModuleBase()
     arrowShape.setOrigin(0.0f, 0.0f);
     arrowShape.setScale(1.0f, 1.0f);
     arrowShape.setAngle(0.0f);
-    arrowShapePainter.setColor(touchgfx::Color::getColorFromRGB(38, 226, 255));
+    arrowShapePainter.setColor(touchgfx::Color::getColorFromRGB(0, 221, 255));
     arrowShape.setPainter(arrowShapePainter);
     const touchgfx::AbstractShape::ShapePoint<float> arrowShapePoints[3] = { { 34.0f, 0.0f }, { 0.0f, 73.0f }, { 34.0f, 146.0f } };
     arrowShape.setShape(arrowShapePoints);

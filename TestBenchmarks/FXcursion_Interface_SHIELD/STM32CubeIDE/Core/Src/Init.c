@@ -50,6 +50,7 @@
 #include "fmc.h"
 #include "app_touchgfx.h"
 #include "w9812g6jh.h"
+#include "usb_device.h"
 
 
 /***************************************************************************************************
@@ -79,6 +80,9 @@
 * Definitions of static global (private) variables
 ***************************************************************************************************/
 
+/* USB task handle */
+osThreadId usbThreadHandle;
+extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 /* Init task handle */
 static osThreadId initThreadHandle;
 /* TouchGFX task handle */
@@ -109,6 +113,9 @@ static void CreateInitThread(void);
 
 /// Init thread
 static void InitThread(void const *argument);
+
+/// USB thread
+static void USBThread(void const *argument);
 
 #ifdef DEBUG
 /// Os monitoring thread
@@ -309,10 +316,8 @@ void init_all(void)
     MX_CRC_Init();
     MX_DMA2D_Init();
     MX_MDMA_Init();
-    MX_FATFS_Init();
     MX_JPEG_Init();
     MX_RTC_Init();
-
 
     /* Initialize SDRAM */
     W9812G6JH_Init(&hsdram1);
@@ -361,8 +366,6 @@ static void CreateInitThread(void)
  * @return    None.
  */
 
-uint8_t flag = 0;
-
 static void InitThread(void const *argument)
 {
 
@@ -372,26 +375,55 @@ static void InitThread(void const *argument)
 //        printf("PIXEL initialize failed!\n");
 //    }
 
-	flag = 1;
+    osThreadDef(USBThread, USBThread, osPriorityNormal, 0, 1000U);
+    usbThreadHandle = osThreadCreate(osThread(USBThread), NULL);
 
 	/* definition and creation of TouchGFXTask */
-	osThreadDef(TouchGFXTask, TouchGFX_Task, osPriorityBelowNormal, 0, 4096U);
+	osThreadDef(TouchGFXTask, TouchGFX_Task, osPriorityNormal, 0, 4096U);
 	TouchGFXTaskHandle = osThreadCreate(osThread(TouchGFXTask), NULL);
-
 
 #ifdef DEBUG
     osThreadDef(MonitoringThread, MonitoringThread, osPriorityBelowNormal, 0, 200U);
     monitoringThreadHandle = osThreadCreate(osThread(MonitoringThread), NULL);
 #endif
 
-
-
-
-
     for(;;)
     {
         /* Delete the Init Thread */
         osThreadTerminate(initThreadHandle);
+    }
+}
+
+/**
+ * @fn    void USBThread(void)
+ *
+ * @brief USB thread.
+ *
+ * @param[in] argument - pointer to input arguments.
+ *
+ * @return    None.
+ */
+
+static void USBThread(void const *argument)
+{
+    MX_FATFS_Init();
+
+    osDelay(1000);
+
+	MX_USB_DEVICE_Init();
+
+    for(;;)
+    {
+    	// Wait for the signal from any of the 3 ISRs
+		osEvent evt = osSignalWait(0x01, osWaitForever);
+
+		if (evt.status == osEventSignal) {
+			/* 1. Call the library handler */
+			HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);
+
+			// 2. Re-enable the interrupt so the next USB event can trigger the ISR
+		    HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
+		}
     }
 }
 

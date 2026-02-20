@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -26,6 +26,8 @@
 
 namespace touchgfx
 {
+struct GlyphNode;
+
 /**
  * This class contains the various low-level drawing routines for drawing bitmaps, texts and
  * rectangles on 16 bits per pixel displays.
@@ -213,6 +215,38 @@ public:
      */
     void enableTextureMapperA4_NearestNeighbor();
 
+    /**
+     * Enables all the decompressors available for L8 images (L4, RLE and LZW9).
+     * This allows drawing L4, RLE and LZW9 compressed L8 images.
+     *
+     * @see enableDecompressorL8_L4, enableDecompressorL8_RLE, enableDecompressorL8_LZW9
+     */
+    void enableDecompressorL8_All();
+
+    /**
+     * Enables the decompressor for L8 images compressed with the L4 algorithm.
+     * This allows drawing L4 compressed L8 images.
+     */
+    void enableDecompressorL8_L4();
+
+    /**
+     * Enables the decompressor for L8 images compressed with the RLE algorithm.
+     * This allows drawing RLE compressed L8 images.
+     */
+    void enableDecompressorL8_RLE();
+
+    /**
+     * Enables the decompressor for L8 images compressed with the LZW9 algorithm.
+     * This allows drawing LZW9 compressed L8 images.
+     */
+    void enableDecompressorL8_LZW9();
+
+    /**
+     * Enables the decompressor for RGB images compressed with the QOI algorithm.
+     * This allows drawing compressed RGB images.
+     */
+    void enableDecompressorRGB();
+
 protected:
     virtual DrawTextureMapScanLineBase* getTextureMapperDrawScanLine(const TextureSurface& texture, RenderingVariant renderVariant, uint8_t alpha);
 
@@ -278,7 +312,7 @@ protected:
      * @param  alpha      The alpha value to use for blending applied to the whole image (255 =
      *                    solid, no blending)
      */
-    static void blitCopyL8(const uint8_t* sourceData, const uint8_t* clutData, const Rect& source, const Rect& blitRect, uint8_t alpha);
+    void blitCopyL8(const uint8_t* sourceData, const uint8_t* clutData, const Rect& source, const Rect& blitRect, uint8_t alpha);
 
     /**
      * Blits a 2D indexed 8-bit source to the framebuffer performing alpha-blending per
@@ -580,6 +614,88 @@ private:
         FORCE_INLINE_FUNCTION void writePixel(uint8_t* const destBits, const uint16_t* const textureBits, const int16_t bitmapStride, const int UInt, const int VInt, const uint8_t UFrac, const uint8_t VFrac) const;
         void writePixelOnEdge(uint8_t* const destBits, const uint16_t* const textureBits, const int16_t bitmapStride, const int16_t bitmapWidth, const int16_t bitmapHeight, const int UInt, const int VInt, const uint8_t UFrac, const uint8_t VFrac) const;
     };
+
+    class DecompressorL8Base
+    {
+    public:
+        virtual ~DecompressorL8Base()
+        {
+        }
+
+        virtual void blitCopyRGB888(const uint8_t* sourceData, const uint8_t* clutData, const Rect& source, const Rect& blitRect, uint8_t alpha) = 0;
+        virtual void blitCopyARGB8888(const uint8_t* sourceData, const uint8_t* clutData, const Rect& source, const Rect& blitRect, uint8_t alpha) = 0;
+    };
+
+    class DecompressorRGBBase
+    {
+    public:
+        virtual ~DecompressorRGBBase()
+        {
+        }
+
+        virtual void blitCopyARGB8888(const uint8_t* sourceData, const Rect& source, const Rect& blitRect, uint8_t alpha) = 0;
+        virtual void blitCopyRGB888(const uint8_t* sourceData, const Rect& source, const Rect& blitRect, uint8_t alpha) = 0;
+    };
+
+    class DecompressorL8_L4 : public DecompressorL8Base
+    {
+    public:
+        virtual void blitCopyRGB888(const uint8_t* sourceData, const uint8_t* clutData, const Rect& source, const Rect& blitRect, uint8_t alpha);
+        virtual void blitCopyARGB8888(const uint8_t* sourceData, const uint8_t* clutData, const Rect& source, const Rect& blitRect, uint8_t alpha);
+
+    private:
+        void blendPixelRGB888(const uint8_t* imagePixel, uint8_t* const fbPixel, int alpha) const;
+        void blendPixelARGB8888(const uint8_t* imagePixel, uint8_t* const fbPixel, int alpha, uint8_t alphapix) const;
+    };
+
+    class DecompressorL8_RLE : public DecompressorL8Base
+    {
+    public:
+        virtual void blitCopyRGB888(const uint8_t* sourceData, const uint8_t* clutData, const Rect& source, const Rect& blitRect, uint8_t alpha);
+        virtual void blitCopyARGB8888(const uint8_t* sourceData, const uint8_t* clutData, const Rect& source, const Rect& blitRect, uint8_t alpha);
+
+    private:
+        static const uint16_t BLOCK_SIZE = 1024U;
+    };
+
+    class DecompressorL8_LZW9 : public DecompressorL8Base
+    {
+    public:
+        virtual void blitCopyRGB888(const uint8_t* sourceData, const uint8_t* clutData, const Rect& source, const Rect& blitRect, uint8_t alpha);
+        virtual void blitCopyARGB8888(const uint8_t* sourceData, const uint8_t* clutData, const Rect& source, const Rect& blitRect, uint8_t alpha);
+
+    private:
+        static const uint16_t MAX_DICT_SIZE = 512U;
+        static const uint16_t BLOCK_SIZE = 1024U;
+
+        struct LZW9DictionaryEntry
+        {
+            uint8_t character;    // Current character of the entry
+            uint8_t length;       // Remaining length of the entry
+            uint16_t prefixIndex; // Index to previous character
+        };
+
+        LZW9DictionaryEntry lzw9Dictionary[MAX_DICT_SIZE];
+        uint8_t entryBuffer[64]; // Having 64byte max entry sizes entails 1 + 2 + ... + 63 + 64 = 2080px size image blocks
+    };
+
+    DecompressorL8Base* decompressorL8_L4;
+    DecompressorL8Base* decompressorL8_RLE;
+    DecompressorL8Base* decompressorL8_LZW9;
+
+    class DecompressorRGB_QOI : public DecompressorRGBBase
+    {
+    public:
+        virtual void blitCopyARGB8888(const uint8_t* sourceData, const Rect& source, const Rect& blitRect, uint8_t alpha);
+        virtual void blitCopyRGB888(const uint8_t* sourceData, const Rect& source, const Rect& blitRect, uint8_t alpha);
+
+    private:
+        static const uint16_t BLOCK_SIZE = 1024U;
+        static const uint16_t INDEX_TABLE_SIZE = 64U;
+        PixelARGB8888 indexTable[INDEX_TABLE_SIZE];
+    };
+
+    DecompressorRGBBase* decompressorRGB_QOI;
 };
 
 } // namespace touchgfx

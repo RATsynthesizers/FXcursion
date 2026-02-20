@@ -29,6 +29,8 @@ FrontendApplicationBase::FrontendApplicationBase(Model& m, FrontendHeap& heap)
     touchgfx::HAL::getInstance()->setDisplayOrientation(touchgfx::ORIENTATION_LANDSCAPE);
     touchgfx::Texts::setLanguage(GB);
     reinterpret_cast<touchgfx::LCD16bpp&>(touchgfx::HAL::lcd()).enableTextureMapperAll();
+    reinterpret_cast<touchgfx::LCD16bpp&>(touchgfx::HAL::lcd()).enableDecompressorL8_All();
+    reinterpret_cast<touchgfx::LCD16bpp&>(touchgfx::HAL::lcd()).enableDecompressorRGB();
 }
 
 /*
@@ -39,7 +41,7 @@ FrontendApplicationBase::FrontendApplicationBase(Model& m, FrontendHeap& heap)
 
 void FrontendApplicationBase::gotoLogoStartupScreenNoTransition()
 {
-    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoLogoStartupScreenNoTransitionImpl);
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoLogoStartupScreenNoTransitionImpl);
     pendingScreenTransitionCallback = &transitionCallback;
 }
 
@@ -52,7 +54,7 @@ void FrontendApplicationBase::gotoLogoStartupScreenNoTransitionImpl()
 
 void FrontendApplicationBase::gotoProjectSettingsScreenBlockTransition()
 {
-    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoProjectSettingsScreenBlockTransitionImpl);
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoProjectSettingsScreenBlockTransitionImpl);
     pendingScreenTransitionCallback = &transitionCallback;
 }
 
@@ -65,7 +67,7 @@ void FrontendApplicationBase::gotoProjectSettingsScreenBlockTransitionImpl()
 
 void FrontendApplicationBase::gotoFXchainScreenBlockTransition()
 {
-    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoFXchainScreenBlockTransitionImpl);
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoFXchainScreenBlockTransitionImpl);
     pendingScreenTransitionCallback = &transitionCallback;
 }
 
@@ -78,7 +80,7 @@ void FrontendApplicationBase::gotoFXchainScreenBlockTransitionImpl()
 
 void FrontendApplicationBase::gotoEffectSettingsScreenBlockTransition()
 {
-    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoEffectSettingsScreenBlockTransitionImpl);
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplicationBase::gotoEffectSettingsScreenBlockTransitionImpl);
     pendingScreenTransitionCallback = &transitionCallback;
 }
 

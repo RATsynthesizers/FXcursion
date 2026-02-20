@@ -4,20 +4,6 @@
 #include <gui_generated/system_screen/SystemViewBase.hpp>
 #include <gui/system_screen/SystemPresenter.hpp>
 
-typedef enum enModuleSelectType
-{
-	MODULE_INPUT			= 0,
-	MODULE_OUTPUT			= 1,
-	MONO_CHAIN_1 			= 2,
-	MONO_CHAIN_2 			= 3,
-	MONO_CHAIN_3	 		= 4,
-	MONO_CHAIN_4 			= 5,
-	STEREO_CHAIN_1 			= 6,
-	STEREO_CHAIN_2 			= 7,
-	STOMP_BOARD	 			= 8,
-
-} ModuleSelectType;
-
 typedef struct stInputType
 {
 	BOOLEAN bIsStereo1;
@@ -34,14 +20,35 @@ public:
     virtual void tearDownScreen();
 
     void encMenuUpdate(S8 nValue);
-    void btnUpUpdate();
-    void btnDownUpdate();
+    void btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed);
+    void btnNoUpdate(S8 nValue, BOOLEAN bIsFuncPressed);
+    void btnUpUpdate(BOOLEAN bIsFuncPressed);
+    void btnDownUpdate(BOOLEAN bIsFuncPressed);
 protected:
 
+    static const U8 MIXER_Y_POS = 40;
+    static const U8 MIXER_X_POSITIONS[4];
+
+    BOOLEAN bIsMixerAdded;
+    ChainModuleNumber eMixerPosition;
 
     InputType_t inputType;
     ModuleSelectType ePrevSelect;
     ModuleSelectType eCurrentSelect;
+
+    MonoChain* monoChain[4] =
+    {
+    	&monoChain1,
+		&monoChain2,
+		&monoChain3,
+		&monoChain4
+    };
+
+    StereoChain* stereoChain[2] =
+    {
+    	&stereoChain1,
+		&stereoChain2
+    };
 };
 
 #endif // SYSTEMVIEW_HPP

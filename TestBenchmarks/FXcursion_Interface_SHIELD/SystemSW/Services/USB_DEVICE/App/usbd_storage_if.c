@@ -22,7 +22,8 @@
 #include "usbd_storage_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "bsp_driver_sd.h"
+#include "cmsis_os.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,7 +51,6 @@
   */
 
 /* USER CODE BEGIN PRIVATE_TYPES */
-
 /* USER CODE END PRIVATE_TYPES */
 
 /**
@@ -113,7 +113,6 @@ const int8_t STORAGE_Inquirydata_FS[] = {/* 36 */
 /* USER CODE END INQUIRY_DATA_FS */
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
-
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -128,7 +127,9 @@ const int8_t STORAGE_Inquirydata_FS[] = {/* 36 */
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
 /* USER CODE BEGIN EXPORTED_VARIABLES */
-
+extern osMutexId SDMMC_MutexID;
+extern osMessageQId USB_SD_QueueID;
+extern SD_OwnerTypeDef sd_owner;
 /* USER CODE END EXPORTED_VARIABLES */
 
 /**
@@ -195,8 +196,11 @@ int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_
   /* USER CODE BEGIN 3 */
   UNUSED(lun);
 
-  *block_num  = STORAGE_BLK_NBR;
-  *block_size = STORAGE_BLK_SIZ;
+  	HAL_SD_CardInfoTypeDef info;
+	BSP_SD_GetCardInfo(&info);
+
+	*block_num  = info.LogBlockNbr - 1;
+    *block_size = info.LogBlockSize;
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -241,11 +245,45 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 {
   /* USER CODE BEGIN 6 */
   UNUSED(lun);
-  UNUSED(buf);
-  UNUSED(blk_addr);
-  UNUSED(blk_len);
+  osEvent event;
 
-  return (USBD_OK);
+  // 1. Lock access (Thread-safe)
+  // This ensures the 5 audio files aren't being written while USB reads
+  if (osMutexWait(SDMMC_MutexID, 1000) != osOK)
+  {
+    return USBD_FAIL;
+  }
+
+  // 2. Set ownership
+  sd_owner = SD_OWNER_USB;
+
+  // 3. Start DMA Read
+  if (BSP_SD_ReadBlocks_DMA((uint32_t *)buf, blk_addr, blk_len) == MSD_OK)
+  {
+    // 4. SLEEP until DMA finishes.
+    // This allows your UI Survey and Display to run
+    event = osMessageGet(USB_SD_QueueID, 1000);
+
+    if (event.status == osEventMessage)
+    {
+      if (event.value.v == READ_CPLT_MSG)
+      {
+        // 5. Wait for the card to be ready for the next command
+        while (BSP_SD_GetCardState() != SD_TRANSFER_OK)
+        {
+          osDelay(1);
+        }
+
+        sd_owner = SD_OWNER_NONE;
+        osMutexRelease(SDMMC_MutexID);
+        return USBD_OK;
+      }
+    }
+  }
+
+  sd_owner = SD_OWNER_NONE;
+  osMutexRelease(SDMMC_MutexID);
+  return USBD_FAIL;
   /* USER CODE END 6 */
 }
 
@@ -260,12 +298,44 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 7 */
-  UNUSED(lun);
-  UNUSED(buf);
-  UNUSED(blk_addr);
-  UNUSED(blk_len);
+    UNUSED(lun);
+    osEvent event;
 
-  return (USBD_OK);
+  // 1. Lock access (Thread-safe)
+  if (osMutexWait(SDMMC_MutexID, 1000) != osOK)
+  {
+	  return USBD_FAIL;
+  }
+
+  // 2. Set ownership and Maintenance
+  sd_owner = SD_OWNER_USB;
+//  SCB_CleanDCache_by_Addr((uint32_t *)buf, blk_len * 512);
+
+  if (BSP_SD_WriteBlocks_DMA((uint32_t *)buf, blk_addr, blk_len) == MSD_OK)
+  {
+	// 3. SLEEP until DMA finishes.
+	// This yields the CPU to your UI and Audio tasks!
+	event = osMessageGet(USB_SD_QueueID, 1000);
+
+	if (event.status == osEventMessage)
+	{
+		if (event.value.v == WRITE_CPLT_MSG)
+	    {
+		   while (BSP_SD_GetCardState() != SD_TRANSFER_OK)
+		   {
+			   osDelay(1);
+		   }
+
+		   sd_owner = SD_OWNER_NONE;
+		   osMutexRelease(SDMMC_MutexID);
+		   return USBD_OK;
+		}
+	}
+  }
+
+  sd_owner = SD_OWNER_NONE;
+  osMutexRelease(SDMMC_MutexID);
+  return USBD_FAIL;
   /* USER CODE END 7 */
 }
 

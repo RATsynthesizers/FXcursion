@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -139,7 +139,7 @@ void Gauge::setValue(int value)
     {
         needle.setRenderingAlgorithm(algorithmMoving);
     }
-    uint16_t progress = AbstractProgressIndicator::getProgress(abs(needleEndAngle - needleStartAngle));
+    const uint16_t progress = AbstractProgressIndicator::getProgress(abs(needleEndAngle - needleStartAngle));
     if (needleEndAngle < needleStartAngle)
     {
         needle.updateZAngle(((float)(needleStartAngle - progress) / 180.0f) * PI);

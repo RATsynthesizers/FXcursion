@@ -104,8 +104,7 @@ void UISurveyThreadWrapper(void const *argument)
     	}
 
     	btnYes.update();
-    	if(TRUE == btnYes.wasChanged()
-    			&& BTN_PRESSED == btnYes.getState())
+    	if(TRUE == btnYes.wasChanged())
     	{
     		btnYes.clearChangedFlag();
     		uiObjectChange.eName  = BTN_YES;
@@ -114,8 +113,7 @@ void UISurveyThreadWrapper(void const *argument)
     	}
 
     	btnNo.update();
-    	if(TRUE == btnNo.wasChanged()
-    			&& BTN_PRESSED == btnNo.getState())
+    	if(TRUE == btnNo.wasChanged())
     	{
     		btnNo.clearChangedFlag();
     		uiObjectChange.eName  = BTN_NO;
@@ -144,14 +142,12 @@ void UISurveyThreadWrapper(void const *argument)
     	}
 
     	// Repeat for each foot switch
-    	btnFoot.update();
-    	if(TRUE == btnFoot.wasChanged()
-    			&& BTN_PRESSED == btnFoot.getState())
+    	btnFunc.update();
+    	if(TRUE == btnFunc.wasChanged())
     	{
-    		btnFoot.clearChangedFlag();
-    		uiObjectChange.eName  = BTN_FOOT;
-    		uiObjectChange.nID    = 0;
-    		uiObjectChange.nValue = btnFoot.getState();
+    		btnFunc.clearChangedFlag();
+    		uiObjectChange.eName  = BTN_FUNC;
+    		uiObjectChange.nValue = btnFunc.getState();
     		PUBSUB_Publish(PUBSUB_TOPIC_UI, (void*) &uiObjectChange, sizeof(uiObjectChange));
     	}
     }

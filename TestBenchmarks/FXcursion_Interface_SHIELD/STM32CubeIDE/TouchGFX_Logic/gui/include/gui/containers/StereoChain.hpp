@@ -3,15 +3,6 @@
 
 #include <gui_generated/containers/StereoChainBase.hpp>
 
-typedef enum enSteroChainModules
-{
-	STEREO_CHAIN_MODULE_1 = 0,
-	STEREO_CHAIN_MODULE_2 = 1,
-	STEREO_CHAIN_MODULE_3 = 2,
-	STEREO_CHAIN_MODULE_4 = 3,
-
-} StereoChainModules;
-
 class StereoChain : public StereoChainBase
 {
 public:
@@ -20,12 +11,24 @@ public:
 
     virtual void initialize();
 
-    void select(StereoChainModules eModuleNum);
-    void deselect();
-    StereoChainModules getSelectedModule();
+    void select(ChainModuleNumber eModuleNum);
+    void deselect(ChainModuleNumber eModuleNum);
+    void addModule(ChainModuleNumber eModuleNum, ModuleName eModuleName);
+    void deleteSelectedModule();
+
+    ChainModuleNumber getSelectedModuleNumber();
+    ModuleName getSelectedModuleName();
+    ModuleName getModuleName(ChainModuleNumber eModuleNumber);
+
 protected:
 
-    StereoChainModules eSelectedModule;
+    static const U8 MODULE_Y_POS = 4;
+    static const U8 MODULE_X_POSITIONS[4];
+
+    ModuleName aCurrentState[4] = {};
+
+    ChainModuleNumber eSelectedModuleNumber;
+    ModuleName		  eSelectedModuleName;
 };
 
 #endif // STEREOCHAIN_HPP

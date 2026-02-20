@@ -37,10 +37,10 @@
             "Action": {
               "Type": "ActionFade",
               "Alpha": 0,
-              "Easing": "Cubic",
-              "EasingOption": "InOut",
+              "Easing": "Linear",
+              "EasingOption": "In",
               "Duration": 3000,
-              "AnimationDelay": 2000,
+              "AnimationDelay": 1000,
               "ActionComponent": "logoImage"
             }
           },
@@ -53,8 +53,7 @@
             },
             "Action": {
               "Type": "ActionGotoScreen",
-              "ScreenTransitionType": "ScreenTransitionCover",
-              "ScreenTransitionDirection": "East",
+              "ScreenTransitionType": "ScreenTransitionNone",
               "ActionComponent": "System"
             }
           }
@@ -71,9 +70,9 @@
             "Height": 240,
             "LockPosition": true,
             "Color": {
-              "Red": 72,
-              "Green": 90,
-              "Blue": 219
+              "Red": 143,
+              "Green": 205,
+              "Blue": 255
             }
           },
           {
@@ -165,9 +164,755 @@
             "Width": 240,
             "Height": 40,
             "CustomContainerDefinitionName": "MonoChain"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "mixModule",
+            "X": 218,
+            "Y": 40,
+            "Width": 58,
+            "Height": 160,
+            "Visible": false,
+            "CustomContainerDefinitionName": "MixModule"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "addModuleWindow",
+            "Width": 320,
+            "Height": 240,
+            "Visible": false,
+            "CustomContainerDefinitionName": "AddModuleWindow"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "modalWindowDelete",
+            "Width": 320,
+            "Height": 240,
+            "Visible": false,
+            "CustomContainerDefinitionName": "ModalWindowDelete"
           }
         ],
-        "Interactions": []
+        "Interactions": [
+          {
+            "InteractionName": "OpenFXChain",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "FXChain"
+            }
+          },
+          {
+            "InteractionName": "OpenRecorder",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "Recorder"
+            }
+          },
+          {
+            "InteractionName": "OpenLooper",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "Looper"
+            }
+          },
+          {
+            "InteractionName": "OpenMixer",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "Mixer"
+            }
+          },
+          {
+            "InteractionName": "OpenInput",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "Input"
+            }
+          },
+          {
+            "InteractionName": "OpenOutput",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "Output"
+            }
+          },
+          {
+            "InteractionName": "OpenStomp",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "Stomp"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "FXChain",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Width": 320,
+            "Height": 240,
+            "LockPosition": true,
+            "Color": {
+              "Red": 255,
+              "Green": 215,
+              "Blue": 140
+            }
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "statusBar",
+            "Width": 320,
+            "Height": 34,
+            "LockPosition": true,
+            "CustomContainerDefinitionName": "StatusBar"
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "nameBox",
+            "Y": 28,
+            "Width": 320,
+            "Height": 40,
+            "LockPosition": true,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "channelNumText",
+            "Y": 34,
+            "Width": 320,
+            "Height": 28,
+            "TextId": "ChannelFX",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 10
+            }
+          },
+          {
+            "Type": "ListLayout",
+            "Name": "list",
+            "Y": 76,
+            "Width": 320,
+            "Height": 164,
+            "Direction": "South",
+            "Components": [
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "Item0",
+                "Width": 320,
+                "Height": 41,
+                "CustomContainerDefinitionName": "FXChainItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "Item1",
+                "Y": 41,
+                "Width": 320,
+                "Height": 41,
+                "CustomContainerDefinitionName": "FXChainItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "Item2",
+                "Y": 82,
+                "Width": 320,
+                "Height": 41,
+                "CustomContainerDefinitionName": "FXChainItem"
+              },
+              {
+                "Type": "CustomContainerInstance",
+                "Name": "Item3",
+                "Y": 123,
+                "Width": 320,
+                "Height": 41,
+                "CustomContainerDefinitionName": "FXChainItem"
+              }
+            ]
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "effectsList",
+            "Width": 320,
+            "Height": 240,
+            "Visible": false,
+            "CustomContainerDefinitionName": "EffectListContainer"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "modalWindowDelete",
+            "Width": 320,
+            "Height": 240,
+            "Visible": false,
+            "CustomContainerDefinitionName": "ModalWindowDelete"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "OpenSystemScreen",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "System"
+            }
+          },
+          {
+            "InteractionName": "OpenEffectSettings",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "EffectSettings"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "EffectSettings",
+        "CanvasBufferSize": 4800,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Width": 320,
+            "Height": 240,
+            "LockPosition": true,
+            "Color": {
+              "Red": 89,
+              "Green": 89,
+              "Blue": 89
+            }
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "statusBar",
+            "Width": 320,
+            "Height": 34,
+            "LockPosition": true,
+            "CustomContainerDefinitionName": "StatusBar"
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "slidingBox",
+            "X": -5,
+            "Y": 29,
+            "Width": 80,
+            "Height": 217,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "Box",
+            "Name": "nameBox",
+            "X": 75,
+            "Y": 34,
+            "Width": 245,
+            "Height": 34,
+            "Color": {
+              "Red": 255,
+              "Green": 174
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "effectName",
+            "X": 75,
+            "Y": 36,
+            "Width": 245,
+            "Height": 30,
+            "TextId": "__SingleUse_TU7Y",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "pages",
+            "X": 297,
+            "Y": 117,
+            "Width": 23,
+            "Height": 71,
+            "CustomContainerDefinitionName": "Pages"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "customGauge0",
+            "X": 99,
+            "Y": 77,
+            "Width": 76,
+            "Height": 70,
+            "CustomContainerDefinitionName": "CustomGauge"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "customGauge1",
+            "X": 209,
+            "Y": 77,
+            "Width": 76,
+            "Height": 70,
+            "CustomContainerDefinitionName": "CustomGauge"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "customGauge2",
+            "X": 99,
+            "Y": 160,
+            "Width": 76,
+            "Height": 70,
+            "CustomContainerDefinitionName": "CustomGauge"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "customGauge3",
+            "X": 209,
+            "Y": 160,
+            "Width": 76,
+            "Height": 70,
+            "CustomContainerDefinitionName": "CustomGauge"
+          },
+          {
+            "Type": "TextArea",
+            "Name": "channelName",
+            "Y": 41,
+            "Width": 74,
+            "Height": 23,
+            "TextId": "__SingleUse_SGCQ",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 10
+            }
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "effectPictogram0",
+            "Y": 68,
+            "Width": 75,
+            "Height": 47,
+            "CustomContainerDefinitionName": "EffectPictogram"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "effectPictogram1",
+            "Y": 110,
+            "Width": 75,
+            "Height": 47,
+            "CustomContainerDefinitionName": "EffectPictogram"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "effectPictogram2",
+            "Y": 152,
+            "Width": 75,
+            "Height": 47,
+            "CustomContainerDefinitionName": "EffectPictogram"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "effectPictogram3",
+            "Y": 194,
+            "Width": 75,
+            "Height": 47,
+            "CustomContainerDefinitionName": "EffectPictogram"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "OpenFXChain",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "FXChain"
+            }
+          },
+          {
+            "InteractionName": "OpenInput",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "Input"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "Recorder",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Y": 34,
+            "Width": 320,
+            "Height": 206,
+            "Color": {
+              "Red": 48,
+              "Green": 48,
+              "Blue": 48
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "text",
+            "X": 75,
+            "Y": 123,
+            "Width": 171,
+            "Height": 28,
+            "TextId": "__SingleUse_7HQ8",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "AutoSize": true
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "statusBar",
+            "Width": 320,
+            "Height": 34,
+            "CustomContainerDefinitionName": "StatusBar"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "OpenSystem",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "System"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "Looper",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Y": 34,
+            "Width": 320,
+            "Height": 206,
+            "Color": {
+              "Red": 48,
+              "Green": 48,
+              "Blue": 48
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "text",
+            "X": 87,
+            "Y": 123,
+            "Width": 146,
+            "Height": 28,
+            "TextId": "__SingleUse_F2SQ",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "AutoSize": true
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "statusBar",
+            "Width": 320,
+            "Height": 34,
+            "CustomContainerDefinitionName": "StatusBar"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "OpenSystem",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "System"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "Mixer",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Y": 34,
+            "Width": 320,
+            "Height": 206,
+            "Color": {
+              "Red": 48,
+              "Green": 48,
+              "Blue": 48
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "text",
+            "X": 92,
+            "Y": 123,
+            "Width": 136,
+            "Height": 28,
+            "TextId": "__SingleUse_G2RL",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "AutoSize": true
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "statusBar",
+            "Width": 320,
+            "Height": 34,
+            "CustomContainerDefinitionName": "StatusBar"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "OpenSystem",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "System"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "Input",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Y": 34,
+            "Width": 320,
+            "Height": 206,
+            "Color": {
+              "Red": 48,
+              "Green": 48,
+              "Blue": 48
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "text",
+            "X": 95,
+            "Y": 123,
+            "Width": 131,
+            "Height": 28,
+            "TextId": "__SingleUse_WK96",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "AutoSize": true
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "statusBar",
+            "Width": 320,
+            "Height": 34,
+            "CustomContainerDefinitionName": "StatusBar"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "OpenSystem",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "System"
+            }
+          },
+          {
+            "InteractionName": "OpenEffectSettings",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "EffectSettings"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "Output",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Y": 34,
+            "Width": 320,
+            "Height": 206,
+            "Color": {
+              "Red": 48,
+              "Green": 48,
+              "Blue": 48
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "text",
+            "X": 86,
+            "Y": 123,
+            "Width": 149,
+            "Height": 28,
+            "TextId": "__SingleUse_52HZ",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "AutoSize": true
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "statusBar",
+            "Width": 320,
+            "Height": 34,
+            "CustomContainerDefinitionName": "StatusBar"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "OpenSystem",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "System"
+            }
+          }
+        ]
+      },
+      {
+        "Name": "Stomp",
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "background",
+            "Y": 34,
+            "Width": 320,
+            "Height": 206,
+            "Color": {
+              "Red": 48,
+              "Green": 48,
+              "Blue": 48
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "text",
+            "X": 91,
+            "Y": 120,
+            "Width": 139,
+            "Height": 28,
+            "TextId": "__SingleUse_HZU6",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "AutoSize": true
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "statusBar",
+            "Width": 320,
+            "Height": 34,
+            "CustomContainerDefinitionName": "StatusBar"
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "OpenSystem",
+            "Trigger": {
+              "Type": "TriggerNone"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "System"
+            }
+          }
+        ]
       }
     ],
     "CustomContainerDefinitions": [
@@ -184,11 +929,32 @@
             "LockPosition": true
           },
           {
+            "Type": "Box",
+            "Name": "moveBox",
+            "Width": 320,
+            "Height": 34,
+            "Visible": false,
+            "Color": {
+              "Red": 21,
+              "Blue": 255
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "recBox",
+            "Width": 320,
+            "Height": 34,
+            "Visible": false,
+            "Color": {
+              "Red": 255
+            }
+          },
+          {
             "Type": "TextArea",
             "Name": "bpmText",
             "X": 12,
             "Y": 8,
-            "Width": 54,
+            "Width": 31,
             "Height": 20,
             "TextId": "__SingleUse_FYCR",
             "TextRotation": "0",
@@ -198,15 +964,18 @@
               "Blue": 255
             },
             "AutoSize": true,
-            "Wildcard1": {}
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 4
+            }
           },
           {
             "Type": "TextArea",
             "Name": "batText",
-            "X": 249,
+            "X": 271,
             "Y": 7,
-            "Width": 56,
-            "Height": 20,
+            "Width": 37,
+            "Height": 21,
             "TextId": "__SingleUse_VRO4",
             "TextRotation": "0",
             "Color": {
@@ -214,11 +983,14 @@
               "Green": 255,
               "Blue": 255
             },
-            "AutoSize": true
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 4
+            }
           },
           {
             "Type": "TextArea",
-            "Name": "textArea1",
+            "Name": "nameText",
             "Width": 320,
             "Height": 28,
             "TextId": "__SingleUse_9PU7",
@@ -227,6 +999,10 @@
               "Red": 255,
               "Green": 255,
               "Blue": 255
+            },
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
             }
           }
         ],
@@ -269,7 +1045,7 @@
             "Name": "stomp3text",
             "X": 242,
             "Y": 11,
-            "Width": 55,
+            "Width": 58,
             "Height": 20,
             "TextId": "__SingleUse_U75P",
             "TextRotation": "0",
@@ -307,7 +1083,7 @@
             "Name": "stomp2text",
             "X": 133,
             "Y": 11,
-            "Width": 55,
+            "Width": 58,
             "Height": 20,
             "TextId": "__SingleUse_C009",
             "TextRotation": "0",
@@ -343,7 +1119,7 @@
             "Name": "stomp1text",
             "X": 23,
             "Y": 11,
-            "Width": 54,
+            "Width": 57,
             "Height": 20,
             "TextId": "__SingleUse_LHUE",
             "TextRotation": "0",
@@ -1059,6 +1835,36 @@
             "Width": 62,
             "Height": 70,
             "CustomContainerDefinitionName": "EmptyModuleStereo"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "fXModule",
+            "X": 8,
+            "Y": 4,
+            "Width": 50,
+            "Height": 62,
+            "Visible": false,
+            "CustomContainerDefinitionName": "FXModuleStereo"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "loopModule",
+            "X": 66,
+            "Y": 4,
+            "Width": 50,
+            "Height": 62,
+            "Visible": false,
+            "CustomContainerDefinitionName": "LoopModuleStereo"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "recModule",
+            "X": 124,
+            "Y": 4,
+            "Width": 50,
+            "Height": 62,
+            "Visible": false,
+            "CustomContainerDefinitionName": "RecModuleStereo"
           }
         ],
         "Interactions": []
@@ -1111,6 +1917,36 @@
             "Width": 62,
             "Height": 40,
             "CustomContainerDefinitionName": "EmptyModuleMono"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "recModule",
+            "X": 8,
+            "Y": 4,
+            "Width": 50,
+            "Height": 32,
+            "Visible": false,
+            "CustomContainerDefinitionName": "RecModuleMono"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "fXModule",
+            "X": 66,
+            "Y": 4,
+            "Width": 50,
+            "Height": 32,
+            "Visible": false,
+            "CustomContainerDefinitionName": "FXModuleMono"
+          },
+          {
+            "Type": "CustomContainerInstance",
+            "Name": "loopModule",
+            "X": 124,
+            "Y": 4,
+            "Width": 50,
+            "Height": 32,
+            "Visible": false,
+            "CustomContainerDefinitionName": "LoopModuleMono"
           }
         ],
         "Interactions": []
@@ -1203,8 +2039,7 @@
             "Width": 34,
             "Height": 146,
             "Color": {
-              "Red": 38,
-              "Green": 226,
+              "Green": 221,
               "Blue": 255
             },
             "Points": [
@@ -1352,9 +2187,9 @@
             "Width": 34,
             "Height": 146,
             "Color": {
-              "Red": 38,
+              "Red": 127,
               "Green": 255,
-              "Blue": 150
+              "Blue": 122
             },
             "Points": [
               {
@@ -2071,6 +2906,663 @@
             "Color": {
               "Red": 255
             }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "AddModuleWindow",
+        "Width": 320,
+        "Height": 240,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "shadeBox",
+            "Width": 320,
+            "Height": 240,
+            "Alpha": 186
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "windowBox",
+            "X": 55,
+            "Y": 30,
+            "Width": 210,
+            "Height": 180,
+            "Color": {
+              "Red": 80,
+              "Green": 75,
+              "Blue": 222
+            },
+            "BorderColor": {
+              "Red": 13,
+              "Green": 13,
+              "Blue": 48
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "mixerBox",
+            "X": 85,
+            "Y": 162,
+            "Width": 150,
+            "Height": 34,
+            "Color": {
+              "Red": 127,
+              "Green": 255,
+              "Blue": 122
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "looperBox",
+            "X": 85,
+            "Y": 123,
+            "Width": 150,
+            "Height": 34,
+            "Color": {
+              "Red": 232,
+              "Green": 138,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "recorderBox",
+            "X": 85,
+            "Y": 84,
+            "Width": 150,
+            "Height": 34,
+            "Color": {
+              "Red": 255,
+              "Green": 145,
+              "Blue": 145
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "effectBox",
+            "X": 85,
+            "Y": 45,
+            "Width": 150,
+            "Height": 34,
+            "Color": {
+              "Red": 255,
+              "Green": 215,
+              "Blue": 140
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "fxText",
+            "X": 99,
+            "Y": 48,
+            "Width": 122,
+            "Height": 25,
+            "TextId": "__SingleUse_09A0",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "TextArea",
+            "Name": "recorderText",
+            "X": 105,
+            "Y": 87,
+            "Width": 111,
+            "Height": 30,
+            "TextId": "__SingleUse_MSRV",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "TextArea",
+            "Name": "looperText",
+            "X": 105,
+            "Y": 124,
+            "Width": 111,
+            "Height": 27,
+            "TextId": "__SingleUse_JXM1",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          },
+          {
+            "Type": "TextArea",
+            "Name": "mixerText",
+            "X": 105,
+            "Y": 165,
+            "Width": 111,
+            "Height": 29,
+            "TextId": "__SingleUse_BC37",
+            "TextRotation": "0",
+            "LineSpacing": -3
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "FXChainItem",
+        "Width": 320,
+        "Height": 41,
+        "Components": [
+          {
+            "Type": "ScalableImage",
+            "Name": "dashSelected",
+            "X": 70,
+            "Width": 242,
+            "Height": 33,
+            "Filename": "empty_dashed_selected.png",
+            "ScalingAlgorithm": "Nearest-neighbor"
+          },
+          {
+            "Type": "ScalableImage",
+            "Name": "dashRegular",
+            "X": 70,
+            "Width": 242,
+            "Height": 33,
+            "Filename": "empty_dashed.png",
+            "ScalingAlgorithm": "Nearest-neighbor"
+          },
+          {
+            "Type": "ScalableImage",
+            "Name": "pictSelected",
+            "X": 20,
+            "Width": 33,
+            "Height": 33,
+            "Filename": "emptySelectedPict.png",
+            "ScalingAlgorithm": "Nearest-neighbor"
+          },
+          {
+            "Type": "ScalableImage",
+            "Name": "pictRegular",
+            "X": 20,
+            "Width": 33,
+            "Height": 33,
+            "Filename": "emptyPict.png",
+            "ScalingAlgorithm": "Nearest-neighbor"
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "blackBox",
+            "X": 70,
+            "Width": 242,
+            "Height": 33,
+            "BorderColor": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "whiteBox",
+            "X": 70,
+            "Width": 242,
+            "Height": 33,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "effectName",
+            "X": 77,
+            "Width": 230,
+            "Height": 33,
+            "TextId": "__SingleUse_BSL3",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "TextId": "EmptyEffect",
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "EffectListContainer",
+        "Width": 320,
+        "Height": 240,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "shadeBox",
+            "Width": 320,
+            "Height": 240,
+            "LockPosition": true,
+            "Alpha": 148
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "windowBox",
+            "X": 25,
+            "Width": 270,
+            "Height": 240,
+            "Color": {
+              "Red": 80,
+              "Green": 75,
+              "Blue": 222
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "nameBox",
+            "X": 25,
+            "Width": 270,
+            "Height": 40,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "nameText",
+            "X": 100,
+            "Y": 6,
+            "Width": 121,
+            "Height": 28,
+            "TextId": "__SingleUse_48V6",
+            "TextRotation": "0",
+            "AutoSize": true
+          },
+          {
+            "Type": "ScrollWheel",
+            "Name": "scrollEffects",
+            "X": 45,
+            "Y": 50,
+            "Width": 230,
+            "Height": 185,
+            "UseSelectedStyle": true,
+            "SelectedItemTemplateName": "EffectListItemSelected",
+            "ItemTemplateName": "EffectListItem",
+            "NumberofItems": 10,
+            "Easing": "Back",
+            "EasingOption": "Out",
+            "SwipeAcceleration": 1.0,
+            "DragAcceleration": 1.0,
+            "OverShootPercentage": 75
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "EffectListItem",
+        "Width": 230,
+        "Height": 40,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "whiteBox",
+            "Width": 230,
+            "Height": 35,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "blackBox",
+            "Width": 230,
+            "Height": 35,
+            "Visible": false,
+            "BorderColor": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "grayBox",
+            "Width": 230,
+            "Height": 35,
+            "Visible": false,
+            "Color": {
+              "Red": 105,
+              "Green": 105,
+              "Blue": 105
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "text",
+            "Y": 2,
+            "Width": 230,
+            "Height": 28,
+            "TextId": "__SingleUse_0XPH",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "EffectListItemSelected",
+        "Width": 230,
+        "Height": 40,
+        "Components": [
+          {
+            "Type": "BoxWithBorder",
+            "Name": "blackBox",
+            "Width": 230,
+            "Height": 35,
+            "BorderColor": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "text",
+            "Y": 2,
+            "Width": 230,
+            "Height": 28,
+            "TextId": "__SingleUse_IHIL",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "CustomGauge",
+        "Width": 76,
+        "Height": 70,
+        "Components": [
+          {
+            "Type": "TextArea",
+            "Name": "parameterName",
+            "Y": 49,
+            "Width": 76,
+            "Height": 21,
+            "TextId": "__SingleUse_SS4Q",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 10
+            }
+          },
+          {
+            "Type": "Circle",
+            "Name": "backgroundCircle",
+            "X": 8,
+            "Width": 60,
+            "Height": 49,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "CenterX": 30.0,
+            "CenterY": 30.0,
+            "Radius": 30.0,
+            "StartAngle": -127.5,
+            "EndAngle": 127.5,
+            "CapPrecision": "Butt"
+          },
+          {
+            "Type": "Circle",
+            "Name": "activeCircle",
+            "X": 8,
+            "Width": 60,
+            "Height": 49,
+            "Color": {
+              "Red": 73,
+              "Green": 191,
+              "Blue": 71
+            },
+            "CenterX": 30.0,
+            "CenterY": 30.0,
+            "Radius": 30.0,
+            "StartAngle": -127.5,
+            "CapPrecision": "Butt"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "EffectPictogram",
+        "Width": 75,
+        "Height": 47,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "editingBox",
+            "Width": 75,
+            "Height": 47,
+            "Visible": false,
+            "Color": {
+              "Red": 89,
+              "Green": 89,
+              "Blue": 89
+            }
+          },
+          {
+            "Type": "Shape",
+            "Name": "selectBox",
+            "Width": 75,
+            "Height": 47,
+            "Visible": false,
+            "Points": [
+              {},
+              {
+                "X": 75.0
+              },
+              {
+                "X": 75.0,
+                "Y": 5.0
+              },
+              {
+                "X": 5.0,
+                "Y": 5.0
+              },
+              {
+                "X": 5.0,
+                "Y": 42.0
+              },
+              {
+                "X": 75.0,
+                "Y": 42.0
+              },
+              {
+                "X": 75.0,
+                "Y": 47.0
+              },
+              {
+                "Y": 47.0
+              }
+            ],
+            "XScale": 1.0,
+            "YScale": 1.0
+          },
+          {
+            "Type": "ScalableImage",
+            "Name": "pictRegular",
+            "X": 23,
+            "Y": 6,
+            "Width": 29,
+            "Height": 29,
+            "Filename": "emptyPict.png",
+            "ScalingAlgorithm": "Bilinear Interpolation"
+          },
+          {
+            "Type": "ScalableImage",
+            "Name": "pictEditing",
+            "X": 23,
+            "Y": 6,
+            "Width": 29,
+            "Height": 29,
+            "Visible": false,
+            "Filename": "emptySelectedPict.png",
+            "ScalingAlgorithm": "Bilinear Interpolation"
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "ModalWindowDelete",
+        "Width": 320,
+        "Height": 240,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "shadeBox",
+            "Width": 320,
+            "Height": 240,
+            "Alpha": 186
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "boxWindow",
+            "X": 60,
+            "Y": 50,
+            "Width": 200,
+            "Height": 140,
+            "Color": {
+              "Red": 255,
+              "Green": 125,
+              "Blue": 125
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textModal",
+            "X": 60,
+            "Y": 71,
+            "Width": 200,
+            "Height": 56,
+            "TextId": "RemoveEffect",
+            "TextRotation": "0",
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 20
+            }
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "boxY",
+            "X": 82,
+            "Y": 140,
+            "Width": 65,
+            "Height": 35,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "boxN",
+            "X": 173,
+            "Y": 140,
+            "Width": 65,
+            "Height": 35,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            },
+            "BorderSize": 5
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textY",
+            "X": 107,
+            "Y": 143,
+            "Width": 15,
+            "Height": 28,
+            "TextId": "__SingleUse_RFHF",
+            "TextRotation": "0",
+            "AutoSize": true
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textN",
+            "X": 198,
+            "Y": 143,
+            "Width": 14,
+            "Height": 28,
+            "TextId": "__SingleUse_UH7J",
+            "TextRotation": "0",
+            "AutoSize": true
+          }
+        ],
+        "Interactions": []
+      },
+      {
+        "Name": "Pages",
+        "Width": 23,
+        "Height": 71,
+        "Components": [
+          {
+            "Type": "Box",
+            "Name": "page1",
+            "X": 4,
+            "Y": 6,
+            "Width": 10,
+            "Height": 22,
+            "Visible": false,
+            "Color": {
+              "Red": 255,
+              "Green": 255,
+              "Blue": 255
+            }
+          },
+          {
+            "Type": "Box",
+            "Name": "page2",
+            "X": 4,
+            "Y": 42,
+            "Width": 10,
+            "Height": 22,
+            "Visible": false
+          },
+          {
+            "Type": "Box",
+            "Name": "page0",
+            "X": 4,
+            "Y": 24,
+            "Width": 10,
+            "Height": 22
           }
         ],
         "Interactions": []

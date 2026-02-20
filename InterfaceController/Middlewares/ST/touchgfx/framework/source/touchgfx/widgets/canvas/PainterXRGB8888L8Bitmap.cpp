@@ -1,8 +1,8 @@
 /******************************************************************************
-* Copyright (c) 2018(-2023) STMicroelectronics.
+* Copyright (c) 2018(-2025) STMicroelectronics.
 * All rights reserved.
 *
-* This file is part of the TouchGFX 4.21.3 distribution.
+* This file is part of the TouchGFX 4.25.0 distribution.
 *
 * This software is licensed under terms that can be found in the LICENSE file in
 * the root directory of this software component.
@@ -116,7 +116,7 @@ void PainterXRGB8888L8Bitmap::paint(uint8_t* destination, int16_t offset, int16_
             count -= length;
             do
             {
-                uint32_t src = reinterpret_cast<const uint32_t*>(bitmapCLUT)[*bitmapPointer++];
+                const uint32_t src = reinterpret_cast<const uint32_t*>(bitmapCLUT)[*bitmapPointer++];
                 const uint8_t srcAlpha = src >> 24;
                 const uint8_t a = LCD::div255(alpha * srcAlpha);
                 if (a == 0xFF)

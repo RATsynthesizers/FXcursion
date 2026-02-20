@@ -14,6 +14,9 @@
 #include <gui/containers/OutModule.hpp>
 #include <gui/containers/StereoChain.hpp>
 #include <gui/containers/MonoChain.hpp>
+#include <gui/containers/MixModule.hpp>
+#include <gui/containers/AddModuleWindow.hpp>
+#include <gui/containers/ModalWindowDelete.hpp>
 
 class SystemViewBase : public touchgfx::View<SystemPresenter>
 {
@@ -42,6 +45,9 @@ protected:
     MonoChain monoChain3;
     MonoChain monoChain2;
     MonoChain monoChain1;
+    MixModule mixModule;
+    AddModuleWindow addModuleWindow;
+    ModalWindowDelete modalWindowDelete;
 
 private:
 
