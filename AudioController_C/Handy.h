@@ -33,6 +33,8 @@ using u32 = uint32_t;
 
 // limit x value by min and max
 #define _CLIP_LIMIT(x, min_, max_)	if((x)>(max_)){(x)=(max_);}else if((x)<(min_)) {(x)=(min_);}
+#define STRINGIFY(x) #x
+
 
 
 #endif /* INC_HANDY_H_ */
