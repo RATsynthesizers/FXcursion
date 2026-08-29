@@ -2,61 +2,34 @@
 
 #include "Module.h"
 
-static u32 allParamNum = 0; // used to count how many Parameters were used by all Modules in total; 0 by default
+static u32 allParamNum = 0;
+static u32 allModulesNum = 0; 
 
-void module_init(module_t *const self, parameter_t p, u32 paramNum) {
-     
-
+static void module_init(module_t *const self, u32 paramNum, u16 module_id) {
+     allModulesNum++;
      self->paramNum = paramNum;             // num of parameters in module
+     allParamNum += paramNum;
      self->prevModule = NULL;               // pointer for module params to be stored to
-     self->nextModule = NULL;
-
-     if (allParamNum + paramNum > MAX_SYNTH_PARAMS) {        // if MAX_SYNTH_PARAMS is not enough to store
-          while (1)
-               ;                                                // error, increase MAX_SYNTH_PARAMS
-     } else {
-          self->p = p + allParamNum;                            // find where to store Module params in allocated array
-          allParamNum += paramNum;                           // increase alloc array offset (to store params of the next Module if created)
-          for (u32 i = 0; i < paramNum; i++)
-               self->p[i].index = i;                               // init parameter indexes
-     }     
+     self->nextModule = NULL;    
 
      self->outputVolume = 1;
      for (int i = 0; i < STEREO; i++)                           // let output be zeroed
          self->output[i] = 0;
 
-
+    self->id = module_id;
 }
 
-void plug_next  (module_t *self, module_t *nextModule) {
+static void plug_next  (module_t *self, module_t *nextModule) {
      self->nextModule = nextModule;
      nextModule->vtable->plugPrev(self);
 }
-void plug_prev  (module_t *self, module_t *prevModule) {
+static void plug_prev  (module_t *self, module_t *prevModule) {
      self->prevModule = prevModule;
 }
-void unplug_next(module_t *self) {
+static void unplug_next(module_t *self) {
      nextModule->vtable->unplugPrev(nextModule);
      self->nextModule = NULL;
 }
-void unplug_prev(module_t *self) {}
-
-
-
-
-
-
-
-
-
-//--mixer.c-------------------------------------------
-void process_mixer(){}
-
-
-void mixer_init(module_t *const self, parameter_t p, u32 paramNum) {
-     self->vtable = _MODULE_VTABLE(process_mixer);
-     self->moduleInit((module_t *) self, p, paramNum);
-
-     //other mixer shit init 
-
+static void unplug_prev(module_t *self) {
+     self->prevModule = NULL;
 }

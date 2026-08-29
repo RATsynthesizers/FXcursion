@@ -43,13 +43,15 @@ typedef enum {
 //--------------------------------------------------
 
 static u32 allParamNum;     // used to count how many Parameters were used by all Modules in total; 0 by default
+static u32 allModulesNum;   // used to count how many Module objects were created. To help make MDMA lists for example
+
 typedef struct module_s module_t;
 
 typedef struct module_vtable {
-void (*process)(module_t *self); // subclass-defined
-void (*moduleInit)(module_t *self, parameter_t p, u32 paramNum);
-void (*plugNext)(module_t *self);
-void (*plugPrev)(module_t *self);
+void (*process)(module_t *self); // subclass-defined TODO void?
+void (*moduleInit)(module_t *self, u32 paramNum, u16 module_id);
+void (*plugNext)(module_t *self, module_t *nextModule;
+void (*plugPrev)(module_t *self, module_t *prevModule);
 void (*unplugNext)(module_t *self);
 void (*unplugPrev)(module_t *self);
 } module_vtable_t;
@@ -75,8 +77,8 @@ typedef struct {
 struct module_s {
 	u32 paramNum;           // num of parameters in module
 
-	Module_t *prevModule;
-	Module_t *nextModule;
+	module_t *prevModule;
+	module_t *nextModule;
 
 	float output[STEREO];
 	float outputVolume;
@@ -87,26 +89,6 @@ struct module_s {
 }
 
 
-
-
 #endif /* MODULE_H_ */
-
-
-
-
-//--------------------------------------------------
-typedef struct {
-	typedef struct module_t super;  // super class
-	
-	//oter shit
-
-
-} module_mixer_t;
-
-
-module_mixer_t mix2;
-module_mixer_t mix2;
-
-
 
 
