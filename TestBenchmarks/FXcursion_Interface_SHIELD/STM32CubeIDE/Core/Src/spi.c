@@ -229,9 +229,25 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
     hdma_spi1_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
     hdma_spi1_tx.Init.PeriphInc = DMA_PINC_DISABLE;
     hdma_spi1_tx.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_spi1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-    hdma_spi1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
-    hdma_spi1_tx.Init.Mode = DMA_NORMAL;
+    /* USER CODE BEGIN SPI1_TX_ALIGN */
+    /* WORD, because SPI1 is now SPI_DATASIZE_32BIT - the same correction the
+       RX stream already carries above. This was left at HALFWORD, which does
+       not match either the peripheral's 32-bit frame or the int32_t buffer. */
+    hdma_spi1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+    hdma_spi1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+    /*
+     * CIRCULAR is not about this stream wrapping - it is what puts the SPI
+     * itself into endless mode. HAL_SPI_TransmitReceive_DMA writes
+     * TSIZE = 0 only when the TX DMA is circular, and TSIZE = Size otherwise
+     * (stm32h7xx_hal_spi.c, "Set the number of data at current transfer").
+     * With TSIZE set, the peripheral raises EOT and SUSPENDS after that many
+     * frames, so a circular RX ring never gets to wrap - the link simply
+     * stops, and every consumer downstream keeps counting slots as if it had
+     * not. It reads off the TX channel even in the TransmitReceive path,
+     * which is why this one line gates the whole link.
+     */
+    hdma_spi1_tx.Init.Mode = DMA_CIRCULAR;
+    /* USER CODE END SPI1_TX_ALIGN */
     hdma_spi1_tx.Init.Priority = DMA_PRIORITY_LOW;
     hdma_spi1_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     if (HAL_DMA_Init(&hdma_spi1_tx) != HAL_OK)
