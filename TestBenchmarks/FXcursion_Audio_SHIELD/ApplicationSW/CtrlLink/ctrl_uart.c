@@ -34,6 +34,9 @@
    in this file names a peripheral any more. */
 #include "uart_tp.h"
 
+/* A loop transfer ends in an audio block and is reported from here. */
+#include "loop_xfer.h"
+
 
 
 /***************************************************************************************************
@@ -279,6 +282,26 @@ void CtrlUart_Service(void)
         {
             nTelemetryCount = 0U;
             SendDiag();
+        }
+    }
+
+    /*
+     * A loop transfer that ended in an audio block. The block could not send a
+     * UART frame, so it latched the result and this collects it - once, which
+     * is why LoopXfer_TakeCompletion clears the latch rather than exposing a
+     * state to poll.
+     *
+     * This frame is how the CRC crosses. The interface checksums what arrived;
+     * comparing it needs the value this side computed over what it sent, and
+     * without this the comparison has nothing to compare against.
+     */
+    {
+        PROTO_LOOP_STAT tStat;
+
+        if (LoopXfer_TakeCompletion(&tStat) == TRUE)
+        {
+            (void)CtrlLink_SendFrame((U8)PROTO_CMD_LOOP_STAT,
+                                     (const U8*)&tStat, (U8)sizeof(tStat));
         }
     }
 

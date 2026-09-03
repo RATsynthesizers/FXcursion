@@ -139,6 +139,26 @@ extern const FX_LOOP_SESSION* LoopXfer_Session(void);
  */
 extern void LoopXfer_Report(PROTO_LOOP_STAT* const pStat);
 
+/**
+ * @brief Take the end-of-session report, ONCE, if there is one.
+ *
+ * The transfer finishes inside an audio block - the last byte goes out in a
+ * frame like any other - but a UART frame cannot be sent from there. So the
+ * completion is latched and collected from the super-loop.
+ *
+ * ONCE is the point. Without a latch the super-loop would resend the same
+ * completion on every pass for as long as the session sat finished, and the
+ * interface would act on the first and then keep being told about a transfer it
+ * had already closed and possibly replaced.
+ *
+ * THIS IS HOW THE CRC CROSSES. The interface computes its own over what
+ * arrived; the only way it can compare is against the value the sender
+ * computed over what it sent, and this frame is what carries it.
+ *
+ * @return TRUE when pStat was filled and the latch cleared
+ */
+extern BOOLEAN LoopXfer_TakeCompletion(PROTO_LOOP_STAT* const pStat);
+
 #endif // #ifndef LOOP_XFER_H
 
 /****************************************** end of file *******************************************/

@@ -64,6 +64,22 @@ static U8   eLastResult;
 /** TRUE once LOOP_CTL(START) has gone out, so Poll knows to watch progress. */
 static BOOLEAN bRunning;
 
+/*
+ * What the audio board computed over what it SENT, and whether it has said so.
+ *
+ * NOT tSession.nCrc. That field is maintained by FxLoop_Advance, and this side
+ * never calls it - the MDMA route lands loop bytes in the staging slot without
+ * the CPU seeing them, which is the whole point of routing them there. So the
+ * session's own CRC stays at its initial value here and comparing against it
+ * would fail every transfer.
+ *
+ * The comparison that means something is: this side's CRC over the staging
+ * slot, against the far side's CRC over the looper. They cross in
+ * LOOP_STAT(COMPLETE).
+ */
+static U32     nPeerCrc;
+static BOOLEAN bPeerDone;
+
 /***************************************************************************************************
 * Definitions of local (private) functions
 ***************************************************************************************************/
@@ -87,6 +103,12 @@ static void SessionRelease(const U8 eResult)
 
     bRunning    = FALSE;
     eLastResult = eResult;
+
+    /* Cleared with everything else. A stale bPeerDone would let the NEXT
+       transfer's Poll close out on the previous one's report, comparing a fresh
+       staging slot against a CRC from a loop that is no longer there. */
+    bPeerDone   = FALSE;
+    nPeerCrc    = 0UL;
 
     if (eResult != (U8)PROTO_RES_OK)
     {
@@ -121,6 +143,8 @@ STD_RESULT LoopSession_Init(void)
 
     nSlot       = (U8)LOOPSPOOL_SLOT_NONE;
     bRunning    = FALSE;
+    bPeerDone   = FALSE;
+    nPeerCrc    = 0UL;
     nFailures   = 0UL;
     eLastResult = (U8)PROTO_RES_OK;
 
@@ -320,12 +344,23 @@ void LoopSession_OnStat(const PROTO_LOOP_STAT* const pStat)
             break;
 
         case (U8)FX_LOOP_RUNNING:
-            /* The audio board reports COMPLETE with its CRC. This side finishes
-               in Poll, where the comparison and the spool commit can take as
-               long as they need. */
             if (pStat->eState == (U8)FX_LOOP_FAILED)
             {
                 SessionRelease(pStat->eResult);
+            }
+            else if (pStat->eState == (U8)FX_LOOP_COMPLETE)
+            {
+                /* The far side has sent everything and told us its CRC. Kept
+                   rather than acted on: this side may still be a block or two
+                   behind, and Poll closes out once its own count agrees. The
+                   comparison and the spool commit are bulk work that belongs in
+                   a thread. */
+                nPeerCrc  = pStat->nCrc;
+                bPeerDone = TRUE;
+            }
+            else
+            {
+                do_nothing();
             }
             break;
 
@@ -365,7 +400,15 @@ void LoopSession_Poll(void)
 
     nTaken = Recorder_LoopBytesTaken();
 
-    if (nTaken < tSession.nBytesTotal)
+    /*
+     * BOTH conditions. Every byte has landed here AND the far side has said it
+     * sent everything - which is also how its CRC arrives.
+     *
+     * Waiting only on the local count would run the comparison against a CRC
+     * that had not been received yet; waiting only on the far side's report
+     * would read a staging slot the MDMA had not finished filling.
+     */
+    if ((nTaken < tSession.nBytesTotal) || (bPeerDone == FALSE))
     {
         return;
     }
@@ -386,7 +429,7 @@ void LoopSession_Poll(void)
      */
     nCrc = Crc32_Ieee(LoopSpool_Buffer(nSlot), tSession.nBytesTotal, 0UL);
 
-    if (nCrc != tSession.nCrc)
+    if (nCrc != nPeerCrc)
     {
         /* Do NOT spool it. A loop that arrived corrupted is worse on the card
            than absent: it looks like a take that can be loaded. */

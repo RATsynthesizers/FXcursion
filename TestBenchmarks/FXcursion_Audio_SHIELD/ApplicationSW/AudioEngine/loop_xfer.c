@@ -38,6 +38,13 @@ static U32 nByteOfs;
 /** First plane of the addressed looper. */
 static U8  nPlaneBase;
 
+/**
+ * Set when the session ends, cleared when the super-loop collects it.
+ *
+ * volatile because the audio block sets it and the super-loop reads it.
+ */
+static volatile BOOLEAN bReportPending;
+
 /***************************************************************************************************
 * Definitions of local (private) functions
 ***************************************************************************************************/
@@ -83,8 +90,9 @@ STD_RESULT LoopXfer_Init(void)
 {
     FxLoop_Reset(&tSession);
 
-    nByteOfs   = 0UL;
-    nPlaneBase = 0U;
+    nByteOfs       = 0UL;
+    nPlaneBase     = 0U;
+    bReportPending = FALSE;
 
     return RESULT_OK;
 }
@@ -163,6 +171,12 @@ STD_RESULT LoopXfer_OnCtl(const PROTO_LOOP_CTL* const pCtl)
     if (pCtl->eAction == (U8)LOOP_ACT_ABORT)
     {
         FxLoop_Abort(&tSession, (U8)PROTO_RES_OK);
+
+        /* Reported like any other ending. The interface asked for the abort, so
+           it knows one is coming - but it still needs to hear that this side
+           has stopped before it reuses the session id. */
+        bReportPending = TRUE;
+
         return RESULT_OK;
     }
 
@@ -339,7 +353,35 @@ STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames, const U8 nStride
 
     nByteOfs += nMoved;
 
+    /*
+     * The session just ended, in an audio block. A UART frame cannot go out
+     * from here, so latch it and let the super-loop send it - see
+     * LoopXfer_TakeCompletion.
+     */
+    if ((tSession.eState == (U8)FX_LOOP_COMPLETE) ||
+        (tSession.eState == (U8)FX_LOOP_FAILED))
+    {
+        bReportPending = TRUE;
+    }
+
     return RESULT_OK;
+}
+
+
+BOOLEAN LoopXfer_TakeCompletion(PROTO_LOOP_STAT* const pStat)
+{
+    if ((pStat == NULL_PTR) || (bReportPending == FALSE))
+    {
+        return FALSE;
+    }
+
+    /* Cleared BEFORE the report is built, so a session that ends again while
+       this is being sent latches afresh rather than being swallowed. */
+    bReportPending = FALSE;
+
+    FxLoop_Report(&tSession, pStat);
+
+    return TRUE;
 }
 
 /****************************************** end of file *******************************************/
