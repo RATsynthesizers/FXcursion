@@ -45,6 +45,15 @@ static U8  nPlaneBase;
  */
 static volatile BOOLEAN bReportPending;
 
+/*
+ * The walking pointer, rebuilt at the top of every block from nByteOfs and then
+ * simply advanced. See LoopXfer_Block for why this replaced a divide-and-modulo
+ * per payload byte.
+ */
+static U8* pWalk;
+static U8  nWalkPlane;
+static U32 nWalkRemain;
+
 /***************************************************************************************************
 * Definitions of local (private) functions
 ***************************************************************************************************/
@@ -240,6 +249,43 @@ STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames, const U8 nStride
         return RESULT_NOT_OK;
     }
 
+    /*
+     * ---- THE WALKING POINTER --------------------------------------------
+     *
+     * pCur is where the next payload byte lives and nInPlane is how many more
+     * bytes remain before the plane changes. Both advance by one per byte; the
+     * plane step happens ONCE per plane, not once per byte.
+     *
+     * This replaced a call that recomputed the plane and the offset within it
+     * from a byte counter, with a divide and a modulo, FOR EVERY BYTE:
+     *
+     *     4096 payload bytes per block  ->  8192 divisions per block
+     *     at ~10 cycles each            ->  ~13% of the audio block
+     *
+     * Thirteen percent of the block spent deriving a pointer that almost always
+     * just advances by one. The plane boundary is crossed once in a multi-
+     * megabyte loop; everything else was arithmetic to rediscover that it had
+     * not been.
+     */
+    {
+        const U32 nPerPlane = LoopMem_PlaneBytes();
+
+        if (nPerPlane == 0UL)
+        {
+            return RESULT_NOT_OK;
+        }
+
+        /* Re-derived once per block from nByteOfs, so a session that was reset
+           or restarted between blocks cannot leave a stale pointer behind. One
+           division per block instead of two per byte. */
+        nWalkPlane  = (U8)(nPlaneBase + (U8)(nByteOfs / nPerPlane));
+        nWalkRemain = nPerPlane - (nByteOfs % nPerPlane);
+        pWalk       = (nWalkPlane < (U8)AUDIO_PLANE_QTY)
+                          ? &LoopMem_PlaneBase(nWalkPlane, (U8)LOOP_COPY_TAKE)
+                               [nByteOfs % nPerPlane]
+                          : NULL_PTR;
+    }
+
     for (nFrame = 0UL; nFrame < nFrames; nFrame++)
     {
         U8 s;
@@ -271,28 +317,49 @@ STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames, const U8 nStride
 
             for (b = 0U; b < 4U; b++)
             {
-                const U32 nOfs = nByteOfs + nMoved;
-                U8* const pAt  = LoopXfer_At(nOfs);
-
                 /* Past the end of the payload: pad. A loop rarely ends on a
                    slot boundary, and the far side stops at nBytesTotal rather
                    than at the end of the block, so these bytes are counted but
                    never written to the file. */
-                if ((nOfs >= tSession.nBytesTotal) || (pAt == NULL_PTR))
+                if (((nByteOfs + nMoved) >= tSession.nBytesTotal) ||
+                    (pWalk == NULL_PTR))
                 {
                     continue;
                 }
 
                 if (tSession.eDir == (U8)LOOP_DIR_SAVE)
                 {
-                    nWord |= ((U32)(*pAt)) << (8U * b);
+                    nWord |= ((U32)(*pWalk)) << (8U * b);
                 }
                 else
                 {
-                    *pAt = (U8)((((U32)pSlots[(nFrame * (U32)nStride) + s]) >> (8U * b)) & 0xFFUL);
+                    *pWalk = (U8)((((U32)pSlots[(nFrame * (U32)nStride) + s]) >> (8U * b)) & 0xFFUL);
                 }
 
                 nMoved++;
+
+                /* Advance. The branch below is taken once per PLANE - about
+                   once in three million bytes - not once per byte. */
+                pWalk++;
+                nWalkRemain--;
+
+                if (nWalkRemain == 0UL)
+                {
+                    nWalkPlane++;
+
+                    if (nWalkPlane < (U8)AUDIO_PLANE_QTY)
+                    {
+                        pWalk       = LoopMem_PlaneBase(nWalkPlane, (U8)LOOP_COPY_TAKE);
+                        nWalkRemain = LoopMem_PlaneBytes();
+                    }
+                    else
+                    {
+                        /* Off the end of the looper. Everything from here pads,
+                           which the length check above already enforces - this
+                           just stops the pointer walking into whatever follows. */
+                        pWalk = NULL_PTR;
+                    }
+                }
             }
 
             if (tSession.eDir == (U8)LOOP_DIR_SAVE)

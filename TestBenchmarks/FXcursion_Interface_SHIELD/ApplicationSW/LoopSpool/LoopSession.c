@@ -29,19 +29,26 @@
 /**
  * Loop slots to ask for.
  *
- * The frame widens to REC_SLOT_QTY + this for the life of a transfer, so it is
- * a trade between how fast a loop moves and how much of each audio block the
- * SPI burst occupies:
+ * The frame widens to REC_SLOTS_PER_FRAME + this for the life of a transfer, so
+ * it trades how fast a loop moves against how much of each audio block the SPI
+ * burst occupies:
  *
- *     slots   wire       burst at 96 MHz   one 5.5 MiB loop
- *        8    1.54 MB/s        19%              3.8 s
- *       16    3.07 MB/s        32%              1.9 s
+ *     slots   width   wire        burst at 96 MHz   one 5.5 MiB loop
+ *        4       8    0.77 MB/s        13%              7.5 s
+ *       12      16    2.30 MB/s        26%              2.5 s
+ *       28      32    5.38 MB/s        51%              1.1 s
  *
- * Sixteen, because the burst still leaves two thirds of every block free and
- * the audio board's buffer is released twice as fast. The card is slower than
- * either figure, which is the point of staging.
+ * TWELVE IS NOT A BANDWIDTH CHOICE. The total width has to divide the receiver's
+ * half-ring exactly or the half boundary lands mid-frame - see
+ * FX_LOOP_SLOT_QTY_MAX. 4096 words per half divides by 8, 16 and 32, so the
+ * legal loop counts are 4, 12 and 28. Twelve is the middle one and leaves three
+ * quarters of every block free.
+ *
+ * Asking for anything else is refused by the de-interleave rather than
+ * misbehaving, so this cannot quietly become wrong - but it would stop loop
+ * transfers entirely, which is why it is pinned to the cap below.
  */
-#define LOOPSESSION_SLOT_QTY            (16U)
+#define LOOPSESSION_SLOT_QTY            (FX_LOOP_SLOT_QTY_MAX)
 
 /** Wire format. Packed 24-bit is what the WAV wants and what the looper holds. */
 #define LOOPSESSION_FORMAT              (LOOP_FMT_S24)

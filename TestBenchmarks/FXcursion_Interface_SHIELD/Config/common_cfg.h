@@ -86,9 +86,42 @@
 #define REC_RX_FRAMES           (2048U)
 #define REC_RX_HALF_FRAMES      (REC_RX_FRAMES / 2U)
 
-/* S32 words in the whole ring - what HAL_SPI_Receive_DMA counts, since SPI1
-   is SPI_DATASIZE_32BIT. */
+/* S32 words in the whole ring - what the SPI DMA counts, since SPI1 is
+   SPI_DATASIZE_32BIT. Named in FRAMES above only because that is how the size
+   was originally chosen; the ring is a fixed number of WORDS and how many
+   frames fit depends on how wide the frame is. */
 #define REC_RX_WORDS            (REC_RX_FRAMES * REC_SLOTS_PER_FRAME)
+
+/**
+ * Words in one half of the ring. The half-transfer interrupt fires here.
+ *
+ * THIS, NOT A FRAME COUNT, IS THE FIXED QUANTITY. The frame widens during a
+ * loop transfer, so the number of frames in a half changes with it - which is
+ * exactly the thing that was assumed constant and was not.
+ */
+#define REC_RX_HALF_WORDS       (REC_RX_WORDS / 2U)
+
+/**
+ * Frames in one half, at a given wire width.
+ *
+ * Use this everywhere a frame count is needed. REC_RX_HALF_FRAMES below is the
+ * same thing at the narrow width and is kept only for the paths that genuinely
+ * cannot widen.
+ */
+#define REC_FRAMES_PER_HALF(w)  (REC_RX_HALF_WORDS / (w))
+
+/**
+ * TRUE when a width divides the half evenly.
+ *
+ * A width that does not divide puts the half boundary in the MIDDLE of a frame.
+ * The de-interleave would then hand over a half whose last frame is cut in two,
+ * and every slot after it is rotated - silently, because the stream carries no
+ * framing that could reveal it.
+ *
+ * Checked at run time against the ACKed width, because the width is negotiated
+ * rather than compiled in.
+ */
+#define REC_WIDTH_IS_LEGAL(w)   (((w) != 0U) && ((REC_RX_HALF_WORDS % (w)) == 0U))
 
 /* One de-interleave moves half the SPI ring, so a per-channel ring of
    REC_CHUNKS of them wraps after REC_CHUNKS half-buffers. One chunk is

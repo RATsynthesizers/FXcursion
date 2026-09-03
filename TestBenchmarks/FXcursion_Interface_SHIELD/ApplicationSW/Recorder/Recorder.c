@@ -74,6 +74,19 @@ FXC_STATIC_ASSERT(REC_RX_HALF_FRAMES <= 4096U, rec_half_fits_mdma_block_repeat);
 
 /* Below this the writer would never wake, because the difference between the
    two counters can never reach the threshold. */
+/*
+ * The widest frame a session can negotiate must divide the half-ring, or its
+ * half boundary lands mid-frame and the de-interleave is rotated. The run-time
+ * check in MDMA_Trigger_Deinterleave catches an ACK that asks for anything
+ * else; this catches a configuration that could never work, at build time,
+ * which is where a geometry mistake belongs.
+ */
+FXC_STATIC_ASSERT((REC_RX_HALF_WORDS % (REC_SLOTS_PER_FRAME + FX_LOOP_SLOT_QTY_MAX)) == 0U,
+                  rec_widest_frame_divides_half_ring);
+
+FXC_STATIC_ASSERT((REC_RX_HALF_WORDS % REC_SLOTS_PER_FRAME) == 0U,
+                  rec_narrow_frame_divides_half_ring);
+
 FXC_STATIC_ASSERT(REC_WRITE_CHUNKS < REC_CHUNKS, rec_write_batch_fits_ring);
 FXC_STATIC_ASSERT(REC_WRITE_CHUNKS >= 1U, rec_write_batch_nonzero);
 
@@ -211,7 +224,9 @@ static uint32_t RecorderClaimChunks(void);
    drives. */
 static void Recorder_OnSpiHalf(const BOOLEAN bSecondHalf);
 
-static STD_RESULT RecorderLoopDest(uint32_t* const pnAddr, const uint8_t nSlotQty);
+static STD_RESULT RecorderLoopDest(uint32_t* const pnAddr,
+                                   const uint8_t nSlotQty,
+                                   const uint8_t nWidth);
 
 static void RecorderThreadWrapper(void const *arg);
 
@@ -747,22 +762,26 @@ uint32_t Recorder_LoopBytesTaken(void)
  * which case the loop route is simply omitted from this block rather than
  * writing past the end of the staging area.
  */
-static STD_RESULT RecorderLoopDest(uint32_t* const pnAddr, const uint8_t nSlotQty)
+static STD_RESULT RecorderLoopDest(uint32_t* const pnAddr,
+                                   const uint8_t nSlotQty,
+                                   const uint8_t nWidth)
 {
     /*
-     * One block of loop slots: nSlotQty words per frame, over the half SPI
-     * buffer the de-interleave moves.
+     * One block of loop slots: nSlotQty words per frame, over however many
+     * frames this half holds AT THIS WIDTH.
      *
-     * The slot count has to come in rather than be assumed. It is negotiated
-     * per session, so a fixed step here would advance the destination at the
-     * wrong rate for every width but one - and the symptom would be a loop file
-     * with silence woven through it rather than an obvious failure.
+     * Both numbers have to come in rather than be assumed. The slot count is
+     * negotiated per session, and the frame count depends on the width - a
+     * fixed step would advance the destination at the wrong rate for every
+     * width but one, and the symptom would be a loop file with silence woven
+     * through it rather than an obvious failure.
      */
     const uint32_t nStep = (uint32_t)nSlotQty
-                         * (uint32_t)REC_RX_HALF_FRAMES
+                         * (uint32_t)REC_FRAMES_PER_HALF(nWidth)
                          * sizeof(int32_t);
 
-    if ((bLoopDstArmed == 0U) || (pnAddr == NULL_PTR) || (nSlotQty == 0U))
+    if ((bLoopDstArmed == 0U) || (pnAddr == NULL_PTR) ||
+        (nSlotQty == 0U) || (REC_WIDTH_IS_LEGAL(nWidth) == 0U))
     {
         return RESULT_NOT_OK;
     }
@@ -934,6 +953,7 @@ void MDMA_Trigger_Deinterleave()
     PROTO_ACK  tAck;
     uint8_t    nRoutes = 0U;
     uint8_t    nStreamWidth;
+    uint32_t   nHalfFrames;
     uint32_t   nSrcBase;
     uint32_t   nDstOffs;
     uint8_t    i;
@@ -948,12 +968,42 @@ void MDMA_Trigger_Deinterleave()
                        ? tAck.nStreamWidth
                        : (uint8_t)REC_SLOTS_PER_FRAME;
 
-    /* Source: the half the SPI DMA is NOT filling. */
+    /*
+     * THE WIDTH MUST DIVIDE THE HALF.
+     *
+     * The half-transfer interrupt fires at a fixed WORD, so a width that does
+     * not divide the half puts that boundary in the middle of a frame - and
+     * every slot after it is rotated, silently, because the stream carries no
+     * framing that could reveal it.
+     *
+     * Refused rather than clamped: a width this side cannot de-interleave is a
+     * width that should never have been ACKed, so transfer nothing and leave
+     * the count for a human to find. Clamping would record plausible audio from
+     * the wrong channels, which is far worse than a gap.
+     */
+    if (REC_WIDTH_IS_LEGAL(nStreamWidth) == 0U)
+    {
+        recDeinterleaveRefused++;
+        return;
+    }
+
+    /*
+     * Frames in this half, AT THIS WIDTH.
+     *
+     * Not REC_RX_HALF_FRAMES. That constant is the frame count at the narrow
+     * width only, and using it unconditionally was a five-times buffer overrun
+     * the moment the frame widened: 1024 frames of a 20-slot frame is 81,920
+     * bytes read out of a half that holds 16,384.
+     */
+    nHalfFrames = (uint32_t)REC_FRAMES_PER_HALF(nStreamWidth);
+
+    /* Source: the half the SPI DMA is NOT filling. Half the ring in BYTES,
+       which is a property of the ring rather than of the frame width. */
     nSrcBase = (uint32_t)audioRxBuffer;
 
     if (halfBufferFlag)
     {
-        nSrcBase += (uint32_t)REC_RX_HALF_FRAMES * REC_BYTES_PER_FRAME;
+        nSrcBase += (uint32_t)REC_RX_HALF_WORDS * sizeof(int32_t);
     }
 
     /*
@@ -1005,7 +1055,8 @@ void MDMA_Trigger_Deinterleave()
                        ? (uint8_t)(nStreamWidth - (uint8_t)REC_SLOTS_PER_FRAME)
                        : 0U;
 
-        if ((nLoopQty > 0U) && (RecorderLoopDest(&nLoopDst, nLoopQty) == RESULT_OK))
+        if ((nLoopQty > 0U) &&
+            (RecorderLoopDest(&nLoopDst, nLoopQty, nStreamWidth) == RESULT_OK))
         {
             aRoute[nRoutes].nSlot    = (uint8_t)REC_SLOTS_PER_FRAME;
             aRoute[nRoutes].nWidth   = nLoopQty;
@@ -1019,7 +1070,7 @@ void MDMA_Trigger_Deinterleave()
     for (i = 0U; i < nRoutes; i++)
     {
         if (FxInterleave_Xfer(&aXfer[i], aRoute[i].nSlot, aRoute[i].nWidth,
-                              nStreamWidth, (uint32_t)REC_RX_HALF_FRAMES) != RESULT_OK)
+                              nStreamWidth, nHalfFrames) != RESULT_OK)
         {
             /* The ACKed layout cannot hold this routing. Programming it anyway
                would record real audio into the wrong files and report nothing,
@@ -1115,14 +1166,18 @@ static void Recorder_OnSpiHalf(const BOOLEAN bSecondHalf)
                                    ? tAck.nStreamWidth
                                    : (uint8_t)REC_SLOTS_PER_FRAME;
 
-        if (nWidth > (uint8_t)REC_SLOTS_PER_FRAME)
+        if ((nWidth > (uint8_t)REC_SLOTS_PER_FRAME) &&
+            (REC_WIDTH_IS_LEGAL(nWidth) != 0U))
         {
+            /* Half the ring in WORDS - a property of the ring, not of the
+               width. This was REC_RX_HALF_FRAMES * nWidth, which at width 16
+               is 16384 words into an 8192-word buffer. */
             const uint32_t nOfs = (bSecondHalf == TRUE)
                                       ? 0UL
-                                      : ((uint32_t)REC_RX_HALF_FRAMES * nWidth);
+                                      : (uint32_t)REC_RX_HALF_WORDS;
 
             LoopSession_FillTx(&audioTxBuffer[nOfs],
-                               (uint32_t)REC_RX_HALF_FRAMES, nWidth);
+                               (uint32_t)REC_FRAMES_PER_HALF(nWidth), nWidth);
         }
     }
 }

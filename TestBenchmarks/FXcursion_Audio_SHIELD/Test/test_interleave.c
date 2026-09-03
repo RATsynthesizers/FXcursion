@@ -126,14 +126,19 @@ void Test_Interleave(void)
          */
         CHECK(FxInterleave_Xfer(&tX, 0U, 3U, 4U, 64UL) == RESULT_OK);
 
-        /* A realistic loop route: 16 slots starting after the four recorder
-           planes, in a 20-slot frame. */
-        CHECK(FxInterleave_Xfer(&tX, (U8)REC_SLOT_QTY, 16U,
-                                (U8)(REC_SLOT_QTY + 16U), 64UL) == RESULT_OK);
+        /* A realistic loop route: the whole loop run starting after the four
+           recorder planes. Taken from the constant rather than a literal, so it
+           follows the cap instead of pinning a number that has already moved
+           once - from 16 to 12, when the frame had to be made to divide the
+           receiver's half-ring. */
+        CHECK(FxInterleave_Xfer(&tX, (U8)REC_SLOT_QTY, (U8)FX_LOOP_SLOT_QTY_MAX,
+                                (U8)(REC_SLOT_QTY + FX_LOOP_SLOT_QTY_MAX),
+                                64UL) == RESULT_OK);
 
         /* One slot too many, and it would read into the next frame. */
-        CHECK(FxInterleave_Xfer(&tX, (U8)REC_SLOT_QTY, 17U,
-                                (U8)(REC_SLOT_QTY + 16U), 64UL) != RESULT_OK);
+        CHECK(FxInterleave_Xfer(&tX, (U8)REC_SLOT_QTY, (U8)(FX_LOOP_SLOT_QTY_MAX + 1U),
+                                (U8)(REC_SLOT_QTY + FX_LOOP_SLOT_QTY_MAX),
+                                64UL) != RESULT_OK);
     }
     TEST_END();
 
