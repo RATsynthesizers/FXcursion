@@ -46,6 +46,7 @@ void (*update)                      (audio_sys_t *self);
 
 typedef struct audio_sys_s {
     const audio_sys_vtable_t *vtable;
+    // audio sys data - io and modules
 // TODO parameters list for scatter-gather MDMA?
     module_t *inputModule[CHANNELS_NUM/2];
     module_t *outputModule[CHANNELS_NUM/2];
