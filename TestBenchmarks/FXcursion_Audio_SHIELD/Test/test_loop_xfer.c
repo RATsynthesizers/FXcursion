@@ -30,8 +30,18 @@
 #include "loop_mem.h"
 #include "fx_loop.h"
 
-/* One block's worth of loop slots, at the largest width a session may ask for. */
-static S32 aSlots[AUDIO_BLOCK_FRAMES * FX_LOOP_SLOT_QTY_MAX];
+/*
+ * One block's worth of WIRE FRAMES at the widest a session may ask for.
+ *
+ * Not just the loop slots: the frame is REC_SLOT_QTY recorder slots followed by
+ * the loop slots, and the loop slots of consecutive frames are therefore a
+ * stride apart rather than adjacent. Modelling the whole frame here is the
+ * point - a test that packed the loop slots contiguously would pass while the
+ * firmware wrote every loop sample on top of a recorder one.
+ */
+#define TEST_XFER_STRIDE                (REC_SLOT_QTY + FX_LOOP_SLOT_QTY_MAX)
+
+static S32 aSlots[AUDIO_BLOCK_FRAMES * TEST_XFER_STRIDE];
 
 
 static U8 Test_XferByte(const U32 nOfs)
@@ -233,7 +243,10 @@ void Test_LoopXfer(void)
 
                 (void)memset(aSlots, 0, sizeof(aSlots));
 
-                CHECK(LoopXfer_Block(aSlots, AUDIO_BLOCK_FRAMES) == RESULT_OK);
+                /* Exactly as rec_spi does it: the frame base plus REC_SLOT_QTY,
+                   with the full frame width as the stride. */
+                CHECK(LoopXfer_Block(&aSlots[REC_SLOT_QTY], AUDIO_BLOCK_FRAMES,
+                                     (U8)TEST_XFER_STRIDE) == RESULT_OK);
 
                 /* Unpack exactly the way the interface will: three bytes out of
                    the low 24 bits of each slot word, in slot order. */
@@ -243,7 +256,8 @@ void Test_LoopXfer(void)
 
                     for (s = 0U; (s < nSlots) && (nGot < nBytes); s++)
                     {
-                        const U32 nWord = (U32)aSlots[(f * nSlots) + s];
+                        const U32 nWord =
+                            (U32)aSlots[(f * (U32)TEST_XFER_STRIDE) + REC_SLOT_QTY + s];
                         U8        b;
 
                         for (b = 0U; (b < 3U) && (nGot < nBytes); b++)

@@ -71,6 +71,23 @@ MDMA_HandleTypeDef hmdma_mdma_channel1_sw_0;
 MDMA_LinkNodeTypeDef node_mdma_channel1_sw_1 __attribute__((section(".dma_buffers"), aligned(32)));
 MDMA_LinkNodeTypeDef node_mdma_channel1_sw_2 __attribute__((section(".dma_buffers"), aligned(32)));
 MDMA_LinkNodeTypeDef node_mdma_channel1_sw_3 __attribute__((section(".dma_buffers"), aligned(32)));
+
+/*
+ * A FOURTH NODE, for the loop transport.
+ *
+ * The de-interleave needs one route per destination. Four recorder planes use
+ * the channel itself plus nodes 1..3, which is the whole of what CubeMX
+ * generates - so a loop transfer, whose slots are contiguous on the wire and
+ * therefore ONE route, had nowhere to go.
+ *
+ * Declared here rather than in MX_MDMA_Init because this block is inside the
+ * USER CODE section and survives regeneration; MX_MDMA_Init does not. Nothing
+ * initialises it here either: Recorder.c copies node 3's static configuration
+ * into it once at start-up and rewrites the dynamic registers every block, the
+ * same as it already does for the other three. That keeps the whole
+ * arrangement independent of what CubeMX decides to emit.
+ */
+MDMA_LinkNodeTypeDef node_mdma_channel1_sw_4 __attribute__((section(".dma_buffers"), aligned(32)));
 /* USER CODE END MDMA_Nodes */
 
 /**

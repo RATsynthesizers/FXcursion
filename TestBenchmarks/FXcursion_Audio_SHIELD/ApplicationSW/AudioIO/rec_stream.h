@@ -92,6 +92,9 @@
 #include "audio_cfg.h"
 #include "fx_defs.h"
 
+/* FX_LOOP_SLOT_QTY_MAX - the widest the frame may get during a transfer. */
+#include "fx_loop.h"
+
 
 
 /***************************************************************************************************
@@ -101,8 +104,27 @@
 /** Staging blocks. Two: one in flight, one waiting. See the invariant above. */
 #define REC_STAGE_QTY                   (2U)
 
-/** 32-bit words in one staged block - 64 frames x 4 slots = 256 words, 1 KiB. */
-#define REC_STAGE_WORDS                 (AUDIO_BLOCK_FRAMES * REC_SLOT_QTY)
+/**
+ * Widest frame this staging can hold, in slots.
+ *
+ * The frame is REC_SLOT_QTY recorder slots followed by up to
+ * FX_LOOP_SLOT_QTY_MAX loop slots, and it WIDENS for the life of a loop
+ * transfer and narrows again afterwards. Staged at the maximum because the
+ * buffer cannot be resized at run time - what varies is how much of it a given
+ * block uses, which RecStream_Words reports.
+ */
+#define REC_STREAM_SLOT_MAX             (REC_SLOT_QTY + FX_LOOP_SLOT_QTY_MAX)
+
+/**
+ * 32-bit words in one staged block.
+ *
+ * 64 frames x 20 slots = 1280 words, 5 KiB per half, 10 KiB for both. It was
+ * 64 x 4 = 1 KiB before the loop slots existed; the extra 8 KiB buys a loop
+ * transfer that does not need its own SPI transaction, which would mean
+ * re-arming the interface's circular receive between bursts - the one thing
+ * that rotates a positionally framed stream into the wrong channels.
+ */
+#define REC_STAGE_WORDS                 (AUDIO_BLOCK_FRAMES * REC_STREAM_SLOT_MAX)
 
 /** Returned when there is nothing for the transport to start. */
 #define REC_STAGE_NONE                  (0xFFU)
@@ -158,14 +180,37 @@ extern BOOLEAN RecStream_IsEnabled(void);
  * because the means of doing so is CMSIS and this file is deliberately free of
  * it.
  *
- * @param pSrc     interleaved block, REC_SLOT_QTY samples per frame
- * @param nFrames  frames in the block, clamped to AUDIO_BLOCK_FRAMES
+ * The recorder samples are written at a STRIDE of nTotalSlots, so slots
+ * REC_SLOT_QTY..nTotalSlots-1 of every frame are left for the loop transport to
+ * fill afterwards. Those slots are ZEROED here rather than left stale: an
+ * aborted transfer would otherwise put the tail of an old loop on the wire, and
+ * the far side has no framing that would let it notice.
+ *
+ * @param pSrc         interleaved block, REC_SLOT_QTY samples per frame
+ * @param nFrames      frames in the block, clamped to AUDIO_BLOCK_FRAMES
+ * @param nTotalSlots  slots per frame on the wire this block; REC_SLOT_QTY when
+ *                     no loop transfer is running, up to REC_STREAM_SLOT_MAX
  *
  * @return the half the transport should start now, or REC_STAGE_NONE - either
  *         because a transfer is already running and this block is now waiting,
  *         or because the block was dropped
  */
-extern U8 RecStream_Stage(const S32* const pSrc, const U16 nFrames);
+extern U8 RecStream_Stage(const S32* const pSrc,
+                          const U16 nFrames,
+                          const U8  nTotalSlots);
+
+/**
+ * @brief Writable pointer to a staged half, for the loop transport to fill.
+ *
+ * RecStream_Buffer returns const, because nothing but this module has any
+ * business writing a staged block. This is the deliberate exception: the loop
+ * slots are filled after the recorder slots, into the same frame, and the
+ * alternative is a second copy of a 5 KiB buffer per block.
+ *
+ * Valid only for the half RecStream_Stage just returned, and only before the
+ * transport is started on it.
+ */
+extern S32* RecStream_StageSlots(const U8 nHalf);
 
 /**
  * @brief Tell the state machine a transfer finished.

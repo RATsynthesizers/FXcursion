@@ -201,7 +201,7 @@ void LoopXfer_Report(PROTO_LOOP_STAT* const pStat)
 }
 
 
-STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames)
+STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames, const U8 nStride)
 {
     const U8  nSlots = tSession.nSlotQty;
     U32       nFrame;
@@ -210,6 +210,15 @@ STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames)
     if (pSlots == NULL_PTR)
     {
         return RESULT_NOT_OK;
+    }
+
+    /* The loop slots have to fit inside the frame they are being written into.
+       A stride too small would have each frame's loop slots overwrite the next
+       frame's recorder samples - silently, since nothing downstream can tell a
+       corrupted sample from a quiet one. */
+    if (nStride < (U8)(nSlots + (U8)REC_SLOT_QTY))
+    {
+        return RESULT_INVALID_PARAM_3;
     }
 
     if (FxLoop_IsStreaming(&tSession) == FALSE)
@@ -255,7 +264,7 @@ STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames)
                 }
                 else
                 {
-                    *pAt = (U8)((((U32)pSlots[(nFrame * nSlots) + s]) >> (8U * b)) & 0xFFUL);
+                    *pAt = (U8)((((U32)pSlots[(nFrame * (U32)nStride) + s]) >> (8U * b)) & 0xFFUL);
                 }
 
                 nMoved++;
@@ -263,7 +272,7 @@ STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames)
 
             if (tSession.eDir == (U8)LOOP_DIR_SAVE)
             {
-                pSlots[(nFrame * nSlots) + s] = (S32)nWord;
+                pSlots[(nFrame * (U32)nStride) + s] = (S32)nWord;
             }
         }
 

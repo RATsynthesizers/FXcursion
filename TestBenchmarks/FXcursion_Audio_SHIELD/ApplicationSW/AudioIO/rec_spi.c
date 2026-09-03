@@ -34,6 +34,10 @@
 #include "main.h"
 #include "spi_tp.h"
 
+/* The loop transport rides in the same frame as the recorder stream: it says
+   how wide the frame is this block, and fills the slots past REC_SLOT_QTY. */
+#include "loop_xfer.h"
+
 
 
 /***************************************************************************************************
@@ -124,6 +128,7 @@ void RecSpi_PushBlock(void)
     U16        nFrames = 0U;
     const S32* pSrc;
     U8         nStart;
+    U8         nSlots;
     U32        nPrimask;
 
     if (RecStream_IsEnabled() == FALSE)
@@ -133,10 +138,35 @@ void RecSpi_PushBlock(void)
 
     pSrc = Recorder_GetStream(&nFrames);
 
+    /*
+     * THE FRAME WIDENS FOR THE LIFE OF A LOOP TRANSFER.
+     *
+     * REC_SLOT_QTY when nothing is moving, REC_SLOT_QTY + nSlotQty while a
+     * session runs. Asked once here and used for both the staging stride and
+     * the loop fill, so the two cannot disagree about where a frame ends -
+     * which would put loop samples on top of recorder ones.
+     */
+    nSlots = LoopXfer_StreamWidth();
+
     nPrimask = __get_PRIMASK();
     __disable_irq();
 
-    nStart = RecStream_Stage(pSrc, nFrames);
+    nStart = RecStream_Stage(pSrc, nFrames, nSlots);
+
+    /*
+     * Fill the loop slots of the half just staged, before it is handed to the
+     * transport. Inside the critical section with the staging: until StartTx
+     * runs, the completion callback could otherwise hand this half out again.
+     */
+    if ((nStart != (U8)REC_STAGE_NONE) && (nSlots > (U8)REC_SLOT_QTY))
+    {
+        S32* const pStage = RecStream_StageSlots(nStart);
+
+        if (pStage != NULL_PTR)
+        {
+            (void)LoopXfer_Block(&pStage[REC_SLOT_QTY], (U32)nFrames, nSlots);
+        }
+    }
 
     __set_PRIMASK(nPrimask);
 

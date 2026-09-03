@@ -97,10 +97,43 @@ void Test_Interleave(void)
     {
         CHECK(FxInterleave_Xfer(NULL_PTR, 0U, 1U, 4U, 64UL) != RESULT_OK);
         CHECK(FxInterleave_Xfer(&tX, 0U, 0U, 4U, 64UL) != RESULT_OK);   /* zero width  */
-        CHECK(FxInterleave_Xfer(&tX, 0U, 3U, 4U, 64UL) != RESULT_OK);   /* 3 is not a chain */
         CHECK(FxInterleave_Xfer(&tX, 0U, 1U, 0U, 64UL) != RESULT_OK);   /* zero stream */
-        CHECK(FxInterleave_Xfer(&tX, 0U, 1U, 99U, 64UL) != RESULT_OK);  /* wider than the stream can be */
         CHECK(FxInterleave_Xfer(&tX, 0U, 1U, 4U, 0UL) != RESULT_OK);    /* no frames   */
+
+        /* Past the widest frame the wire can carry. 99 was refused before as
+           "wider than the stream can be" against a cap of REC_SLOT_QTY; the cap
+           is now REC_SLOT_QTY plus the loop run, so the number moved but the
+           check did not. */
+        CHECK(FxInterleave_Xfer(&tX, 0U, 1U,
+                                (U8)(FX_IL_STREAM_WIDTH_MAX + 1U), 64UL) != RESULT_OK);
+        CHECK(FxInterleave_Xfer(&tX, 0U, (U8)(FX_IL_SLOT_WIDTH_MAX + 1U),
+                                (U8)FX_IL_STREAM_WIDTH_MAX, 64UL) != RESULT_OK);
+    }
+    TEST_END();
+
+    TEST_BEGIN("a slot width past two is a loop run, not nonsense");
+    {
+        /*
+         * Width 3 used to be refused outright: a recorder chain is mono or a
+         * stereo pair and nothing else. The loop transport broke that
+         * assumption - its slots are contiguous, so an arbitrary run of them is
+         * lifted as ONE transfer, which is what makes it cost one MDMA route
+         * instead of sixteen.
+         *
+         * The protection that actually mattered is untouched, and is checked
+         * immediately below: a run reaching past the stream width still fails,
+         * because that reads the next frame's samples as this frame's.
+         */
+        CHECK(FxInterleave_Xfer(&tX, 0U, 3U, 4U, 64UL) == RESULT_OK);
+
+        /* A realistic loop route: 16 slots starting after the four recorder
+           planes, in a 20-slot frame. */
+        CHECK(FxInterleave_Xfer(&tX, (U8)REC_SLOT_QTY, 16U,
+                                (U8)(REC_SLOT_QTY + 16U), 64UL) == RESULT_OK);
+
+        /* One slot too many, and it would read into the next frame. */
+        CHECK(FxInterleave_Xfer(&tX, (U8)REC_SLOT_QTY, 17U,
+                                (U8)(REC_SLOT_QTY + 16U), 64UL) != RESULT_OK);
     }
     TEST_END();
 

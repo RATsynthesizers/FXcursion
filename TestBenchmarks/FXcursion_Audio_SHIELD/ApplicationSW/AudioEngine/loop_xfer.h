@@ -96,15 +96,25 @@ extern U8 LoopXfer_StreamWidth(void);
  * @brief Fill this block's loop slots from the looper, or drain them into it.
  *
  * Called once per audio block from the stream builder, AFTER the recorder slots
- * are filled and only when LoopXfer_StreamWidth() exceeds REC_SLOT_QTY.
+ * are staged and only when LoopXfer_StreamWidth() exceeds REC_SLOT_QTY.
  *
- * @param pSlots   the loop slots of this block's frame - nSlotQty S32 words per
- *                 frame, AUDIO_BLOCK_FRAMES frames
+ * THE LOOP SLOTS ARE NOT CONTIGUOUS. A frame on the wire is REC_SLOT_QTY
+ * recorder slots followed by nSlotQty loop slots, so consecutive loop slots are
+ * nStride words apart, not one. Passing the frame base with a stride rather
+ * than a packed array is what lets this write straight into the staged block
+ * instead of into a copy that would then have to be interleaved.
+ *
+ * @param pSlots   the FIRST loop slot of frame 0 - i.e. the staged block plus
+ *                 REC_SLOT_QTY
  * @param nFrames  frames in the block
+ * @param nStride  total slots per frame, the distance between one frame's loop
+ *                 slots and the next frame's
  *
  * @return RESULT_OK while the session is healthy
  */
-extern STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames);
+extern STD_RESULT LoopXfer_Block(S32* const pSlots,
+                                 const U32 nFrames,
+                                 const U8  nStride);
 
 /** @brief TRUE when a transfer is moving bytes this block. */
 extern BOOLEAN LoopXfer_IsRunning(void);

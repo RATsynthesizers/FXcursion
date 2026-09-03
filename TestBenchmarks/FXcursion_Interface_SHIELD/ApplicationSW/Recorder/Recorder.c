@@ -115,6 +115,31 @@ volatile uint32_t recOverruns = 0UL;
  */
 volatile uint8_t recIsWriting = 0U;
 
+/*
+ * ======== THE LOOP ROUTE'S DESTINATION ========
+ *
+ * Where the de-interleave puts the loop slots while a transfer is running, and
+ * how far along it has got. Set by Recorder_ArmLoopDest when a session starts,
+ * cleared when it ends; the de-interleave advances the offset itself so the
+ * write position cannot drift from the number of blocks that actually landed.
+ *
+ * WORDS, NOT PACKED BYTES. The MDMA writes what arrives on the wire, which is
+ * one 32-bit slot per sample carrying 24 bits of payload - it cannot narrow on
+ * the way past. So the staging area fills with S32 and something has to pack it
+ * to 3 bytes before it reaches the card. Deciding WHERE that happens is part of
+ * wiring the session up, and it changes how big a staging slot has to be: 4/3
+ * of the payload if it lands as S32, exactly the payload if the pack happens
+ * first. Nothing here presumes either.
+ */
+static volatile uint32_t nLoopDstBase = 0UL;
+static volatile uint32_t nLoopDstOfs  = 0UL;
+static volatile uint32_t nLoopDstEnd  = 0UL;
+static volatile uint8_t  bLoopDstArmed = 0U;
+
+/** Loop blocks refused because the destination was full. Non-zero means the
+    session and the staging area disagree about how much is coming. */
+volatile uint32_t recLoopOverruns = 0UL;
+
 /* Was .RAM_D1, which the D-cache now covers. SPI1 fills this by DMA, but
    RecorderInit zeroes it with the CPU first - so a dirty cache line could
    evict later, landing on top of audio that has since arrived.
@@ -165,6 +190,8 @@ static uint32_t RecorderClaimChunks(void);
 /* Registered with SPI_TP in RecorderInit, defined near the de-interleave it
    drives. */
 static void Recorder_OnSpiHalf(const BOOLEAN bSecondHalf);
+
+static STD_RESULT RecorderLoopDest(uint32_t* const pnAddr, const uint8_t nSlotQty);
 
 static void RecorderThreadWrapper(void const *arg);
 
@@ -649,6 +676,85 @@ static uint32_t RecorderWritePacked24(FIL* const pFile,
 }
 
 
+STD_RESULT Recorder_ArmLoopDest(const uint32_t nBase, const uint32_t nBytes)
+{
+    /* Word aligned, because the MDMA writes 32-bit slots and an unaligned
+       destination would fault rather than merely be slow. */
+    if ((nBase == 0UL) || (nBytes == 0UL) || ((nBase & 3UL) != 0UL))
+    {
+        return RESULT_INVALID_PARAM_1;
+    }
+
+    nLoopDstBase  = nBase;
+    nLoopDstOfs   = 0UL;
+    nLoopDstEnd   = nBytes;
+    bLoopDstArmed = 1U;
+
+    return RESULT_OK;
+}
+
+
+void Recorder_DisarmLoopDest(void)
+{
+    /* Cleared BEFORE the stream narrows, not after: while this is armed the
+       de-interleave will happily route slots that the audio board has already
+       stopped sending, writing whatever the wire leaves in them. */
+    bLoopDstArmed = 0U;
+    nLoopDstOfs   = 0UL;
+}
+
+
+uint32_t Recorder_LoopBytesTaken(void)
+{
+    return nLoopDstOfs;
+}
+
+
+/**
+ * @brief Next destination for the loop route, and advance past it.
+ *
+ * Called from the de-interleave with interrupts already in the right state.
+ * Returns NOT_OK when nothing is armed, or when the destination is full - in
+ * which case the loop route is simply omitted from this block rather than
+ * writing past the end of the staging area.
+ */
+static STD_RESULT RecorderLoopDest(uint32_t* const pnAddr, const uint8_t nSlotQty)
+{
+    /*
+     * One block of loop slots: nSlotQty words per frame, over the half SPI
+     * buffer the de-interleave moves.
+     *
+     * The slot count has to come in rather than be assumed. It is negotiated
+     * per session, so a fixed step here would advance the destination at the
+     * wrong rate for every width but one - and the symptom would be a loop file
+     * with silence woven through it rather than an obvious failure.
+     */
+    const uint32_t nStep = (uint32_t)nSlotQty
+                         * (uint32_t)REC_RX_HALF_FRAMES
+                         * sizeof(int32_t);
+
+    if ((bLoopDstArmed == 0U) || (pnAddr == NULL_PTR) || (nSlotQty == 0U))
+    {
+        return RESULT_NOT_OK;
+    }
+
+    if ((nLoopDstOfs + nStep) > nLoopDstEnd)
+    {
+        /* The session said fewer bytes than the stream is delivering. Dropping
+           the route is the safe half of that disagreement; the count is how
+           anyone finds out it happened. */
+        recLoopOverruns++;
+        return RESULT_NOT_OK;
+    }
+
+    *pnAddr = nLoopDstBase + nLoopDstOfs;
+
+    nLoopDstOfs += nStep;
+
+    return RESULT_OK;
+}
+
+
 uint32_t Recorder_BacklogChunks(void)
 {
     /* Both are volatile and each has exactly one writer, so this is a reading
@@ -778,11 +884,14 @@ static uint32_t RecorderDrainChunks(REC_SINK* const aSink,
 
 void MDMA_Trigger_Deinterleave()
 {
-    static MDMA_LinkNodeTypeDef* const apNodes[3] =
+    /* Four nodes plus the channel = five routes: one per recorder plane, and
+       one for the loop transport's contiguous slot run. */
+    static MDMA_LinkNodeTypeDef* const apNodes[4] =
     {
         &node_mdma_channel1_sw_1,
         &node_mdma_channel1_sw_2,
-        &node_mdma_channel1_sw_3
+        &node_mdma_channel1_sw_3,
+        &node_mdma_channel1_sw_4
     };
 
     MDMA_Channel_TypeDef* const ch = hmdma_mdma_channel1_sw_0.Instance;
@@ -790,8 +899,9 @@ void MDMA_Trigger_Deinterleave()
     /* One route per destination buffer. All REC_SLOTS_PER_FRAME slots are always
        covered, so there are between two (both pairs stereo) and four (all mono)
        of them - which is exactly the channel plus up to three nodes. */
-    REC_ROUTE  aRoute[REC_SLOTS_PER_FRAME];
-    FX_IL_XFER aXfer[REC_SLOTS_PER_FRAME];
+    /* One extra for the loop route. */
+    REC_ROUTE  aRoute[REC_SLOTS_PER_FRAME + 1U];
+    FX_IL_XFER aXfer[REC_SLOTS_PER_FRAME + 1U];
     PROTO_ACK  tAck;
     uint8_t    nRoutes = 0U;
     uint8_t    nStreamWidth;
@@ -843,6 +953,37 @@ void MDMA_Trigger_Deinterleave()
         aRoute[nRoutes].nSlot    = nRoutes;
         aRoute[nRoutes].nWidth   = 1U;
         aRoute[nRoutes].nDstAddr = (uint32_t)&recorder[nRoutes][0] + nDstOffs;
+    }
+
+    /*
+     * ---- the loop route, when a transfer is running ----------------------
+     *
+     * ONE route, not one per slot: the loop slots are contiguous on the wire,
+     * so FxInterleave_Xfer can lift the whole run in a single transfer. That is
+     * the only reason this fits - four planes plus one loop run is five routes,
+     * exactly the channel plus four nodes.
+     *
+     * nStreamWidth already came from the ACK above, so it is the width the
+     * audio board actually committed to rather than what this side hopes for.
+     * A stale width would put the loop route over the recorder's slots, which
+     * is why it is not recomputed here.
+     */
+    {
+        uint32_t nLoopDst  = 0UL;
+        uint8_t  nLoopQty  = 0U;
+
+        nLoopQty = (nStreamWidth > (uint8_t)REC_SLOTS_PER_FRAME)
+                       ? (uint8_t)(nStreamWidth - (uint8_t)REC_SLOTS_PER_FRAME)
+                       : 0U;
+
+        if ((nLoopQty > 0U) && (RecorderLoopDest(&nLoopDst, nLoopQty) == RESULT_OK))
+        {
+            aRoute[nRoutes].nSlot    = (uint8_t)REC_SLOTS_PER_FRAME;
+            aRoute[nRoutes].nWidth   = nLoopQty;
+            aRoute[nRoutes].nDstAddr = nLoopDst;
+
+            nRoutes++;
+        }
     }
 
     /* ---- geometry, checked in full before any register is touched --------- */

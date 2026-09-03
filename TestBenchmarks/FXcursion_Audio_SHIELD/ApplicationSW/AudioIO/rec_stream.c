@@ -170,14 +170,31 @@ BOOLEAN RecStream_IsEnabled(void)
 
 //--------------------------------------------------------------------------------------------------
 
-U8 RecStream_Stage(const S32* const pSrc, const U16 nFrames)
+U8 RecStream_Stage(const S32* const pSrc, const U16 nFrames, const U8 nTotalSlots)
 {
     U8  nStart = (U8)REC_STAGE_NONE;
     U8  nFree;
+    U16 nUse;
     U16 nWords;
-    U16 i;
+    U16 f;
 
     if ((bEnabled == FALSE) || (pSrc == NULL_PTR) || (nFrames == 0U))
+    {
+        return (U8)REC_STAGE_NONE;
+    }
+
+    /*
+     * A width outside the range would run off the end of the staging buffer,
+     * and below REC_SLOT_QTY would drop recorder channels silently. Both are
+     * configuration faults rather than runtime conditions, so refuse the block
+     * rather than clamp into something that half works.
+     *
+     * NOT counted as a dropped block, for the same reason a NULL pointer is
+     * not: nBlocksDropped means the link could not keep up and audio was lost,
+     * and it is the number you look at when a recording has a gap. A caller
+     * bug inflating it sends you to investigate the wrong thing.
+     */
+    if ((nTotalSlots < (U8)REC_SLOT_QTY) || (nTotalSlots > (U8)REC_STREAM_SLOT_MAX))
     {
         return (U8)REC_STAGE_NONE;
     }
@@ -192,12 +209,33 @@ U8 RecStream_Stage(const S32* const pSrc, const U16 nFrames)
         return (U8)REC_STAGE_NONE;
     }
 
-    nWords = (U16)(((nFrames > (U16)AUDIO_BLOCK_FRAMES) ? (U16)AUDIO_BLOCK_FRAMES : nFrames)
-                   * REC_SLOT_QTY);
+    nUse   = (nFrames > (U16)AUDIO_BLOCK_FRAMES) ? (U16)AUDIO_BLOCK_FRAMES : nFrames;
+    nWords = (U16)(nUse * (U16)nTotalSlots);
 
-    for (i = 0U; i < nWords; i++)
+    /*
+     * Frame by frame at the wire stride: REC_SLOT_QTY recorder samples, then
+     * the loop slots zeroed for the transport to overwrite.
+     *
+     * The zeroing is not tidiness. Without it an aborted or finished loop
+     * transfer leaves its last block in the staging buffer, and the next frame
+     * carries that stale audio in slots the interface is still routing - which
+     * it cannot detect, because the stream has no framing to check against.
+     */
+    for (f = 0U; f < nUse; f++)
     {
-        aStage[nFree][i] = pSrc[i];
+        const U16 nDst = (U16)(f * (U16)nTotalSlots);
+        const U16 nSrc = (U16)(f * (U16)REC_SLOT_QTY);
+        U8        s;
+
+        for (s = 0U; s < (U8)REC_SLOT_QTY; s++)
+        {
+            aStage[nFree][nDst + s] = pSrc[nSrc + s];
+        }
+
+        for (s = (U8)REC_SLOT_QTY; s < nTotalSlots; s++)
+        {
+            aStage[nFree][nDst + s] = 0L;
+        }
     }
 
     anWords[nFree] = nWords;
@@ -257,6 +295,15 @@ void RecStream_Error(void)
 
 const S32* RecStream_Buffer(const U8 nHalf)
 {
+    return (nHalf < (U8)REC_STAGE_QTY) ? &aStage[nHalf][0] : NULL_PTR;
+}
+
+//--------------------------------------------------------------------------------------------------
+
+S32* RecStream_StageSlots(const U8 nHalf)
+{
+    /* The one writable view of a staged block. See rec_stream.h for why it
+       exists at all rather than the loop transport staging its own copy. */
     return (nHalf < (U8)REC_STAGE_QTY) ? &aStage[nHalf][0] : NULL_PTR;
 }
 

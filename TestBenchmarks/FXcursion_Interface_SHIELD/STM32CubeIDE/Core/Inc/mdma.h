@@ -35,6 +35,10 @@ extern MDMA_HandleTypeDef hmdma_mdma_channel1_sw_0;
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_1;
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_2;
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_3;
+
+/* The loop transport's route. See the note over its definition in mdma.c for
+   why it lives in the USER CODE block and is configured from Recorder.c. */
+extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_4;
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_4;
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_5;
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_6;
