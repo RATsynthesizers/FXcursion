@@ -454,6 +454,20 @@ void Looper_Process(const GRID* const pGrid,
 
 //--------------------------------------------------------------------------------------------------
 
+U32 Looper_RecordedFrames(const U8 nLooper)
+{
+    if (nLooper >= (U8)LOOPER_QTY)
+    {
+        return 0UL;
+    }
+
+    /* 0 means empty, which the transport turns into a refusal rather than a
+       zero-length file. */
+    return aLength[nLooper].nFrames;
+}
+
+//--------------------------------------------------------------------------------------------------
+
 void Looper_GetTelemetry(PROTO_TELEMETRY* const pTelem)
 {
     U8 i;

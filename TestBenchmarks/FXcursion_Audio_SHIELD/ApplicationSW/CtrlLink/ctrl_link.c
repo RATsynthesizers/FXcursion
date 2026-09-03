@@ -29,6 +29,10 @@
 #include "audio_sys.h"
 #include "rec_stream.h"
 
+/* Owns the loop transfer state machine on this board; this file routes its
+   commands and answers with the status it produces. */
+#include "loop_xfer.h"
+
 #include <string.h>
 
 
@@ -111,6 +115,47 @@ static void Dispatch(const U8 eCmd, const U8* const pPayload, const U8 nLength)
                 // is the entire point of having a command for this rather than
                 // streaming unconditionally. See fx_protocol.h.
                 RecStream_Enable((tCmd.bEnable != (U8)FALSE) ? TRUE : FALSE);
+            }
+            break;
+
+        case (U8)PROTO_CMD_LOOP_OPEN:
+            if (nLength == (U8)sizeof(PROTO_LOOP_OPEN))
+            {
+                PROTO_LOOP_OPEN tOpen;
+                PROTO_LOOP_STAT tStat;
+
+                (void)memcpy(&tOpen, pPayload, sizeof(tOpen));
+
+                /*
+                 * The looper's recorded length is what sizes a SAVE - this is
+                 * the only side that knows it, which is why the interface may
+                 * ask with a byte count of zero.
+                 *
+                 * Answered on EVERY path including refusals: the interface is
+                 * holding a staging slot and an armed MDMA route waiting for
+                 * this, and a silent drop turns a refusal into a timeout that
+                 * says nothing about why.
+                 */
+                (void)LoopXfer_OnOpen(&tOpen,
+                                      Looper_RecordedFrames(tOpen.nLooper),
+                                      &tStat);
+
+                (void)CtrlLink_SendFrame((U8)PROTO_CMD_LOOP_STAT,
+                                         (const U8*)&tStat, (U8)sizeof(tStat));
+            }
+            break;
+
+        case (U8)PROTO_CMD_LOOP_CTL:
+            if (nLength == (U8)sizeof(PROTO_LOOP_CTL))
+            {
+                PROTO_LOOP_CTL tCtl;
+
+                (void)memcpy(&tCtl, pPayload, sizeof(tCtl));
+
+                /* START widens the stream from the next block. The interface
+                   armed its routing before sending this - see fx_protocol.h for
+                   why that order is not negotiable. */
+                (void)LoopXfer_OnCtl(&tCtl);
             }
             break;
 

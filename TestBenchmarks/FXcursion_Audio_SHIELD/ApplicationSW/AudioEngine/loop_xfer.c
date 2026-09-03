@@ -233,18 +233,29 @@ STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames, const U8 nStride
         for (s = 0U; s < nSlots; s++)
         {
             /*
-             * One wire slot carries THREE payload bytes, not four.
+             * FOUR payload bytes per slot - the loop payload is a BYTE STREAM.
              *
-             * The slot is 32-bit because the recorder stream is, and a loop
-             * sample is packed 24-bit. Sending four would mean the interface
-             * had to strip a byte per sample from a stream whose framing it
-             * de-interleaves by position - so the padding byte is spent here,
-             * where it costs nothing but a shift.
+             * The recorder puts one 24-bit sample in each 32-bit slot because
+             * its slots ARE channels: the interface de-interleaves them by
+             * position into separate planes, so a sample has to sit in a known
+             * slot. A loop has no such requirement. It is one contiguous run of
+             * bytes lifted as a single transfer, and where a sample boundary
+             * falls inside that run is nobody's business until the WAV header
+             * is written.
+             *
+             * This carried three bytes and a pad byte at first, mirroring the
+             * recorder out of habit. That cost 25% of the wire AND forced the
+             * interface's staging to hold S32 - so a 5.5 MiB slot held only
+             * 4.1 MiB of loop, and 20 seconds of stereo became 14.3.
+             *
+             * At four bytes the staging holds EXACTLY the payload, the far side
+             * writes what it received straight to the card with no narrowing
+             * anywhere, and a loop moves a third faster.
              */
             U32 nWord = 0UL;
             U8  b;
 
-            for (b = 0U; b < 3U; b++)
+            for (b = 0U; b < 4U; b++)
             {
                 const U32 nOfs = nByteOfs + nMoved;
                 U8* const pAt  = LoopXfer_At(nOfs);

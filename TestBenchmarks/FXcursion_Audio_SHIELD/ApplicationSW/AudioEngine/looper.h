@@ -149,6 +149,19 @@ extern void Looper_Process(const GRID* const pGrid,
  */
 extern void Looper_GetTelemetry(PROTO_TELEMETRY* const pTelem);
 
+/**
+ * @brief Frames recorded in a looper. 0 when it is empty.
+ *
+ * This is what sizes a loop SAVE, and this board is the only side that knows
+ * it - which is why PROTO_LOOP_OPEN may arrive with a byte count of zero and be
+ * answered rather than obeyed.
+ *
+ * Frames PER PLANE, not total: a stereo looper of this length is twice the
+ * bytes. FxLoop_BytesFor does that arithmetic, and both boards call it so they
+ * cannot arrive at different answers.
+ */
+extern U32 Looper_RecordedFrames(const U8 nLooper);
+
 
 
 #endif // #ifndef LOOPER_H

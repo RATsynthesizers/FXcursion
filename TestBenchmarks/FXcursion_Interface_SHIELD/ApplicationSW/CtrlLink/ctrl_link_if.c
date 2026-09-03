@@ -22,6 +22,9 @@
 
 #include "fx_link.h"
 #include "pubsub.h"
+
+/* Owns the loop transfer state machine; this file only routes its commands. */
+#include "LoopSession.h"
 #include "common_cfg.h"
 
 #include "cmsis_os.h"
@@ -142,6 +145,17 @@ static void Dispatch(const U8 eCmd, const U8* const pPayload, const U8 nLength)
             }
             break;
 
+        case (U8)PROTO_CMD_LOOP_STAT:
+            if (nLength == (U8)sizeof(PROTO_LOOP_STAT))
+            {
+                /* Handed straight over rather than republished. A loop transfer
+                   is a conversation with one owner, not a value several screens
+                   might want - and it has to be answered in order, which a
+                   topic cannot guarantee. */
+                LoopSession_OnStat((const PROTO_LOOP_STAT*)(const void*)pPayload);
+            }
+            break;
+
         case (U8)PROTO_CMD_PONG:
             /* Liveness only. FxLink has already counted the frame. */
             do_nothing();
@@ -227,6 +241,13 @@ static void LinkThreadWrapper(void const* argument)
         {
             DrainRx();
             (void)FxLink_Poll();
+
+            /* Drives a loop transfer to completion: watches how much the MDMA
+               route has landed, then does the CRC and the spool commit. Both
+               are bulk work and belong in a thread, which is why the transfer
+               is polled rather than closed out from the DMA callback that could
+               have noticed a little sooner. */
+            LoopSession_Poll();
 
             /* In case a transfer finished while the queue was empty and
                something has been queued since, with no interrupt left to
@@ -340,6 +361,27 @@ STD_RESULT CtrlLinkIf_Transport(const U8 nChain, const U8 eAction)
     tCmd.nReserved[1] = 0U;
 
     return FxLink_Send((U8)PROTO_CMD_TRANSPORT, (const U8*)&tCmd, (U8)sizeof(tCmd));
+}
+
+//--------------------------------------------------------------------------------------------------
+
+STD_RESULT CtrlLinkIf_SendFrame(const U8 eCmd, const U8* const pPayload, const U8 nLength)
+{
+    /*
+     * The generic send, for callers that build their own payload.
+     *
+     * Every other command here has a typed wrapper, which is the right shape
+     * when this file knows what the command means. It does not know what a loop
+     * transfer means and should not: LoopSession owns that state machine, and
+     * giving it a typed wrapper per command would put the protocol's shape in
+     * two places.
+     */
+    if ((pPayload == NULL_PTR) && (nLength != 0U))
+    {
+        return RESULT_INVALID_PARAM_2;
+    }
+
+    return FxLink_Send(eCmd, pPayload, nLength);
 }
 
 //--------------------------------------------------------------------------------------------------

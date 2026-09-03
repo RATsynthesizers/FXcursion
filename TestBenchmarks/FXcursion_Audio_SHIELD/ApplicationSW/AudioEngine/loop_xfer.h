@@ -25,9 +25,19 @@
 *           which is what makes them one MDMA route on the far side rather than
 *           one per slot.
 *
-*           Per block that is nSlotQty * 4 bytes of wire for
-*           nSlotQty * 4 * 3/4 bytes of payload, because the wire slot is 32-bit
-*           and a loop sample is 24.
+*           Per block that is nSlotQty * 4 bytes of wire carrying nSlotQty * 4
+*           bytes of payload - every byte of every slot, because the loop
+*           payload is a BYTE STREAM rather than one sample per slot.
+*
+*           That differs from the recorder deliberately. Recorder slots ARE
+*           channels: the interface de-interleaves them by position, so a
+*           24-bit sample must sit in a known 32-bit slot and the top byte is
+*           padding. A loop is one contiguous run lifted as a single transfer,
+*           so sample boundaries inside it matter to nothing until the WAV
+*           header is written. Using the fourth byte makes the interface's
+*           staging hold exactly the payload rather than 4/3 of it - the
+*           difference between 20 seconds of stereo and 14.3 - and moves a loop
+*           a third faster.
 *
 *           ------------------------------------------------------------------
 *           WHO STARTS IT, AND THE ORDER

@@ -157,6 +157,17 @@ extern STD_RESULT CtrlLinkIf_Transport(const U8 nChain, const U8 eAction);
  */
 extern STD_RESULT CtrlLinkIf_Stream(const BOOLEAN bEnable);
 
+/**
+ * @brief Send a frame whose payload the caller built.
+ *
+ * For commands whose meaning belongs to another module - the loop transfer
+ * commands, which LoopSession owns. A typed wrapper per command would put the
+ * protocol's shape in two places.
+ */
+extern STD_RESULT CtrlLinkIf_SendFrame(const U8 eCmd,
+                                       const U8* const pPayload,
+                                       const U8 nLength);
+
 /** Liveness probe. The answer arrives as a PONG and only bumps nFramesOk. */
 extern STD_RESULT CtrlLinkIf_Ping(void);
 

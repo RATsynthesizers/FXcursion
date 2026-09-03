@@ -56,6 +56,7 @@
 #include "pubsub.h"
 #include "Recorder.h"
 #include "LoopSpool.h"
+#include "LoopSession.h"
 
 
 /***************************************************************************************************
@@ -424,6 +425,9 @@ static void InitThread(void const *argument)
      * recorder thread was running would leave a window in which the recorder
      * wrote unguarded. */
     LoopSpool_Init();
+
+    /* After the spooler, whose slots it allocates from. */
+    LoopSession_Init();
 
     RecorderInit();
 

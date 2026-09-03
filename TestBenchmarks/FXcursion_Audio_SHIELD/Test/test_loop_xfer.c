@@ -260,7 +260,9 @@ void Test_LoopXfer(void)
                             (U32)aSlots[(f * (U32)TEST_XFER_STRIDE) + REC_SLOT_QTY + s];
                         U8        b;
 
-                        for (b = 0U; (b < 3U) && (nGot < nBytes); b++)
+                        /* ALL FOUR bytes of each slot: the loop payload is a
+                           byte stream, not one sample per slot. */
+                        for (b = 0U; (b < 4U) && (nGot < nBytes); b++)
                         {
                             aGot[nGot] = (U8)((nWord >> (8U * b)) & 0xFFUL);
                             nGot++;

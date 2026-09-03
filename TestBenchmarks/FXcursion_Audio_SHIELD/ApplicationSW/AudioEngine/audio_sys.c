@@ -25,6 +25,7 @@
 #include "mixer.h"
 #include "looper.h"
 #include "loop_mem.h"
+#include "loop_xfer.h"
 #include "recorder.h"
 #include "params.h"
 #include "Effects/fx_common.h"
@@ -125,6 +126,10 @@ STD_RESULT AudioSys_Init(void)
     if (Grid_Init()      != RESULT_OK) { eResult = RESULT_NOT_OK; }
     if (Mixer_Init()     != RESULT_OK) { eResult = RESULT_NOT_OK; }
     if (LoopMem_Init() != RESULT_OK) { eResult = RESULT_NOT_OK; }
+
+    /* After LoopMem_Init: the transfer reads and writes those buffers, so they
+       have to exist before a session can be negotiated against them. */
+    if (LoopXfer_Init() != RESULT_OK) { eResult = RESULT_NOT_OK; }
     if (Looper_Init()    != RESULT_OK) { eResult = RESULT_NOT_OK; }
     if (Recorder_Init()  != RESULT_OK) { eResult = RESULT_NOT_OK; }
 
