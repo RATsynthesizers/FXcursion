@@ -47,11 +47,11 @@ add_executable(fxc_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/test_rec_stream.c
     ${CMAKE_CURRENT_SOURCE_DIR}/test_interleave.c
 
-    ${ROOT}/Shared/fx_defs.c
-    ${ROOT}/Shared/fx_crc.c
-    ${ROOT}/Shared/fx_link.c
-    ${ROOT}/Shared/fx_interleave.c
-    ${ROOT}/Shared/fx_loop.c
+    ${ROOT}/SystemSW/Lib/InterComProtocol/fx_defs.c
+    ${ROOT}/SystemSW/Lib/InterComProtocol/fx_crc.c
+    ${ROOT}/SystemSW/Lib/InterComProtocol/fx_link.c
+    ${ROOT}/SystemSW/Lib/InterComProtocol/fx_interleave.c
+    ${ROOT}/SystemSW/Lib/InterComProtocol/fx_loop.c
 
     ${ROOT}/ApplicationSW/AudioEngine/params.c
     ${ROOT}/ApplicationSW/AudioEngine/grid.c
@@ -87,7 +87,7 @@ target_include_directories(fxc_tests PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/host      # stand-in for SystemSW/Include
     ${ROOT}/Config
-    ${ROOT}/Shared
+    ${ROOT}/SystemSW/Lib/InterComProtocol
     ${ROOT}/ApplicationSW/AudioEngine
     ${ROOT}/ApplicationSW/AudioIO
     ${ROOT}/ApplicationSW/CtrlLink

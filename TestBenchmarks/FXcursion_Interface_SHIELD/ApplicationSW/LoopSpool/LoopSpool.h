@@ -20,7 +20,7 @@
 *             SAVE   audio --SPI--> slot --f_write--> loopN.wav
 *             LOAD   loopN.wav --f_read--> slot --SPI--> audio
 *
-*           Shared/fx_loop.c is the SPI half and both boards run it. This file
+*           InterComProtocol/fx_loop.c is the SPI half and both boards run it. This file
 *           is the card half and exists only here.
 *
 *           ------------------------------------------------------------------

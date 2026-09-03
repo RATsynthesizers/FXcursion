@@ -3,7 +3,7 @@
 *
 * @brief    The audio side of the loop transport.
 *
-*           Shared/fx_loop.c is the session state machine and BOTH boards run
+*           InterComProtocol/fx_loop.c is the session state machine and BOTH boards run
 *           it. This file is what the audio board wraps around it: it answers
 *           PROTO_CMD_LOOP_OPEN against the looper memory it actually has, and
 *           it moves bytes between that memory and the recorder stream's extra

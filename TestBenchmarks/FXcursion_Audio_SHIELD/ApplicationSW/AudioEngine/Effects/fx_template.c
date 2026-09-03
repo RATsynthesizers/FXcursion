@@ -21,7 +21,7 @@
  *               variant have that the mono one cannot? If the honest answer is
  *               "nothing, it just runs twice", then only write the mono one.
  *
- *            3. In Shared/fx_defs.h:
+ *            3. In InterComProtocol/fx_defs.h:
  *                 - append FX_MYEFFECT_M and FX_MYEFFECT_S to FX_TYPE, in that
  *                   order, mono at an EVEN id (FX_VARIANT_FOR_WIDTH depends on
  *                   it), BEFORE FX_TYPE_QTY and WITHOUT renumbering anything
@@ -29,7 +29,7 @@
  *                 - bump FX_TYPE_QTY by two;
  *                 - add both parameter index enums.
  *
- *            4. In Shared/fx_defs.c: add both parameter descriptor arrays and
+ *            4. In InterComProtocol/fx_defs.c: add both parameter descriptor arrays and
  *               both rows in g_aFxDesc, with nWidth 1 and 2. Give the two rows
  *               the SAME display name - the GUI shows one entry and resolves the
  *               variant from the chain's width. Mark time-like and rate-like

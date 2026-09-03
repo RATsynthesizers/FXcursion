@@ -1,0 +1,6 @@
+[submodule "TestBenchmarks/FXcursion_Interface_SHIELD/SystemSW"]
+	path = TestBenchmarks/FXcursion_Interface_SHIELD/SystemSW
+	url = https://github.com/RATsynthesizers/SystemSW.git
+[submodule "TestBenchmarks/FXcursion_Audio_SHIELD/SystemSW"]
+	path = TestBenchmarks/FXcursion_Audio_SHIELD/SystemSW
+	url = https://github.com/RATsynthesizers/SystemSW.git

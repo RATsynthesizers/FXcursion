@@ -4,7 +4,7 @@
  * @details   The interface controller's end of the control link to the audio
  *            controller: USART2, DMA, and a task that owns both.
  *
- *            The framing is NOT here. Shared/fx_link.c carries the sync word,
+ *            The framing is NOT here. InterComProtocol/fx_link.c carries the sync word,
  *            the CRC and the parse state machine, compiled from the same source
  *            as the audio side and covered by that project's host tests. This
  *            file is transport plus meaning: what to send, and what to do with

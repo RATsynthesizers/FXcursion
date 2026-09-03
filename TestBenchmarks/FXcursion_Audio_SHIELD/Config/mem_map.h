@@ -300,7 +300,7 @@ FXC_STATIC_ASSERT(MEM_SDRAM_REVERB_TOTAL <= MEM_SDRAM_BANK_BYTES,       mem_sdra
 FXC_STATIC_ASSERT(MEM_SRAM_FAST_TOTAL    <= MEM_SRAM_FAST_BUDGET_BYTES, mem_sram_fast_fits);
 
 /*
- * If this one fails, LOOP_MAX_SEC in Shared/fx_defs.h is longer than a bank's
+ * If this one fails, LOOP_MAX_SEC in InterComProtocol/fx_defs.h is longer than a bank's
  * looper region can hold. MEM_LOOP_SEC_THAT_FIT is the honest number - either
  * lower LOOP_MAX_SEC to it, or raise MEM_SDRAM_LOOP_REGION_BYTES here AND
  * SDRAM_LOOP_A / SDRAM_LOOP_B in the linker script AND the staging slots in the

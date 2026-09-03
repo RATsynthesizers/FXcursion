@@ -5,7 +5,7 @@
  *
  *            Dimensions the interface controller also needs - channel count,
  *            grid size, parameter count, sample rate, loop length - live in
- *            Shared/fx_defs.h so there is exactly one definition of each. This
+ *            InterComProtocol/fx_defs.h so there is exactly one definition of each. This
  *            file holds what only the audio side cares about: block size,
  *            effect memory limits and link tuning.
  *

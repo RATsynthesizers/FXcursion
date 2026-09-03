@@ -4,7 +4,7 @@
  * @details   What the AUDIO controller does with a control frame.
  *
  *            The framing, the CRC and the parse state machine are not here -
- *            they live in Shared/fx_link.h and are compiled into both firmwares
+ *            they live in InterComProtocol/fx_link.h and are compiled into both firmwares
  *            from the same source. This module is only the audio side's answer
  *            to "a frame arrived, now what": apply a grid, set a parameter, move
  *            the transport, gate the recorder stream.
@@ -31,7 +31,7 @@
  * @authors   Claude (design draft)
  *
  * \date      31.08.2026 - First release
- * \date      02.09.2026 - Framing moved to Shared/fx_link.c so the interface
+ * \date      02.09.2026 - Framing moved to InterComProtocol/fx_link.c so the interface
  *                         controller inherits the same parser and its tests
  *
  * @copyright RAT Synthesizers

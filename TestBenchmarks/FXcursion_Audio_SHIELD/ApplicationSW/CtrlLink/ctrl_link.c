@@ -2,14 +2,14 @@
  * @file      ctrl_link.c
  *
  * @details   The audio controller's dispatch. See ctrl_link.h for the split
- *            between this and Shared/fx_link.c.
+ *            between this and InterComProtocol/fx_link.c.
  *
  * @version   2.0.0
  *
  * @authors   Claude (design draft)
  *
  * \date      31.08.2026 - First release
- * \date      02.09.2026 - Framing moved to Shared/fx_link.c
+ * \date      02.09.2026 - Framing moved to InterComProtocol/fx_link.c
  *
  * @copyright RAT Synthesizers
  */
