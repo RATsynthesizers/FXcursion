@@ -81,6 +81,16 @@ extern STD_RESULT CtrlLink_Init(const CTRL_TX_FN pfTx);
 extern void CtrlLink_RxByte(const U8 nByte);
 
 /**
+ * @brief Abandon the frame being assembled; bytes are known to have been lost.
+ *
+ * For a transport that KNOWS there is a gap - a receive overrun, a framing
+ * error, a re-armed DMA. Without it the parser carries on into what looks like
+ * a continuation, and a spliced frame whose length byte survived can swallow
+ * the real frame behind it: one lost byte costs two frames instead of one.
+ */
+extern void CtrlLink_Resync(void);
+
+/**
  * @brief Drain the ring, parse complete frames, dispatch them.
  *
  * Call from the SUPER-LOOP only - dispatch calls Grid_Apply, which may clear

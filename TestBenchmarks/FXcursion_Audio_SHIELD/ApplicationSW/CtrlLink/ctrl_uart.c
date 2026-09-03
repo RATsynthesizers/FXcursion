@@ -30,7 +30,9 @@
 #include "rec_spi.h"
 
 #include "main.h"
-#include "usart.h"
+/* The UART, its baud rate and its callbacks belong to the transport; nothing
+   in this file names a peripheral any more. */
+#include "uart_tp.h"
 
 
 
@@ -53,18 +55,14 @@ FXC_STATIC_ASSERT(CTRL_TX_RING_BYTES >= (2U * PROTO_FRAME_MAX), ctrl_tx_ring_hol
 ***************************************************************************************************/
 
 /*
- * RAM_D2. DMA1 and DMA2 cannot address DTCM, so neither the receive buffer nor
- * the transmit ring can live with the rest of this module's state.
+ * The buffers and ring indices that used to be here belong to UART_TP, along
+ * with their RAM_D2 placement - DMA1 and DMA2 cannot address DTCM, which is why
+ * they could never live with the rest of this module's state. The transport
+ * takes that placement from UART_TP_DMA_SECTION in uart_tp_cfg.h.
+ *
+ * What is left here is the PROTOCOL side: telemetry cadence, diagnostics, and
+ * the health flags reported in PROTO_DIAG.
  */
-static U8 aRxDma[CTRL_RX_RING_BYTES]  IN_DMA_BUF MEM_ALIGN(32);
-static U8 aTxRing[CTRL_TX_RING_BYTES] IN_DMA_BUF MEM_ALIGN(32);
-
-/** How far the super-loop has read into the circular receive buffer. */
-static U16 nRxRead IN_DTCM;
-
-static volatile U16 nTxHead     IN_DTCM;    /**< next byte the super-loop writes */
-static volatile U16 nTxTail     IN_DTCM;    /**< next byte the DMA will send     */
-static volatile U16 nTxInFlight IN_DTCM;    /**< length of the running transfer  */
 
 static U32 nTxDropped  IN_DTCM;
 static U32 nRxNearFull IN_DTCM;
@@ -89,69 +87,38 @@ static BOOLEAN bBound           IN_DTCM;
  * handful of register writes - well under a microsecond of a 1333 us audio
  * block - and it is what makes the two callers safe rather than nearly safe.
  */
-static void PumpTx(void)
-{
-    const U32 nPrimask = __get_PRIMASK();
-
-    __disable_irq();
-
-    if ((nTxInFlight == 0U) && (nTxHead != nTxTail))
-    {
-        /* Up to the end of the buffer, or up to the head - the DMA takes a
-         * pointer and a length, so a wrapped run goes out as two transfers. */
-        const U16 nRun = (nTxHead > nTxTail) ? (U16)(nTxHead - nTxTail)
-                                             : (U16)(CTRL_TX_RING_BYTES - nTxTail);
-
-        if (HAL_UART_Transmit_DMA(&huart1, &aTxRing[nTxTail], nRun) == HAL_OK)
-        {
-            nTxInFlight = nRun;
-        }
-    }
-
-    __set_PRIMASK(nPrimask);
-}
-
-//--------------------------------------------------------------------------------------------------
-
 /**
  * @brief The CTRL_TX_FN handed to ctrl_link.
  *
  * Copies rather than borrows: the frame it is given lives in DTCM, which the
- * DMA cannot reach. See ctrl_uart.h.
+ * DMA cannot reach. UART_TP_Send does that copy. See ctrl_uart.h.
+ *
+ * WHAT MOVED. This file used to carry its own transmit ring, its own PumpTx
+ * with a critical section around the test-and-start, its own circular receive
+ * DMA and both HAL UART callbacks - all of it duplicated, near enough line for
+ * line, in the interface controller. It is UART_TP in SystemSW now, which is
+ * where a thing both firmwares need belongs.
+ *
+ * The refusal semantics are unchanged: dropped whole, never truncated, because
+ * half a frame on the wire costs the receiver a resynchronisation on top of the
+ * lost message. UART_TP counts the drop in its own statistics; nTxDropped is
+ * kept here so PROTO_DIAG keeps reporting the same number it always did.
  */
 static STD_RESULT TxQueue(const U8* const pData, const U16 nLength)
 {
-    STD_RESULT eResult = RESULT_OK;
-    const U16  nUsed   = (U16)((nTxHead - nTxTail) % CTRL_TX_RING_BYTES);
-    const U16  nFree   = (U16)(CTRL_TX_RING_BYTES - 1U - nUsed);
+    STD_RESULT eResult;
 
     if (pData == NULL_PTR)
     {
-        eResult = RESULT_INVALID_PARAM_0;
+        return RESULT_INVALID_PARAM_0;
     }
-    else if (nLength > nFree)
+
+    eResult = UART_TP_Send(pData, nLength);
+
+    if (eResult != RESULT_OK)
     {
-        // Dropped whole, never truncated: half a frame on the wire would cost
-        // the receiver a resynchronisation on top of the lost message.
         nTxDropped++;
         eResult = RESULT_NOT_OK;
-    }
-    else
-    {
-        U16 i;
-        U16 nHead = nTxHead;
-
-        for (i = 0U; i < nLength; i++)
-        {
-            aTxRing[nHead] = pData[i];
-            nHead = (U16)((nHead + 1U) % CTRL_TX_RING_BYTES);
-        }
-
-        // Published only once the bytes are all in place, so the interrupt can
-        // never see a partially written frame.
-        nTxHead = nHead;
-
-        PumpTx();
     }
 
     return eResult;
@@ -164,38 +131,43 @@ static STD_RESULT TxQueue(const U8* const pData, const U16 nLength)
  */
 static void DrainRx(void)
 {
-    U16 nWrite;
-    U16 nAvail;
+    U8      aChunk[64];
+    BOOLEAN bOverrun = FALSE;
+    U16     nQty;
 
-    if (huart1.hdmarx == NULL_PTR)
+    /* Not yet a loss, but the super-loop is close to being lapped. Worth
+     * knowing before it becomes corruption - the same warning this used to
+     * compute from NDTR, now asked of the transport. */
+    if (UART_TP_RxPending() > (U16)CTRL_RX_WARN_BYTES)
     {
-        return;
-    }
-
-    /* NDTR counts down, so this is how many bytes the DMA has written in total,
-     * modulo the ring. Sampled once: anything that arrives during the loop
-     * below is simply picked up on the next call. */
-    nWrite = (U16)(CTRL_RX_RING_BYTES - __HAL_DMA_GET_COUNTER(huart1.hdmarx));
-
-    if (nWrite >= (U16)CTRL_RX_RING_BYTES)
-    {
-        nWrite = 0U;                                // NDTR reads 0 mid-reload
-    }
-
-    nAvail = (U16)((nWrite - nRxRead) % CTRL_RX_RING_BYTES);
-
-    if (nAvail > (U16)CTRL_RX_WARN_BYTES)
-    {
-        // Not yet a loss, but the super-loop is close to being lapped by a link
-        // running at 11.5 KB/s. Worth knowing before it becomes corruption.
         nRxNearFull++;
     }
 
-    while (nRxRead != nWrite)
+    /* Drain in chunks until the transport has nothing left. The ring walk and
+       the NDTR arithmetic that used to be here are UART_TP's now. */
+    do
     {
-        CtrlLink_RxByte(aRxDma[nRxRead]);
-        nRxRead = (U16)((nRxRead + 1U) % CTRL_RX_RING_BYTES);
-    }
+        U16 i;
+
+        nQty = UART_TP_Read(aChunk, (U16)sizeof(aChunk), &bOverrun);
+
+        /*
+         * Bytes were lost BEFORE these ones. The parser is holding the front of
+         * a frame whose middle is missing, and the bytes now arriving look like
+         * a continuation of it - so tell it to give up on that frame rather
+         * than let it splice two together and rely on the CRC noticing.
+         */
+        if (bOverrun == TRUE)
+        {
+            CtrlLink_Resync();
+        }
+
+        for (i = 0U; i < nQty; i++)
+        {
+            CtrlLink_RxByte(aChunk[i]);
+        }
+
+    } while (nQty == (U16)sizeof(aChunk));
 
     (void)CtrlLink_Poll();
 }
@@ -246,10 +218,8 @@ STD_RESULT CtrlUart_Init(const BOOLEAN bLoopMemOk)
 {
     STD_RESULT eResult;
 
-    nRxRead          = 0U;
-    nTxHead          = 0U;
-    nTxTail          = 0U;
-    nTxInFlight      = 0U;
+    /* The ring indices that used to be reset here are UART_TP's, cleared in
+       UART_TP_Init below. */
     nTxDropped       = 0UL;
     nRxNearFull      = 0UL;
     nUartErrors      = 0UL;
@@ -262,8 +232,14 @@ STD_RESULT CtrlUart_Init(const BOOLEAN bLoopMemOk)
 
     if (eResult == RESULT_OK)
     {
-        /* Circular, and never stopped again. The read pointer chases NDTR. */
-        if (HAL_UART_Receive_DMA(&huart1, aRxDma, (uint16_t)CTRL_RX_RING_BYTES) != HAL_OK)
+        /* Takes the peripheral, applies UART_TP_BAUDRATE and arms the circular
+           receive - which is never stopped again.
+
+           WHICH UART IS NO LONGER NAMED HERE. It moved from USART1 to USART2 so
+           that both controllers use the same peripheral for the control link;
+           that choice now lives in uart_tp_cfg.h, and USART1 is free for a
+           per-board debug console. */
+        if (UART_TP_Init() != RESULT_OK)
         {
             eResult = RESULT_NOT_OK;
         }
@@ -306,9 +282,9 @@ void CtrlUart_Service(void)
         }
     }
 
-    // In case a transfer finished while the ring was empty and something has
+    // In case a transfer finished while the queue was empty and something has
     // been queued since without the interrupt having anything to start.
-    PumpTx();
+    UART_TP_Poll();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -336,7 +312,13 @@ U32 CtrlUart_RxNearFull(void)
 
 U32 CtrlUart_UartErrors(void)
 {
-    return nUartErrors;
+    /* From the transport, which owns the error callback now. Kept as an
+       accessor so PROTO_DIAG reports the same field it always did. */
+    UART_TP_STATS tTp;
+
+    UART_TP_GetStats(&tTp);
+
+    return nUartErrors + tTp.nUartErrors;
 }
 
 
@@ -345,33 +327,18 @@ U32 CtrlUart_UartErrors(void)
 * HAL callbacks
 ***************************************************************************************************/
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
-{
-    if (huart == &huart1)
-    {
-        nTxTail     = (U16)((nTxTail + nTxInFlight) % CTRL_TX_RING_BYTES);
-        nTxInFlight = 0U;
-
-        PumpTx();
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
-
-void HAL_UART_ErrorCallback(UART_HandleTypeDef* huart)
-{
-    if (huart == &huart1)
-    {
-        nUartErrors++;
-
-        /*
-         * An overrun or framing error aborts the receive DMA, and a control link
-         * that has silently stopped listening is worse than one that glitches.
-         * Restart it and resynchronise the read pointer with the fresh buffer.
-         */
-        nRxRead = 0U;
-        (void)HAL_UART_Receive_DMA(&huart1, aRxDma, (uint16_t)CTRL_RX_RING_BYTES);
-    }
-}
+/*
+ * The two HAL UART callbacks that used to live here - transmit-complete and
+ * error - belong to UART_TP now, along with the restart-after-error that kept a
+ * control link from silently going deaf.
+ *
+ * The one behaviour that improved in the move: the restart used to reset the
+ * read pointer and say nothing, so the parser carried on mid-frame into a fresh
+ * buffer. UART_TP reports it instead, DrainRx sees the overrun flag and calls
+ * CtrlLink_Resync, and the frame is abandoned deliberately.
+ *
+ * nUartErrors is still reported in PROTO_DIAG - CtrlUart_Errors reads it from
+ * the transport's own counters.
+ */
 
 /****************************************** end of file *******************************************/

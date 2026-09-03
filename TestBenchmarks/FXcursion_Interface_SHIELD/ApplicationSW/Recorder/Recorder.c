@@ -19,7 +19,9 @@
 
 #include "mdma.h"
 
-#include "spi.h"
+/* The SPI peripheral, its clock and its callbacks belong to the transport now;
+   nothing in this file touches hspi1. */
+#include "spi_tp.h"
 
 /* Stream geometry, shared byte for byte with the audio controller so the two
    boards cannot disagree about where a slot is. */
@@ -160,6 +162,10 @@ static uint32_t RecorderDrainChunks(REC_SINK* const aSink,
 
 static uint32_t RecorderClaimChunks(void);
 
+/* Registered with SPI_TP in RecorderInit, defined near the de-interleave it
+   drives. */
+static void Recorder_OnSpiHalf(const BOOLEAN bSecondHalf);
+
 static void RecorderThreadWrapper(void const *arg);
 
 static osThreadId xRecorderThreadHandle;
@@ -191,9 +197,32 @@ STD_RESULT RecorderInit()
 	{
 		audioRxBuffer[i] = 0;
 	}
+	/* The peripheral, its clock and its callbacks belong to SPI_TP now. This
+	   used to call HAL_SPI_Receive_DMA on hspi1 and own the two Rx callbacks
+	   directly; the transport owns those weak symbols because it also owns the
+	   error path and the transmit side on the audio board. */
+	if (SPI_TP_Init() != RESULT_OK)
+	{
+		return RESULT_NOT_OK;
+	}
+
+	if (SPI_TP_RegisterHalfCb(&Recorder_OnSpiHalf) != RESULT_OK)
+	{
+		return RESULT_NOT_OK;
+	}
+
 	/* Size counts DATA FRAMES, and SPI1 is SPI_DATASIZE_32BIT, so this is S32
-	   words - REC_RX_WORDS of them, 32 KiB. */
-	HAL_SPI_Receive_DMA(&hspi1, (uint8_t*) audioRxBuffer, REC_RX_WORDS);
+	   words - REC_RX_WORDS of them, 32 KiB.
+
+	   ARMED BEFORE THE AUDIO BOARD IS TOLD TO STREAM. The stream is
+	   de-interleaved by POSITION with no framing of its own, so joining it
+	   mid-block rotates every channel into the wrong file, silently and with
+	   plausible audio in it. CtrlLinkIf_Stream is what says "go", and it is
+	   sent later - see the note over PROTO_STREAM. */
+	if (SPI_TP_StartReceive(audioRxBuffer, (U16)REC_RX_WORDS) != RESULT_OK)
+	{
+		return RESULT_NOT_OK;
+	}
 
 	return RESULT_OK;
 }
@@ -884,15 +913,22 @@ void MDMA_Trigger_Deinterleave()
                             aXfer[0].nBeats);
 }
 
-void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi)
+/**
+ * @brief One half of the SPI receive ring has filled. Registered with SPI_TP.
+ *
+ * Was two separate HAL callbacks. The transport owns those weak symbols now and
+ * calls this with which half completed, so the only thing that changed here is
+ * that the two bodies collapsed into one - they always differed by exactly this
+ * flag.
+ *
+ * bSecondHalf FALSE means the FIRST half just filled, so the de-interleave
+ * takes it while the DMA moves into the second. halfBufferFlag carries that to
+ * MDMA_Trigger_Deinterleave, which uses it to pick the source half.
+ */
+static void Recorder_OnSpiHalf(const BOOLEAN bSecondHalf)
 {
-    halfBufferFlag=0;
-    MDMA_Trigger_Deinterleave();
-}
+    halfBufferFlag = (bSecondHalf == TRUE) ? 1U : 0U;
 
-void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
-{
-	halfBufferFlag=1;
     MDMA_Trigger_Deinterleave();
 }
 

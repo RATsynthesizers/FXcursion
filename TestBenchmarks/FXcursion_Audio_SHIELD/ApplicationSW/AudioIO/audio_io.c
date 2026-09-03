@@ -252,7 +252,18 @@ STD_RESULT AudioIO_Start(void)
         return RESULT_OK;
     }
 
-    /* The monitor is independent of the main timebase and can start whenever.
+    /* THE MONITOR MUST BE ARMED FIRST, and this is no longer a free choice.
+     *
+     * I2S3 is a SLAVE now - its CK and WS come from SAI1 block A. A slave I2S
+     * latches its frame alignment from the WS edge it sees when it is enabled,
+     * so it has to be waiting BEFORE any clock exists. Start it after the
+     * master and it joins mid-frame: left and right swap, and it stays swapped
+     * until the next restart.
+     *
+     * That is why the master is started last, below. The order reads the same
+     * as it did when this was an independent master and the ordering did not
+     * matter; it matters now.
+     *
      * The HAL takes the item count as U16 and the buffer as uint16_t*; both are
      * legacy signatures - the transfer width comes from the DMA configuration,
      * which is 32-bit for our 24-bit samples. */

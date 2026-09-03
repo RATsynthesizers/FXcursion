@@ -27,7 +27,22 @@
 
 #include "recorder.h"
 
-#include "spi.h"
+/* The SPI peripheral, its clock and its callbacks belong to the transport now.
+   spi.h is no longer needed here: nothing in this file touches hspi1. main.h
+   still is - it is what pulls in the CMSIS core intrinsics for __get_PRIMASK,
+   which spi.h used to provide transitively. */
+#include "main.h"
+#include "spi_tp.h"
+
+
+
+/***************************************************************************************************
+* Declarations of local (private) functions
+***************************************************************************************************/
+
+/* Defined below, registered with the transport in RecSpi_Init above them. */
+static void RecSpi_OnSent(void);
+static void RecSpi_OnError(void);
 
 
 
@@ -36,15 +51,19 @@
 ***************************************************************************************************/
 
 /**
- * @brief Hand one staged half to the SPI DMA.
+ * @brief Hand one staged half to the transport.
  *
- * SPI1 is configured SPI_DATASIZE_32BIT, so HAL_SPI_Transmit_DMA counts 32-bit
- * data frames, not bytes - the word count from the staging layer goes straight
- * in.
+ * SPI1 is configured SPI_DATASIZE_32BIT, so the transport counts 32-bit data
+ * frames, not bytes - the word count from the staging layer goes straight in.
  *
  * No cache maintenance: the buffer is in RAM_D2, which MPU region 0 maps
  * non-cacheable precisely so that the audio DMA buffers never need it. See
  * mem_map.h.
+ *
+ * WHAT MOVED. This used to call HAL_SPI_Transmit_DMA on hspi1 directly and own
+ * HAL_SPI_TxCpltCallback. Both now belong to SPI_TP, which also applies the
+ * configured bit clock - so the link speed lives in spi_tp_cfg.h rather than in
+ * whatever CubeMX last generated.
  */
 static void StartTx(const U8 nHalf)
 {
@@ -57,13 +76,14 @@ static void StartTx(const U8 nHalf)
         return;
     }
 
-    /* Cast away const for the HAL, which takes a non-const pointer even for a
-       transmit. Nothing writes through it. */
-    if (HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*)(void*)pBuf, nWords) != HAL_OK)
+    if (SPI_TP_SendFrame(pBuf, nWords) != RESULT_OK)
     {
         /* The state machine believes a transfer is running. Tell it otherwise,
-           or it waits for a completion interrupt that will never arrive and the
-           stream stops for good. */
+           or it waits for a completion that will never arrive and the stream
+           stops for good.
+           A RESULT_BUSY here means the previous frame had not finished, which
+           SPI_TP counts as a dropped frame - the number that says out loud that
+           the frame no longer fits the block at this clock. */
         RecStream_Error();
     }
 }
@@ -76,7 +96,25 @@ static void StartTx(const U8 nHalf)
 
 STD_RESULT RecSpi_Init(void)
 {
-    return RecStream_Init();
+    STD_RESULT eResult = RecStream_Init();
+
+    if (eResult == RESULT_OK)
+    {
+        /* Applies the configured bit clock and takes the peripheral. */
+        eResult = SPI_TP_Init();
+    }
+
+    if (eResult == RESULT_OK)
+    {
+        eResult = SPI_TP_RegisterSentCb(&RecSpi_OnSent);
+    }
+
+    if (eResult == RESULT_OK)
+    {
+        eResult = SPI_TP_RegisterErrorCb(&RecSpi_OnError);
+    }
+
+    return eResult;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -131,46 +169,53 @@ const REC_STREAM_STATS* RecSpi_Stats(void)
 * HAL callbacks
 ***************************************************************************************************/
 
-void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef* hspi)
+/**
+ * @brief One frame has gone out. Registered with SPI_TP at init.
+ *
+ * Was HAL_SPI_TxCpltCallback with a handle check. SPI_TP owns that weak symbol
+ * now - it has to, because it also owns the error callback and the receive side
+ * on the other board - and hands the event on through this.
+ */
+static void RecSpi_OnSent(void)
 {
-    if (hspi == &hspi1)
+    U8  nNext;
+    U32 nPrimask = __get_PRIMASK();
+
+    __disable_irq();
+
+    nNext = RecStream_Complete();
+
+    __set_PRIMASK(nPrimask);
+
+    if (nNext != (U8)REC_STAGE_NONE)
     {
-        U8  nNext;
-        U32 nPrimask = __get_PRIMASK();
-
-        __disable_irq();
-
-        nNext = RecStream_Complete();
-
-        __set_PRIMASK(nPrimask);
-
-        if (nNext != (U8)REC_STAGE_NONE)
-        {
-            StartTx(nNext);
-        }
+        StartTx(nNext);
     }
 }
 
 //--------------------------------------------------------------------------------------------------
 
-void HAL_SPI_ErrorCallback(SPI_HandleTypeDef* hspi)
+/**
+ * @brief A transfer failed. Registered with SPI_TP at init.
+ *
+ * Was HAL_SPI_ErrorCallback with a handle check; SPI_TP owns that weak symbol
+ * now and calls this.
+ */
+static void RecSpi_OnError(void)
 {
-    if (hspi == &hspi1)
-    {
-        /*
-         * An underrun or a bus error means the interface has just received an
-         * unknown number of words, so its de-interleave is now of unknown
-         * phase. There is no way to resynchronise by content - the stream
-         * carries no framing - so the honest thing is to stop and let the
-         * interface notice nStreamErrors and re-arm.
-         *
-         * RecStream_Error clears the machine; staging stays enabled, so the
-         * next block starts a fresh transfer on a block boundary. The interface
-         * will have a discontinuity in the recording either way, and a
-         * discontinuity it can see beats a rotation it cannot.
-         */
-        RecStream_Error();
-    }
+    /*
+     * An underrun or a bus error means the interface has just received an
+     * unknown number of words, so its de-interleave is now of unknown phase.
+     * There is no way to resynchronise by content - the stream carries no
+     * framing - so the honest thing is to stop and let the interface notice
+     * nStreamErrors and re-arm.
+     *
+     * RecStream_Error clears the machine; staging stays enabled, so the next
+     * block starts a fresh transfer on a block boundary. The interface will
+     * have a discontinuity in the recording either way, and a discontinuity it
+     * can see beats a rotation it cannot.
+     */
+    RecStream_Error();
 }
 
 /****************************************** end of file *******************************************/

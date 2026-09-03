@@ -54,16 +54,47 @@ void MX_I2S3_Init(void)
    * I2S3_SDI, so full duplex remains possible later if an aux return or
    * re-amp loop is ever wanted. PC11 (I2S3_SDI) can be freed meanwhile.
    *
-   * This one is NOT frame-synchronous with SAI1 - it has its own CK and WS and
-   * its own DMA. That is fine for a monitor: it shares the 24.576 MHz crystal,
-   * so it is frequency-locked and cannot drift. Only the frame phase differs,
-   * which a small elastic buffer in the HP bus absorbs. Sample-alignment would
-   * only matter if this fed the main mix, and it does not.
+   * ---- SLAVE, clocked from SAI1 -------------------------------------------
+   *
+   * This used to be a second MASTER, generating its own MCLK, CK and WS from
+   * the SPI123 kernel. It worked because that kernel was the same 24.576 MHz
+   * crystal SAI1 uses, so the two were frequency-locked and only the frame
+   * PHASE differed - which HpWrite absorbs by writing half an elastic ring
+   * ahead of wherever the DMA actually is.
+   *
+   * WHY IT MOVED. I2S3 is SPI3, and D2CCIP1R.SPI123SEL selects the kernel for
+   * SPI1, SPI2 and SPI3 TOGETHER. So a second master here pinned SPI1 to the
+   * 24.576 MHz pin clock, and with the H7's minimum /2 prescaler that capped
+   * the board-to-board link at 12.288 Mbit/s - half of which the recorder
+   * stream alone consumes, leaving no room for loop transport.
+   *
+   * As a slave it needs no kernel of its own, which frees SPI123 to run from a
+   * PLL. See spi_tp_cfg.h.
+   *
+   * WHAT THE BOARD MUST PROVIDE. CK and WS are now INPUTS, driven by SAI1
+   * block A - the same MCLK/SCK/FS that already clock codec 1, which has no
+   * clock pins of its own either:
+   *
+   *     SAI1_SCK_A  PE5  ->  I2S3_CK  PC10   and the codec
+   *     SAI1_FS_A   PE4  ->  I2S3_WS  PA15   and the codec
+   *     SAI1_MCLK_A PE2  ->  codec MCLK only - a slave I2S cannot emit MCLK,
+   *                          and does not need one
+   *     PC7 (was I2S3_MCK) is now free.
+   *
+   * The formats already agree: SAI1 is I2S standard, 24-bit in 2 slots, so
+   * BCLK is 64 x Fs = 3.072 MHz, and I2S_DATAFORMAT_24B frames identically.
+   *
+   * The elastic ring in HpWrite is kept. It costs nothing and it no longer has
+   * to work: with one clock domain the phase is fixed by construction rather
+   * than merely stable.
    * ======================================================================== */
-  hi2s3.Init.Mode = I2S_MODE_MASTER_TX;
+  hi2s3.Init.Mode = I2S_MODE_SLAVE_TX;
   hi2s3.Init.Standard = I2S_STANDARD_PHILIPS;
   hi2s3.Init.DataFormat = I2S_DATAFORMAT_24B;
-  hi2s3.Init.MCLKOutput = I2S_MCLKOUTPUT_ENABLE;
+  /* A slave cannot drive MCLK - the codec takes SAI1_MCLK_A directly. */
+  hi2s3.Init.MCLKOutput = I2S_MCLKOUTPUT_DISABLE;
+  /* Ignored in slave mode: the rate arrives on CK. Left at the real value so
+     the number is not misleading to a reader. */
   hi2s3.Init.AudioFreq = I2S_AUDIOFREQ_48K;
   hi2s3.Init.CPOL = I2S_CPOL_LOW;
   hi2s3.Init.FirstBit = I2S_FIRSTBIT_MSB;
@@ -101,9 +132,19 @@ void HAL_I2S_MspInit(I2S_HandleTypeDef* i2sHandle)
     PC11     ------> I2S3_SDI
     PC12     ------> I2S3_SDO
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_7|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12;
+    /* PC7 (I2S3_MCK) is NOT configured any more: a slave emits no MCLK, and
+       leaving it as an alternate function would drive a clock into a net that
+       is now fed by SAI1_MCLK_A. It is free for other use.
+
+       PC10 (CK) and PC11/PC12 (data) stay alternate-function. CK is an INPUT in
+       slave mode; the alternate function is still correct - the peripheral
+       reads the pin rather than driving it. */
+    GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
+    /* CK and WS arrive at 3.072 MHz from SAI1. LOW speed is a slew-rate limit
+       on OUTPUTS and does not affect these inputs, but SDO is an output at the
+       same rate, so the setting is left as generated. */
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF6_SPI3;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);

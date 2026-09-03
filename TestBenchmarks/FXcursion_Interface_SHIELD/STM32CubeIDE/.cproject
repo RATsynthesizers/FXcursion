@@ -66,7 +66,7 @@
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/texts/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/videos/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/gui/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/InterComProtocol}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Shared}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input.745387335" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input"/>
 							</tool>
@@ -109,6 +109,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/FreeRTOS/Source/portable/GCC/ARM_CM4F}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/FatFs/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/std}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/InterComProtocol}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/UsbDeviceLibrary/Core/Inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/UsbDeviceLibrary/Class/MSC/Inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/HW_Drivers/LED_WS2812}&quot;"/>
@@ -121,7 +122,7 @@
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/texts/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/videos/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/gui/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/InterComProtocol}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Shared}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.976723236" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -166,6 +167,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/FreeRTOS/Source/portable/GCC/ARM_CM4F}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/UsbDeviceLibrary/Core/Inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/UsbDeviceLibrary/Class/MSC/Inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/InterComProtocol}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/HW_Drivers/LED_WS2812}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/HW_Drivers/DISP_ILI9341}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/HW_Drivers/W9812G6JH}&quot;"/>
@@ -178,7 +180,7 @@
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/texts/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/videos/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/gui/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/InterComProtocol}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Shared}&quot;"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.otherflags.3516290212" name="Other flags" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.otherflags" useByScannerDiscovery="true" valueType="stringList">
 									<listOptionValue builtIn="false" value="-femit-class-debug-always"/>
@@ -329,7 +331,7 @@
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/texts/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/videos/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/gui/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/InterComProtocol}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Shared}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input.21693323" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input"/>
 							</tool>
@@ -381,7 +383,7 @@
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/texts/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/videos/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/gui/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/InterComProtocol}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Shared}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.303012764" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -433,7 +435,7 @@
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/texts/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/videos/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/gui/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/InterComProtocol}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Shared}&quot;"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.otherflags.8158128035" name="Other flags" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.otherflags" useByScannerDiscovery="true" valueType="stringList">
 									<listOptionValue builtIn="false" value="-femit-class-debug-always"/>

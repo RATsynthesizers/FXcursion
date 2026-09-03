@@ -673,9 +673,25 @@ void PeriphCommonClock_Config(void)
 
   /** Initializes the peripherals clock
   */
+  /* --------------------------------------------------------------------------
+   * PLL3P = 240 MHz, the SPI1 kernel. This board is the SLAVE on that link.
+   *
+   *     HSI 64 MHz / PLL3M 8 = 8 MHz  x PLL3N 120 = 960 MHz VCO  / PLL3P 4
+   *
+   * WHY 240 AND NOT THE MASTER'S 192. A slave resynchronises the incoming clock
+   * into its own kernel domain, so the kernel has to be at least twice SCK. The
+   * wire is 96 MHz, and 192 would be EXACTLY 2x - no margin left for cable
+   * delay or the master's clock-to-out. The failure that buys is silent
+   * corruption of a stream that carries no CRC, so the two ends deliberately
+   * run different kernels: 192 on the master because /2 lands exactly on 96,
+   * 240 here because sampling wants the headroom. Only SCK has to match.
+   *
+   * 960 MHz is the top of RCC_PLL3VCOWIDE. PLL3 feeds nothing else - the
+   * selection below is SPI1 and SPI2 only - so raising N moves no other clock.
+   * ------------------------------------------------------------------------ */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPI2|RCC_PERIPHCLK_SPI1;
   PeriphClkInitStruct.PLL3.PLL3M = 8;
-  PeriphClkInitStruct.PLL3.PLL3N = 96;
+  PeriphClkInitStruct.PLL3.PLL3N = 120;
   PeriphClkInitStruct.PLL3.PLL3P = 4;
   PeriphClkInitStruct.PLL3.PLL3Q = 4;
   PeriphClkInitStruct.PLL3.PLL3R = 2;

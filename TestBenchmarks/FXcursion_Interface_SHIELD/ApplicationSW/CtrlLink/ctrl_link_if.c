@@ -26,7 +26,9 @@
 
 #include "cmsis_os.h"
 
-#include "usart.h"
+/* The UART, its baud rate and its callbacks belong to the transport; nothing
+   in this file names a peripheral any more. */
+#include "uart_tp.h"
 
 #include <string.h>
 
@@ -37,26 +39,13 @@
 ***************************************************************************************************/
 
 /*
- * RAM_D2, non-cacheable, via MPU region 0 - see MPU_Config in Init.c.
+ * The buffers, the ring indices and the DMA placement that used to be here all
+ * belong to UART_TP now - including the RAM_D2 non-cacheable placement, which
+ * it takes from UART_TP_DMA_SECTION in uart_tp_cfg.h.
  *
- * Both directions need it now that the D-cache is on: the DMA writes aRxDma
- * and the CPU reads it, and the CPU writes aTxRing for the DMA to read. It is
- * also DMA1's own domain, so neither transfer crosses the D2-to-D1 bridge
- * that RAM_D1 required.
- *
- * .dma_buffers is NOLOAD, so nothing here starts zeroed. That is fine:
- * CtrlLinkIf_Init sets every index it uses, and the receive buffer is filled
- * by DMA before anything reads it.
+ * This file is the PROTOCOL side of the link: what to send, when to ping, what
+ * to do with an ACK. It no longer knows which USART carries any of it.
  */
-static U8 aRxDma[CTRL_IF_RX_DMA_BYTES]   IN_DMA_BUF;
-static U8 aTxRing[CTRL_IF_TX_RING_BYTES] IN_DMA_BUF;
-
-static volatile U16 nTxHead;
-static volatile U16 nTxTail;
-static volatile U16 nTxInFlight;
-
-/** Where the receive DMA had got to at the previous poll. */
-static U16 nRxLast;
 
 /** Tick of the last ping, so a silent peer is probed at a bounded rate. */
 static U32 nLastPingTick;
@@ -73,13 +62,11 @@ static SUB_HANDLE xAckHandle;
 static PROTO_ACK tLastAck;
 static BOOLEAN   bHaveAck;
 
-FXC_STATIC_ASSERT((CTRL_IF_TX_RING_BYTES & (CTRL_IF_TX_RING_BYTES - 1U)) == 0U,
-                  ctrl_if_tx_ring_is_power_of_two);
-
 /* An ACK generated while a configuration frame is still going out must have
- * somewhere to sit, which is the whole reason this is a ring. */
-FXC_STATIC_ASSERT(CTRL_IF_TX_RING_BYTES >= (2U * PROTO_FRAME_MAX),
-                  ctrl_if_tx_ring_holds_two_frames);
+ * somewhere to sit. The queue is the transport's now, so the requirement is
+ * checked against ITS size - the invariant did not move, only the buffer. */
+FXC_STATIC_ASSERT(UART_TP_TX_QUEUE_BYTES >= (2U * PROTO_FRAME_MAX),
+                  ctrl_if_tx_queue_holds_two_frames);
 
 
 
@@ -88,82 +75,30 @@ FXC_STATIC_ASSERT(CTRL_IF_TX_RING_BYTES >= (2U * PROTO_FRAME_MAX),
 ***************************************************************************************************/
 
 /**
- * @brief Start a transmit if the UART is idle and there is anything queued.
- *
- * Called from the link task AND from the transmit-complete interrupt, so the
- * whole test-and-start is inside a critical section - the same treatment the
- * audio side's PumpTx gets, for the same reason.
- */
-static void PumpTx(void)
-{
-    const U32 nPrimask = __get_PRIMASK();
-
-    __disable_irq();
-
-    if ((nTxInFlight == 0U) && (nTxHead != nTxTail))
-    {
-        /* Up to the end of the buffer, or up to the head - the DMA takes a
-           pointer and a length, so a wrapped run goes out as two transfers. */
-        const U16 nRun = (nTxHead > nTxTail) ? (U16)(nTxHead - nTxTail)
-                                             : (U16)(CTRL_IF_TX_RING_BYTES - nTxTail);
-
-        if (HAL_UART_Transmit_DMA(&huart2, &aTxRing[nTxTail], nRun) == HAL_OK)
-        {
-            nTxInFlight = nRun;
-        }
-    }
-
-    __set_PRIMASK(nPrimask);
-}
-
-//--------------------------------------------------------------------------------------------------
-
-/**
  * @brief The transmit callback handed to the shared framer.
  *
- * Copies into the ring rather than handing the framer's own buffer to the DMA:
- * that buffer is reused by the very next FxLink_Send, and pointing a transfer at
- * it would be the "mutate a live DMA buffer" bug this protocol was written to
- * get away from.
+ * Copies into the transport's queue rather than handing the framer's own buffer
+ * to the DMA: that buffer is reused by the very next FxLink_Send, and pointing a
+ * transfer at it would be the "mutate a live DMA buffer" bug this protocol was
+ * written to get away from. UART_TP_Send does that copy.
+ *
+ * WHAT MOVED. This file used to carry its own transmit ring, its own PumpTx
+ * with a critical section around the test-and-start, its own circular receive
+ * DMA, and both HAL UART callbacks. All of it is UART_TP now, byte for byte the
+ * same design - it was duplicated here and in the audio controller's
+ * ctrl_uart.c, which is exactly the kind of thing SystemSW exists to hold once.
+ *
+ * The refusal semantics are unchanged: a frame that will not fit is rejected
+ * WHOLE, because half a frame on the wire makes the far end resynchronise.
  */
 static STD_RESULT LinkTx(const U8* const pData, const U16 nLength)
 {
-    STD_RESULT eResult = RESULT_NOT_OK;
-    U16        nFree;
-    U32        nPrimask;
-
     if ((pData == NULL_PTR) || (nLength == 0U))
     {
         return RESULT_INVALID_PARAM_1;
     }
 
-    nPrimask = __get_PRIMASK();
-    __disable_irq();
-
-    nFree = (U16)((CTRL_IF_TX_RING_BYTES - 1U)
-                  - ((U16)(nTxHead - nTxTail) & (CTRL_IF_TX_RING_BYTES - 1U)));
-
-    if (nLength <= nFree)
-    {
-        U16 i;
-
-        for (i = 0U; i < nLength; i++)
-        {
-            aTxRing[nTxHead] = pData[i];
-            nTxHead = (U16)((nTxHead + 1U) & (CTRL_IF_TX_RING_BYTES - 1U));
-        }
-
-        eResult = RESULT_OK;
-    }
-
-    __set_PRIMASK(nPrimask);
-
-    if (eResult == RESULT_OK)
-    {
-        PumpTx();
-    }
-
-    return eResult;
+    return UART_TP_Send(pData, nLength);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -223,32 +158,44 @@ static void Dispatch(const U8 eCmd, const U8* const pPayload, const U8 nLength)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Feed the framer everything the receive DMA has written since last time.
+ * @brief Feed the framer everything the transport has received since last time.
  *
- * The DMA never stops and never interrupts; NDTR counts DOWN, so the write
- * position is size - NDTR. Nothing here can block.
+ * Nothing here can block: UART_TP_Read returns 0 when the ring is empty rather
+ * than waiting.
  */
 static void DrainRx(void)
 {
-    U16 nWrite;
+    U8      aChunk[64];
+    BOOLEAN bOverrun = FALSE;
+    U16     nQty;
 
-    if (huart2.hdmarx == NULL_PTR)
+    /* Drain in chunks until the transport has nothing left. The ring walk and
+       the NDTR arithmetic that used to be here are UART_TP's now. */
+    do
     {
-        return;
-    }
+        U16 i;
 
-    nWrite = (U16)(CTRL_IF_RX_DMA_BYTES - __HAL_DMA_GET_COUNTER(huart2.hdmarx));
+        nQty = UART_TP_Read(aChunk, (U16)sizeof(aChunk), &bOverrun);
 
-    while (nRxLast != nWrite)
-    {
-        FxLink_RxByte(aRxDma[nRxLast]);
-
-        nRxLast++;
-        if (nRxLast >= (U16)CTRL_IF_RX_DMA_BYTES)
+        /*
+         * Bytes were lost BEFORE these ones. Telling the framer to drop what it
+         * has half-assembled is the point of surfacing this: it is already
+         * holding the front of a frame whose middle is missing, and letting it
+         * run on would have it accept a frame spliced from two - which the CRC
+         * would probably catch, but "probably" is not the same as
+         * resynchronising deliberately.
+         */
+        if (bOverrun == TRUE)
         {
-            nRxLast = 0U;
+            FxLink_Resync();
         }
-    }
+
+        for (i = 0U; i < nQty; i++)
+        {
+            FxLink_RxByte(aChunk[i]);
+        }
+
+    } while (nQty == (U16)sizeof(aChunk));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -266,10 +213,12 @@ static void LinkThreadWrapper(void const* argument)
        only if a view happened to be open when it arrived. */
     xAckHandle = PUBSUB_Subscribe(PUBSUB_TOPIC_ACK, NULL);
 
-    if (HAL_UART_Receive_DMA(&huart2, aRxDma, (uint16_t)CTRL_IF_RX_DMA_BYTES) == HAL_OK)
+    /* Takes the peripheral, applies UART_TP_BAUDRATE and arms the circular
+       receive. Which USART and how fast are both in uart_tp_cfg.h now, so this
+       file no longer names either. */
+    if (UART_TP_Init() == RESULT_OK)
     {
-        nRxLast = 0U;
-        bBound  = TRUE;
+        bBound = TRUE;
     }
 
     for (;;)
@@ -279,10 +228,10 @@ static void LinkThreadWrapper(void const* argument)
             DrainRx();
             (void)FxLink_Poll();
 
-            /* In case a transfer finished while the ring was empty and
+            /* In case a transfer finished while the queue was empty and
                something has been queued since, with no interrupt left to
                start it. */
-            PumpTx();
+            UART_TP_Poll();
 
             /*
              * Probe a silent peer. This is the only traffic this task
@@ -314,10 +263,9 @@ static void LinkThreadWrapper(void const* argument)
 
 STD_RESULT CtrlLinkIf_Init(void)
 {
-    nTxHead     = 0U;
-    nTxTail     = 0U;
-    nTxInFlight = 0U;
-    nRxLast     = 0U;
+    /* The ring indices that used to be reset here belong to UART_TP, which
+       clears them in UART_TP_Init - called from the link thread once the
+       topics exist. */
     bBound      = FALSE;
 
     nLastPingTick = 0UL;
@@ -469,74 +417,18 @@ STD_RESULT CtrlLinkIf_GetAck(PROTO_ACK* const pAck)
 /***************************************************************************************************
 * HAL callbacks
 ***************************************************************************************************/
-
 /*
- * NOTE: this arrives from USART2_IRQn, not from the transmit DMA stream's own
- * interrupt - the HAL routes UART DMA completion through the UART handler. Both
- * are enabled in usart.c and dma.c.
+ * The two HAL UART callbacks that used to live here - transmit-complete and
+ * error - belong to UART_TP now. It owns those weak symbols because it owns the
+ * buffers they manipulate, and the error recovery in particular has to be one
+ * decision: whether to re-arm a circular receive depends on whether the HAL
+ * stopped it, which only the code that armed it can know.
  *
- * Calls no FreeRTOS API, deliberately, so the priority relative to
- * configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY cannot become a problem.
+ * The loss that error recovery used to hide is now REPORTED instead. When
+ * UART_TP re-arms after an error it tells DrainRx through the overrun flag, and
+ * DrainRx calls FxLink_Resync - so the framer abandons the frame it was
+ * assembling deliberately, rather than discovering the damage from a CRC one
+ * frame later.
  */
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
-{
-    if (huart == &huart2)
-    {
-        nTxTail     = (U16)((nTxTail + nTxInFlight) & (CTRL_IF_TX_RING_BYTES - 1U));
-        nTxInFlight = 0U;
-
-        PumpTx();
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
-
-void HAL_UART_ErrorCallback(UART_HandleTypeDef* huart)
-{
-    if (huart == &huart2)
-    {
-        const U32 nErr = HAL_UART_GetError(huart);
-
-        /*
-         * ONLY a DMA fault may touch the transmit bookkeeping.
-         *
-         * The tempting version of this clears nTxInFlight on every error. That
-         * is wrong, and the common case - an RX overrun - is exactly when it
-         * bites: the overrun says nothing about the transmitter, so a transfer
-         * may still be in flight. Clear the count and, when that transfer
-         * completes, HAL_UART_TxCpltCallback advances the tail by ZERO - so
-         * every byte already on the wire is queued and sent a second time. The
-         * CRC would reject the duplicate and resynchronise, but a link that
-         * silently doubles frames under load is not a link worth debugging.
-         */
-        if ((nErr & HAL_UART_ERROR_DMA) != 0UL)
-        {
-            /* A failed transfer never reports completion, so the ring would
-               stall behind it forever. Abort so the HAL state agrees with
-               ours. */
-            (void)HAL_UART_AbortTransmit(huart);
-            nTxInFlight = 0U;
-        }
-
-        /*
-         * Re-arm receive only if the HAL actually stopped it. The buffer is
-         * circular and read by position, so a DMA that is still running needs
-         * nothing done to it - and re-arming would reset nRxLast against a
-         * stream that never restarted, losing byte alignment for one frame.
-         */
-        if (huart->RxState == HAL_UART_STATE_READY)
-        {
-            if (HAL_UART_Receive_DMA(huart, aRxDma, (uint16_t)CTRL_IF_RX_DMA_BYTES) == HAL_OK)
-            {
-                nRxLast = 0U;
-                bBound  = TRUE;
-            }
-            else
-            {
-                bBound = FALSE;
-            }
-        }
-    }
-}
 
 /****************************************** end of file *******************************************/

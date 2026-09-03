@@ -315,19 +315,45 @@ void PeriphCommonClock_Config(void)
    *     MCLK  = 24.576 / 2  = 12.288 MHz  = 256 x Fs   (what the WM8731 wants)
    *     BCLK  = 64 x Fs     =  3.072 MHz               (2 slots x 32-bit)
    *
-   * NOTE: SPI1, SPI2 and SPI3/I2S3 share one kernel clock selection on the H7.
-   * I2S3 must have the crystal, so SPI1 gets it too - capping SPI1 at
-   * 24.576/2 = 12.288 Mbit/s. The recorder stream needs 6.14 Mbit/s
-   * (4 slots x 32 bit x 48 kHz), so there is about 2x headroom. If a future
-   * stream needs more, SPI1 has to move to SPI4/5/6, which have their own
-   * clock selection.
+   * SPI123 NO LONGER NEEDS THE CRYSTAL.
+   *
+   * SPI1, SPI2 and SPI3/I2S3 share one kernel selection (D2CCIP1R.SPI123SEL),
+   * and this note used to read "I2S3 must have the crystal, so SPI1 gets it
+   * too" - capping the board-to-board link at 24.576/2 = 12.288 Mbit/s, half of
+   * which the recorder stream alone consumes.
+   *
+   * I2S3 is now a SLAVE, taking CK and WS from SAI1 block A (see i2s.c). It
+   * derives nothing from the kernel, so the whole SPI123 domain is free to run
+   * from a PLL, and SPI1 can carry loop transport alongside the recorder.
+   *
+   * The audio path is unaffected: SAI1 and SAI23 keep _PIN, so every sample
+   * clock in the system still comes from Y1. The headphone codec is now on the
+   * same clock EDGE as the other two rather than merely the same frequency.
+   *
+   * PLL3P is 192 MHz so SPI1's minimum /2 prescaler lands exactly on 96 MHz -
+   * see spi_tp_cfg.h for why 96 and not 48.
+   *
+   *     HSI 64 MHz / PLL3M 8 = 8 MHz  x PLL3N 96 = 768 MHz VCO  / PLL3P 4
+   *
+   * HSI-derived is fine HERE and nowhere else on this board: the SPI link is
+   * synchronous - the slave samples the clock it is given - so the +/-1% of an
+   * untrimmed HSI costs a little throughput and nothing else. It would still be
+   * unacceptable for anything that has to stay in step with the converters.
    * ------------------------------------------------------------------------ */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1|RCC_PERIPHCLK_SAI2
                               |RCC_PERIPHCLK_SPI3|RCC_PERIPHCLK_SPI2
                               |RCC_PERIPHCLK_SPI1;
+  PeriphClkInitStruct.PLL3.PLL3M = 8;
+  PeriphClkInitStruct.PLL3.PLL3N = 96;
+  PeriphClkInitStruct.PLL3.PLL3P = 4;
+  PeriphClkInitStruct.PLL3.PLL3Q = 4;
+  PeriphClkInitStruct.PLL3.PLL3R = 2;
+  PeriphClkInitStruct.PLL3.PLL3RGE = RCC_PLL3VCIRANGE_3;
+  PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOWIDE;
+  PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
   PeriphClkInitStruct.Sai1ClockSelection  = RCC_SAI1CLKSOURCE_PIN;
   PeriphClkInitStruct.Sai23ClockSelection = RCC_SAI23CLKSOURCE_PIN;
-  PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PIN;
+  PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL3;
 
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
