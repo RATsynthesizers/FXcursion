@@ -70,6 +70,8 @@ void Error_Handler(void);
 #define ENC_MENU_A_GPIO_Port GPIOE
 #define ENC_MENU_B_Pin GPIO_PIN_4
 #define ENC_MENU_B_GPIO_Port GPIOE
+#define BTN_REC_Pin GPIO_PIN_13
+#define BTN_REC_GPIO_Port GPIOC
 #define ADC_VUSB_Pin GPIO_PIN_1
 #define ADC_VUSB_GPIO_Port GPIOC
 #define ADC_VBAT_Pin GPIO_PIN_3
@@ -101,10 +103,10 @@ void Error_Handler(void);
 #define MY_SD_DETECT_GPIO_Port GPIOA
 #define MY_LED_REAR_Pin GPIO_PIN_15
 #define MY_LED_REAR_GPIO_Port GPIOA
-#define BTN_UP_Pin GPIO_PIN_14
-#define BTN_UP_GPIO_Port GPIOG
 #define BTN_DOWN_Pin GPIO_PIN_13
 #define BTN_DOWN_GPIO_Port GPIOG
+#define BTN_UP_Pin GPIO_PIN_14
+#define BTN_UP_GPIO_Port GPIOG
 #define BTN_YES_Pin GPIO_PIN_4
 #define BTN_YES_GPIO_Port GPIOB
 #define BTN_NO_Pin GPIO_PIN_7

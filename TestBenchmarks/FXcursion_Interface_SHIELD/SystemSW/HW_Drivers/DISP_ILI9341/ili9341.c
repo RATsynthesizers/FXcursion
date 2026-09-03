@@ -941,9 +941,35 @@ void lcdSetCursor(unsigned short x, unsigned short y) {
 
 bool logoFinished = false;
 
+/*
+ * Set the GRAM window and leave the panel expecting pixel data.
+ *
+ * This used to open with osDelay(2). That was not a panel settling delay - it
+ * was covering a race in which the window was retargeted while an MDMA
+ * transfer was still writing the previous rect, so the tail of one landed at
+ * the start of the next.
+ *
+ * The cause was that mdmaSemaphoreHandle is created ALREADY GIVEN, so every
+ * flush acknowledged the previous transfer rather than its own and returned
+ * early. It is drained once in TouchGFXHAL::initialize, and the wait there now
+ * means what it says. At 60 Hz the delay was costing ~12% of a frame on every
+ * flush, so removing it is worth a good deal more than the two milliseconds.
+ *
+ * ONE RESIDUAL WINDOW, and why it is not a problem here: the FMC write FIFO is
+ * still enabled, so MDMA completion means "issued", with up to 16 pixels
+ * possibly still queued inside the FMC - about 333 ns to drain at the current
+ * timing. Nothing calls this function until the framework has come back round
+ * to the next flush, which is orders of magnitude longer than that. If a small
+ * glitch at the start of a rect ever does appear, the guarantee is one line:
+ * set hsram1.Init.WriteFifo = FMC_WRITE_FIFO_DISABLE in fmc.c, and completion
+ * then means the panel holds every pixel.
+ *
+ * The DSB retires these eleven command and data writes before the caller starts
+ * a DMA to the same bank. MPU region 2 maps this bank non-cacheable AND
+ * non-bufferable, so it is belt-and-braces rather than strictly required.
+ */
 void lcdSetWindow(unsigned short x0, unsigned short y0, unsigned short x1,
 		unsigned short y1) {
-	osDelay(2);
 	lcdWriteCommand(ILI9341_COLADDRSET);
 	lcdWriteData((x0 >> 8) & 0xFF);
 	lcdWriteData(x0 & 0xFF);
@@ -955,6 +981,8 @@ void lcdSetWindow(unsigned short x0, unsigned short y0, unsigned short x1,
 	lcdWriteData((y1 >> 8) & 0xFF);
 	lcdWriteData(y1 & 0xFF);
 	lcdWriteCommand(ILI9341_MEMORYWRITE);
+
+	__DSB();
 }
 
 void lcdBacklightOff(void) {

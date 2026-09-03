@@ -69,6 +69,41 @@ public:
 		model->moveFXParams(channel, effectNum, direction);
 	}
 
+	/* Send one parameter to the audio controller. Fire and forget - see the
+	   note above pushConfig in Model.hpp for why this is safe with no audio
+	   board attached. */
+	void pushParam(ChannelType channel, U8 effectNum, U8 paramNum, U8 paramValue)
+	{
+		model->pushParam(channel, effectNum, paramNum, paramValue);
+	}
+
+	/* Needed because reordering happens on this screen too now: each step
+	   writes the new order straight to the model, so nothing is ever in a
+	   half-moved state. */
+	void saveFXChain(ChannelType channel, FXChainItemInfo* menuItemInfoArray)
+	{
+		model->saveFXChain(channel, menuItemInfoArray);
+	}
+
+	void pushConfig()
+	{
+		model->pushConfig();
+	}
+
+	/* Reordering uses this so the user hears each step, coalesced to one send
+	   per frame so a fast turn cannot overrun the transmit ring. */
+	void pushConfigDeferred()
+	{
+		model->pushConfigDeferred();
+	}
+
+	/* Parameter names and counts, from the descriptor shared with the audio
+	   controller. NULL when the slot is empty. */
+	const FX_DESC* getFxDesc(ChannelType channel, U8 effectNum)
+	{
+		return model->getFxDesc(channel, effectNum);
+	}
+
 private:
     EffectSettingsPresenter();
 

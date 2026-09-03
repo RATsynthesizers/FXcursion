@@ -1,5 +1,11 @@
 #include <gui/system_screen/SystemView.hpp>
 
+extern "C" {
+
+#include "pubsub.h"
+
+}
+
 const U8 SystemView::MIXER_X_POSITIONS[4] =
 {
 	218,
@@ -19,6 +25,15 @@ SystemView::SystemView()
 
 	ePrevSelect 	= SELECT_INPUT;
 	eCurrentSelect 	= SELECT_INPUT;
+
+	nRowQty = 0U;
+
+	for (U8 i = 0U; i < (U8)NAV_ROW_MAX; i++)
+	{
+		aRow[i].pMono   = 0;
+		aRow[i].pStereo = 0;
+		aRow[i].eSelect = SELECT_INPUT;
+	}
 }
 
 void SystemView::setupScreen()
@@ -98,41 +113,73 @@ void SystemView::setupScreen()
 		mixModule.setVisible(true);
 	}
 
+	/* Which containers are rows, and how many, before anything asks. */
+	buildRowTable();
+
 	eCurrentSelect = presenter->getSelectedModule();
 	ePrevSelect = presenter->getPrevSelectedModule();
 
+	NAV_POS tPos;
+
 	switch(eCurrentSelect)
 	{
-	default:
-	case SELECT_INPUT:
-		inModule.select();
-		break;
 	case SELECT_OUTPUT:
-		outModule.select();
+		tPos.nRow  = NAV_ROW_OUTPUT;
+		tPos.nSlot = 0U;
 		break;
+
+	case SELECT_STOMP_BOARD:
+		tPos.nRow  = NAV_ROW_STOMP;
+		tPos.nSlot = (U8)presenter->getSelectedFootSwitch();
+		if(tPos.nSlot >= (U8)NAV_FOOT_QTY)
+		{
+			tPos.nSlot = 0U;
+		}
+		break;
+
 	case SELECT_MONO_CHAIN_1:
 	case SELECT_MONO_CHAIN_2:
 	case SELECT_MONO_CHAIN_3:
 	case SELECT_MONO_CHAIN_4:
-		if(bIsMixerAdded
-			&& eMixerPosition == presenter->getSelectedChainModule())
-		{
-			mixModule.select();
-		}
-		monoChain[eCurrentSelect - SELECT_MONO_CHAIN_1]->select(presenter->getSelectedChainModule());
-		break;
 	case SELECT_STEREO_CHAIN_1:
 	case SELECT_STEREO_CHAIN_2:
-		if(bIsMixerAdded
-			&& eMixerPosition == presenter->getSelectedChainModule())
+	{
+		const S8 nRow = rowIndexForSelect(eCurrentSelect);
+
+		tPos.nRow  = (nRow < 0) ? (S8)0 : nRow;
+		tPos.nSlot = (U8)presenter->getSelectedChainModule();
+		if(tPos.nSlot >= (U8)NAV_SLOT_QTY)
+		{
+			tPos.nSlot = 0U;
+		}
+		break;
+	}
+
+	case SELECT_INPUT:
+	default:
+		tPos.nRow  = NAV_ROW_INPUT;
+		tPos.nSlot = 0U;
+		break;
+	}
+
+	/*
+	 * The stored cursor can name a row this topology no longer has - the input
+	 * configuration is changed on a different screen, and this view is rebuilt
+	 * from the model every time it is entered. rowIndexForSelect collapses it
+	 * onto a row that does exist, and eCurrentSelect is rewritten from the
+	 * result so the two can never disagree afterwards.
+	 */
+	eCurrentSelect = selectForPos(tPos);
+
+	applyHighlight(tPos);
+
+	{
+		const NAV_CTX tCtx = navCtx();
+
+		if(FALSE != Nav_IsOnMixer(&tCtx, tPos))
 		{
 			mixModule.select();
 		}
-		stereoChain[eCurrentSelect - SELECT_STEREO_CHAIN_1]->select(presenter->getSelectedChainModule());
-		break;
-	case SELECT_STOMP_BOARD:
-		stompBoard.select(presenter->getSelectedFootSwitch());
-		break;
 	}
 
     SystemViewBase::setupScreen();
@@ -143,1094 +190,332 @@ void SystemView::tearDownScreen()
     SystemViewBase::tearDownScreen();
 }
 
-void SystemView::encMenuUpdate(S8 nValue)
+
+/***************************************************************************************************
+* The row table, and moving the cursor over it
+*
+* See SystemNav.hpp for where the cursor is allowed to go. Everything here is
+* the translation between that integer space and the containers on screen.
+***************************************************************************************************/
+
+void SystemView::addRow(MonoChain* pMono,
+                        StereoChain* pStereo,
+                        ModuleSelectType eSelect)
 {
-	if(true == addModuleWindow.isVisible())
+	if(nRowQty >= (U8)NAV_ROW_MAX)
 	{
-		if(1 == nValue)
-		{
-			addModuleWindow.selectDown();
-		}
-		else
-		{
-			addModuleWindow.selectUp();
-		}
+		return;
+	}
+
+	aRow[nRowQty].pMono   = pMono;
+	aRow[nRowQty].pStereo = pStereo;
+	aRow[nRowQty].eSelect = eSelect;
+
+	nRowQty++;
+}
+
+void SystemView::buildRowTable()
+{
+	nRowQty = 0U;
+
+	/* Group 1 is the first input pair, group 2 the second. A stereo pair is
+	   one row; a mono pair is two. Top to bottom. */
+	if(TRUE == inputType.bIsStereo1)
+	{
+		addRow(0, &stereoChain1, SELECT_STEREO_CHAIN_1);
 	}
 	else
 	{
-		switch(eCurrentSelect)
+		addRow(&monoChain1, 0, SELECT_MONO_CHAIN_1);
+		addRow(&monoChain2, 0, SELECT_MONO_CHAIN_2);
+	}
+
+	if(TRUE == inputType.bIsStereo2)
+	{
+		addRow(0, &stereoChain2, SELECT_STEREO_CHAIN_2);
+	}
+	else
+	{
+		addRow(&monoChain3, 0, SELECT_MONO_CHAIN_3);
+		addRow(&monoChain4, 0, SELECT_MONO_CHAIN_4);
+	}
+}
+
+S8 SystemView::rowIndexForSelect(ModuleSelectType eSelect)
+{
+	for(U8 i = 0U; i < nRowQty; i++)
+	{
+		if(aRow[i].eSelect == eSelect)
 		{
-		case SELECT_INPUT:
-
-			if(-1 == nValue)
-			{
-				switch(ePrevSelect)
-				{
-				case SELECT_MONO_CHAIN_1:
-				default:
-
-					if(FALSE == inputType.bIsStereo1)
-					{
-						eCurrentSelect = SELECT_MONO_CHAIN_1;
-						monoChain1.select(CHAIN_MODULE_1);
-					}
-					else
-					{
-						eCurrentSelect = SELECT_STEREO_CHAIN_1;
-						stereoChain1.select(CHAIN_MODULE_1);
-					}
-					break;
-
-				case SELECT_MONO_CHAIN_2:
-
-					if(FALSE == inputType.bIsStereo1)
-					{
-						eCurrentSelect = SELECT_MONO_CHAIN_2;
-						monoChain2.select(CHAIN_MODULE_1);
-					}
-					else
-					{
-						eCurrentSelect = SELECT_STEREO_CHAIN_1;
-						stereoChain1.select(CHAIN_MODULE_1);
-					}
-					break;
-
-				case SELECT_MONO_CHAIN_3:
-
-					if(FALSE == inputType.bIsStereo2)
-					{
-						eCurrentSelect = SELECT_MONO_CHAIN_3;
-						monoChain3.select(CHAIN_MODULE_1);
-					}
-					else
-					{
-						eCurrentSelect = SELECT_STEREO_CHAIN_2;
-						stereoChain2.select(CHAIN_MODULE_1);
-					}
-					break;
-
-				case SELECT_MONO_CHAIN_4:
-
-					if(FALSE == inputType.bIsStereo2)
-					{
-						eCurrentSelect = SELECT_MONO_CHAIN_4;
-						monoChain4.select(CHAIN_MODULE_1);
-					}
-					else
-					{
-						eCurrentSelect = SELECT_STEREO_CHAIN_2;
-						stereoChain2.select(CHAIN_MODULE_1);
-					}
-					break;
-				}
-
-				ePrevSelect = SELECT_INPUT;
-				inModule.deselect();
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_1 == eMixerPosition)
-				{
-					mixModule.select();
-				}
-
-			}
-
-			break;
-
-		case SELECT_OUTPUT:
-
-			if(1 == nValue)
-			{
-				switch(ePrevSelect)
-				{
-				case SELECT_MONO_CHAIN_1:
-				default:
-
-					if(FALSE == inputType.bIsStereo1)
-					{
-						eCurrentSelect = SELECT_MONO_CHAIN_1;
-						monoChain1.select(CHAIN_MODULE_4);
-					}
-					else
-					{
-						eCurrentSelect = SELECT_STEREO_CHAIN_1;
-						stereoChain1.select(CHAIN_MODULE_4);
-					}
-					break;
-
-				case SELECT_MONO_CHAIN_2:
-
-					if(FALSE == inputType.bIsStereo1)
-					{
-						eCurrentSelect = SELECT_MONO_CHAIN_2;
-						monoChain2.select(CHAIN_MODULE_4);
-					}
-					else
-					{
-						eCurrentSelect = SELECT_STEREO_CHAIN_1;
-						stereoChain1.select(CHAIN_MODULE_4);
-					}
-					break;
-
-				case SELECT_MONO_CHAIN_3:
-
-					if(FALSE == inputType.bIsStereo2)
-					{
-						eCurrentSelect = SELECT_MONO_CHAIN_3;
-						monoChain3.select(CHAIN_MODULE_4);
-					}
-					else
-					{
-						eCurrentSelect = SELECT_STEREO_CHAIN_2;
-						stereoChain2.select(CHAIN_MODULE_4);
-					}
-					break;
-
-				case SELECT_MONO_CHAIN_4:
-
-					if(FALSE == inputType.bIsStereo2)
-					{
-						eCurrentSelect = SELECT_MONO_CHAIN_4;
-						monoChain4.select(CHAIN_MODULE_4);
-					}
-					else
-					{
-						eCurrentSelect = SELECT_STEREO_CHAIN_2;
-						stereoChain2.select(CHAIN_MODULE_4);
-					}
-					break;
-				}
-
-				ePrevSelect = SELECT_OUTPUT;
-				outModule.deselect();
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_4 == eMixerPosition)
-				{
-					mixModule.select();
-				}
-			}
-
-
-			break;
-
-		case SELECT_MONO_CHAIN_1:
-
-			switch(monoChain1.getSelectedModuleNumber())
-			{
-			case CHAIN_MODULE_1:
-
-				monoChain1.deselect(CHAIN_MODULE_1);
-
-				if(1 == nValue)
-				{
-					ePrevSelect = SELECT_MONO_CHAIN_1;
-
-					eCurrentSelect = SELECT_INPUT;
-					inModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-				else
-				{
-					monoChain1.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_2 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_1 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				break;
-
-			case CHAIN_MODULE_2:
-
-				monoChain1.deselect(CHAIN_MODULE_2);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_2 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					monoChain1.select(CHAIN_MODULE_1);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					monoChain1.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_3 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_3:
-
-				monoChain1.deselect(CHAIN_MODULE_3);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_3 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					monoChain1.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_2 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					monoChain1.select(CHAIN_MODULE_4);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_4:
-
-				monoChain1.deselect(CHAIN_MODULE_4);
-
-				if(1 == nValue)
-				{
-					monoChain1.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_3 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_4 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				else
-				{
-					ePrevSelect = SELECT_MONO_CHAIN_1;
-
-					eCurrentSelect = SELECT_OUTPUT;
-					outModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-
-				break;
-
-			default:
-				break;
-			}
-			break;
-
-		case SELECT_MONO_CHAIN_2:
-
-			switch(monoChain2.getSelectedModuleNumber())
-			{
-			case CHAIN_MODULE_1:
-
-				monoChain2.deselect(CHAIN_MODULE_1);
-
-				if(1 == nValue)
-				{
-					ePrevSelect = SELECT_MONO_CHAIN_2;
-
-					eCurrentSelect = SELECT_INPUT;
-					inModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-				else
-				{
-					monoChain2.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_2 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_1 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				break;
-
-			case CHAIN_MODULE_2:
-
-				monoChain2.deselect(CHAIN_MODULE_2);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_2 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					monoChain2.select(CHAIN_MODULE_1);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					monoChain2.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_3 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_3:
-
-				monoChain2.deselect(CHAIN_MODULE_3);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_3 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					monoChain2.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_2 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					monoChain2.select(CHAIN_MODULE_4);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_4:
-
-				monoChain2.deselect(CHAIN_MODULE_4);
-
-				if(1 == nValue)
-				{
-					monoChain2.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_3 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_4 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				else
-				{
-					ePrevSelect = SELECT_MONO_CHAIN_2;
-
-					eCurrentSelect = SELECT_OUTPUT;
-					outModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-
-				break;
-
-			default:
-				break;
-			}
-			break;
-
-		case SELECT_MONO_CHAIN_3:
-
-			switch(monoChain3.getSelectedModuleNumber())
-			{
-			case CHAIN_MODULE_1:
-
-				monoChain3.deselect(CHAIN_MODULE_1);
-
-				if(1 == nValue)
-				{
-					ePrevSelect = SELECT_MONO_CHAIN_3;
-
-					eCurrentSelect = SELECT_INPUT;
-					inModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-				else
-				{
-					monoChain3.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_2 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_1 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				break;
-
-			case CHAIN_MODULE_2:
-
-				monoChain3.deselect(CHAIN_MODULE_2);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_2 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					monoChain3.select(CHAIN_MODULE_1);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					monoChain3.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_3 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_3:
-
-				monoChain3.deselect(CHAIN_MODULE_3);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_3 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					monoChain3.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_2 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					monoChain3.select(CHAIN_MODULE_4);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_4:
-
-				monoChain3.deselect(CHAIN_MODULE_4);
-
-				if(1 == nValue)
-				{
-					monoChain3.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_3 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_4 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				else
-				{
-					ePrevSelect = SELECT_MONO_CHAIN_3;
-
-					eCurrentSelect = SELECT_OUTPUT;
-					outModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-
-				break;
-
-			default:
-				break;
-			}
-			break;
-
-		case SELECT_MONO_CHAIN_4:
-
-			switch(monoChain4.getSelectedModuleNumber())
-			{
-			case CHAIN_MODULE_1:
-
-				monoChain4.deselect(CHAIN_MODULE_1);
-
-				if(1 == nValue)
-				{
-					ePrevSelect = SELECT_MONO_CHAIN_4;
-
-					eCurrentSelect = SELECT_INPUT;
-					inModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-				else
-				{
-					monoChain4.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_2 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_1 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				break;
-
-			case CHAIN_MODULE_2:
-
-				monoChain4.deselect(CHAIN_MODULE_2);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_2 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					monoChain4.select(CHAIN_MODULE_1);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					monoChain4.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_3 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_3:
-
-				monoChain4.deselect(CHAIN_MODULE_3);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_3 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					monoChain4.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_2 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					monoChain4.select(CHAIN_MODULE_4);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_4:
-
-				monoChain4.deselect(CHAIN_MODULE_4);
-
-				if(1 == nValue)
-				{
-					monoChain4.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_3 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_4 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				else
-				{
-					ePrevSelect = SELECT_MONO_CHAIN_4;
-
-					eCurrentSelect = SELECT_OUTPUT;
-					outModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-
-				break;
-
-			default:
-				break;
-			}
-			break;
-
-		case SELECT_STEREO_CHAIN_1:
-
-			switch(stereoChain1.getSelectedModuleNumber())
-			{
-			case CHAIN_MODULE_1:
-
-				stereoChain1.deselect(CHAIN_MODULE_1);
-
-				if(1 == nValue)
-				{
-					ePrevSelect = SELECT_STEREO_CHAIN_1;
-
-					eCurrentSelect = SELECT_INPUT;
-					inModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-				else
-				{
-					stereoChain1.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_2 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_1 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				break;
-
-			case CHAIN_MODULE_2:
-
-				stereoChain1.deselect(CHAIN_MODULE_2);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_2 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					stereoChain1.select(CHAIN_MODULE_1);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					stereoChain1.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_3 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_3:
-
-				stereoChain1.deselect(CHAIN_MODULE_3);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_3 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					stereoChain1.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_2 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					stereoChain1.select(CHAIN_MODULE_4);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_4:
-
-				stereoChain1.deselect(CHAIN_MODULE_4);
-
-				if(1 == nValue)
-				{
-					stereoChain1.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_3 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_4 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				else
-				{
-					ePrevSelect = SELECT_STEREO_CHAIN_1;
-
-					eCurrentSelect = SELECT_OUTPUT;
-					outModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-
-				break;
-
-			default:
-				break;
-			}
-			break;
-
-		case SELECT_STEREO_CHAIN_2:
-
-			switch(stereoChain2.getSelectedModuleNumber())
-			{
-			case CHAIN_MODULE_1:
-
-				stereoChain2.deselect(CHAIN_MODULE_1);
-
-				if(1 == nValue)
-				{
-					ePrevSelect = SELECT_STEREO_CHAIN_2;
-
-					eCurrentSelect = SELECT_INPUT;
-					inModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-				else
-				{
-					stereoChain2.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_2 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_1 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				break;
-
-			case CHAIN_MODULE_2:
-
-				stereoChain2.deselect(CHAIN_MODULE_2);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_2 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					stereoChain2.select(CHAIN_MODULE_1);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_1 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					stereoChain2.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_3 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_3:
-
-				stereoChain2.deselect(CHAIN_MODULE_3);
-
-				if(TRUE == bIsMixerAdded
-						&& CHAIN_MODULE_3 == eMixerPosition)
-				{
-					mixModule.deselect();
-				}
-
-				if(1 == nValue)
-				{
-					stereoChain2.select(CHAIN_MODULE_2);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_2 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					stereoChain2.select(CHAIN_MODULE_4);
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-
-			case CHAIN_MODULE_4:
-
-				stereoChain2.deselect(CHAIN_MODULE_4);
-
-				if(1 == nValue)
-				{
-					stereoChain2.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded)
-					{
-						if(CHAIN_MODULE_3 == eMixerPosition)
-						{
-							mixModule.select();
-						}
-						else if (CHAIN_MODULE_4 == eMixerPosition)
-						{
-							mixModule.deselect();
-						}
-					}
-				}
-				else
-				{
-					ePrevSelect = SELECT_STEREO_CHAIN_2;
-
-					eCurrentSelect = SELECT_OUTPUT;
-					outModule.select();
-
-					if(TRUE == bIsMixerAdded
-							&& CHAIN_MODULE_4 == eMixerPosition)
-					{
-						mixModule.deselect();
-					}
-				}
-
-				break;
-
-			default:
-				break;
-			}
-			break;
-
-		case SELECT_STOMP_BOARD:
-
-			switch(stompBoard.getSelectedFootSwitch())
-			{
-			case FOOT_SWITCH_1:
-
-				if(1 == nValue)
-				{
-					stompBoard.select(FOOT_SWITCH_2);
-				}
-				break;
-
-			case FOOT_SWITCH_2:
-
-				if(1 == nValue)
-				{
-					stompBoard.select(FOOT_SWITCH_3);
-				}
-				else
-				{
-					stompBoard.select(FOOT_SWITCH_1);
-				}
-				break;
-
-			case FOOT_SWITCH_3:
-
-				if(-1 == nValue)
-				{
-					stompBoard.select(FOOT_SWITCH_2);
-				}
-				break;
-
-			default:
-				break;
-			}
-			break;
-
-		default:
-			break;
+			return (S8)i;
 		}
 	}
+
+	/*
+	 * Not a row under this topology. Collapse onto the first row of the same
+	 * input group, which is what the old code's long
+	 * "if (FALSE == bIsStereo1) monoChain2 else stereoChain1" chains added up
+	 * to - one of which tested the wrong flag.
+	 */
+	if((SELECT_MONO_CHAIN_3 == eSelect)
+		|| (SELECT_MONO_CHAIN_4 == eSelect)
+		|| (SELECT_STEREO_CHAIN_2 == eSelect))
+	{
+		const U8 nGroup1Rows = (TRUE == inputType.bIsStereo1) ? 1U : 2U;
+
+		return (nGroup1Rows < nRowQty) ? (S8)nGroup1Rows : (S8)0;
+	}
+
+	return (S8)0;
+}
+
+ModuleSelectType SystemView::selectForPos(const NAV_POS& tPos)
+{
+	switch(tPos.nRow)
+	{
+	case NAV_ROW_INPUT:
+		return SELECT_INPUT;
+	case NAV_ROW_OUTPUT:
+		return SELECT_OUTPUT;
+	case NAV_ROW_STOMP:
+		return SELECT_STOMP_BOARD;
+	default:
+		break;
+	}
+
+	return ((U8)tPos.nRow < nRowQty) ? aRow[tPos.nRow].eSelect : SELECT_INPUT;
+}
+
+NAV_CTX SystemView::navCtx()
+{
+	NAV_CTX tCtx;
+
+	tCtx.nRowQty     = nRowQty;
+	tCtx.bMixerAdded = bIsMixerAdded;
+	tCtx.nMixerCol   = (TRUE == bIsMixerAdded) ? (S8)eMixerPosition : (S8)-1;
+
+	return tCtx;
+}
+
+NAV_POS SystemView::currentPos()
+{
+	NAV_POS tPos;
+
+	switch(eCurrentSelect)
+	{
+	case SELECT_OUTPUT:
+		tPos.nRow  = NAV_ROW_OUTPUT;
+		tPos.nSlot = 0U;
+		break;
+
+	case SELECT_STOMP_BOARD:
+		tPos.nRow  = NAV_ROW_STOMP;
+		tPos.nSlot = (U8)stompBoard.getSelectedFootSwitch();
+		break;
+
+	case SELECT_INPUT:
+		tPos.nRow  = NAV_ROW_INPUT;
+		tPos.nSlot = 0U;
+		break;
+
+	default:
+	{
+		const S8 nRow = rowIndexForSelect(eCurrentSelect);
+
+		tPos.nRow  = (nRow < 0) ? (S8)0 : nRow;
+		tPos.nSlot = (U8)rowSelectedSlot((U8)tPos.nRow);
+		break;
+	}
+	}
+
+	return tPos;
+}
+
+void SystemView::rowSelect(U8 nRow, ChainModuleNumber eSlot)
+{
+	if(nRow >= nRowQty)
+	{
+		return;
+	}
+
+	if(0 != aRow[nRow].pMono)
+	{
+		aRow[nRow].pMono->select(eSlot);
+	}
+	else if(0 != aRow[nRow].pStereo)
+	{
+		aRow[nRow].pStereo->select(eSlot);
+	}
+}
+
+void SystemView::rowDeselect(U8 nRow, ChainModuleNumber eSlot)
+{
+	if(nRow >= nRowQty)
+	{
+		return;
+	}
+
+	if(0 != aRow[nRow].pMono)
+	{
+		aRow[nRow].pMono->deselect(eSlot);
+	}
+	else if(0 != aRow[nRow].pStereo)
+	{
+		aRow[nRow].pStereo->deselect(eSlot);
+	}
+}
+
+ChainModuleNumber SystemView::rowSelectedSlot(U8 nRow)
+{
+	if(nRow < nRowQty)
+	{
+		if(0 != aRow[nRow].pMono)
+		{
+			return aRow[nRow].pMono->getSelectedModuleNumber();
+		}
+
+		if(0 != aRow[nRow].pStereo)
+		{
+			return aRow[nRow].pStereo->getSelectedModuleNumber();
+		}
+	}
+
+	return CHAIN_MODULE_1;
+}
+
+void SystemView::applyHighlight(const NAV_POS& tPos)
+{
+	switch(tPos.nRow)
+	{
+	case NAV_ROW_INPUT:
+		inModule.select();
+		break;
+	case NAV_ROW_OUTPUT:
+		outModule.select();
+		break;
+	case NAV_ROW_STOMP:
+		stompBoard.select((FootSwitches)tPos.nSlot);
+		break;
+	default:
+		rowSelect((U8)tPos.nRow, (ChainModuleNumber)tPos.nSlot);
+		break;
+	}
+}
+
+void SystemView::clearHighlight(const NAV_POS& tPos)
+{
+	switch(tPos.nRow)
+	{
+	case NAV_ROW_INPUT:
+		inModule.deselect();
+		break;
+	case NAV_ROW_OUTPUT:
+		outModule.deselect();
+		break;
+	case NAV_ROW_STOMP:
+		stompBoard.deselect();
+		break;
+	default:
+		rowDeselect((U8)tPos.nRow, (ChainModuleNumber)tPos.nSlot);
+		break;
+	}
+}
+
+void SystemView::moveCursor(const NAV_POS& tOld, const NAV_POS& tNew)
+{
+	if((tOld.nRow == tNew.nRow) && (tOld.nSlot == tNew.nSlot))
+	{
+		/* The walk refused to move - an edge, or the mixer blocking a
+		   vertical step. Nothing to repaint. */
+		return;
+	}
+
+	const NAV_CTX tCtx        = navCtx();
+	const BOOLEAN bWasOnMixer = Nav_IsOnMixer(&tCtx, tOld);
+	const BOOLEAN bNowOnMixer = Nav_IsOnMixer(&tCtx, tNew);
+
+	/* StompBoard::select already hides the other two switches, so sliding
+	   along the stomp row does not need a deselect first - and skipping it
+	   saves three invalidates. */
+	if((NAV_ROW_STOMP != tOld.nRow) || (NAV_ROW_STOMP != tNew.nRow))
+	{
+		clearHighlight(tOld);
+	}
+
+	applyHighlight(tNew);
+
+	/* MixModule::select and deselect both invalidate unconditionally, so only
+	   touch it when the answer actually changed. */
+	if(bNowOnMixer != bWasOnMixer)
+	{
+		if(FALSE != bNowOnMixer)
+		{
+			mixModule.select();
+		}
+		else
+		{
+			mixModule.deselect();
+		}
+	}
+
+	/*
+	 * ePrevSelect records the last thing the cursor was ON, not the last cell
+	 * it occupied - so moving within a row must leave it alone, exactly as
+	 * the old code did by only assigning it in the branches that changed
+	 * eCurrentSelect. That is what makes "leave the chain at the input, come
+	 * back, land on the row you left" work.
+	 */
+	const ModuleSelectType eNewSelect = selectForPos(tNew);
+
+	if(eNewSelect != eCurrentSelect)
+	{
+		ePrevSelect    = eCurrentSelect;
+		eCurrentSelect = eNewSelect;
+	}
+}
+
+
+/***************************************************************************************************
+* Input handlers
+***************************************************************************************************/
+
+void SystemView::encMenuUpdate(S8 nValue)
+{
+	if(TRUE == modalWindowDelete.isVisible())
+	{
+		/*
+		 * The encoder used to keep walking the grid behind the delete
+		 * confirmation: only btnUp and btnDown guarded against it. Now all
+		 * three agree.
+		 */
+		do_nothing();
+		return;
+	}
+
+	if(true == addModuleWindow.isVisible())
+	{
+		/* Tested by sign rather than against 1, so a zero cannot be taken for
+		   a reverse turn. The encoder no longer emits one - see encoder.hpp -
+		   but this is the place the old bug was visible. */
+		if(nValue > 0)
+		{
+			addModuleWindow.selectDown();
+		}
+		else if(nValue < 0)
+		{
+			addModuleWindow.selectUp();
+		}
+
+		return;
+	}
+
+	const NAV_CTX tCtx = navCtx();
+	const NAV_POS tOld = currentPos();
+
+	moveCursor(tOld, Nav_Horizontal(&tCtx,
+	                                tOld,
+	                                nValue,
+	                                rowIndexForSelect(ePrevSelect)));
 }
 
 void SystemView::btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
@@ -1261,9 +546,16 @@ void SystemView::btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 				else
 				{
 					addModuleWindow.unblockSelect(monoChain[eCurrentSelect - SELECT_MONO_CHAIN_1]->getSelectedModuleName());
+
+					if(MODULE_REC == monoChain[eCurrentSelect - SELECT_MONO_CHAIN_1]->getSelectedModuleName())
+					{
+						presenter->getRecorderInfo()->mono[eCurrentSelect - SELECT_MONO_CHAIN_1] = FALSE;
+						PUBSUB_Publish(PUBSUB_TOPIC_REC, presenter->getRecorderInfo(), sizeof(RecorderInfo_t));
+					}
+
 					monoChain[eCurrentSelect - SELECT_MONO_CHAIN_1]->deleteSelectedModule();
 
-					presenter->saveMonoModulePosition(MODULE_NONE, 0, monoChain[eCurrentSelect - SELECT_MONO_CHAIN_1]->getSelectedModuleNumber());
+					presenter->saveMonoModulePosition(MODULE_NONE, eCurrentSelect - SELECT_MONO_CHAIN_1, monoChain[eCurrentSelect - SELECT_MONO_CHAIN_1]->getSelectedModuleNumber());
 				}
 
 				presenter->clearFXChain((ChannelType) (eCurrentSelect - SELECT_MONO_CHAIN_1));
@@ -1286,9 +578,24 @@ void SystemView::btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 				else
 				{
 					addModuleWindow.unblockSelect(stereoChain[eCurrentSelect - SELECT_STEREO_CHAIN_1]->getSelectedModuleName());
+
+					if(MODULE_REC == stereoChain[eCurrentSelect - SELECT_STEREO_CHAIN_1]->getSelectedModuleName())
+					{
+						if(SELECT_STEREO_CHAIN_1 == eCurrentSelect)
+						{
+							presenter->getRecorderInfo()->stereo1 = FALSE;
+						}
+						else if(SELECT_STEREO_CHAIN_2 == eCurrentSelect)
+						{
+							presenter->getRecorderInfo()->stereo2 = FALSE;
+						}
+
+						PUBSUB_Publish(PUBSUB_TOPIC_REC, presenter->getRecorderInfo(), sizeof(RecorderInfo_t));
+					}
+
 					stereoChain[eCurrentSelect - SELECT_STEREO_CHAIN_1]->deleteSelectedModule();
 
-					presenter->saveStereoModulePosition(MODULE_NONE, 0, stereoChain[eCurrentSelect - SELECT_STEREO_CHAIN_1]->getSelectedModuleNumber());
+					presenter->saveStereoModulePosition(MODULE_NONE, eCurrentSelect - SELECT_STEREO_CHAIN_1, stereoChain[eCurrentSelect - SELECT_STEREO_CHAIN_1]->getSelectedModuleNumber());
 				}
 
 				presenter->clearFXChain((ChannelType) (eCurrentSelect - SELECT_MONO_CHAIN_1));
@@ -1297,6 +604,11 @@ void SystemView::btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 			default:
 				break;
 			}
+
+			/* The grid changed - a module or the mixer was removed. Both
+			   branches above have already written it to the model, so one
+			   whole-configuration send covers every case. */
+			presenter->pushConfig();
 
 			modalWindowDelete.setVisible(FALSE);
 			modalWindowDelete.invalidate();
@@ -1330,6 +642,10 @@ void SystemView::btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 					break;
 				}
 				presenter->saveMixerPosition(eMixerPosition);
+
+				/* Mixer placed - the grid gained a whole column. */
+				presenter->pushConfig();
+
 				application().gotoMixerScreenNoTransition();
 			}
 			else
@@ -1353,6 +669,9 @@ void SystemView::btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 					presenter->saveSelectedChainModule(
 							(ChainModuleNumber) monoChain[eCurrentSelect - SELECT_MONO_CHAIN_1]->getSelectedModuleNumber());
 
+					/* Module added to a mono chain. */
+					presenter->pushConfig();
+
 					switch(addModuleWindow.getAddModuleName())
 					{
 					case MODULE_FX:
@@ -1362,6 +681,11 @@ void SystemView::btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 						application().gotoLooperScreenNoTransition();
 						break;
 					case MODULE_REC:
+
+						presenter->getRecorderInfo()->mono[eCurrentSelect - SELECT_MONO_CHAIN_1] = TRUE;
+
+						PUBSUB_Publish(PUBSUB_TOPIC_REC, presenter->getRecorderInfo(), sizeof(RecorderInfo_t));
+
 						application().gotoRecorderScreenNoTransition();
 						break;
 					default:
@@ -1382,6 +706,9 @@ void SystemView::btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 					presenter->saveSelectedChainModule(
 							(ChainModuleNumber) stereoChain[eCurrentSelect - SELECT_STEREO_CHAIN_1]->getSelectedModuleNumber());
 
+					/* Module added to a stereo chain. */
+					presenter->pushConfig();
+
 					switch(addModuleWindow.getAddModuleName())
 					{
 					case MODULE_FX:
@@ -1391,6 +718,18 @@ void SystemView::btnYesUpdate(S8 nValue, BOOLEAN bIsFuncPressed)
 						application().gotoLooperScreenNoTransition();
 						break;
 					case MODULE_REC:
+
+						if(SELECT_STEREO_CHAIN_1 == eCurrentSelect)
+						{
+							presenter->getRecorderInfo()->stereo1 = TRUE;
+						}
+						else if(SELECT_STEREO_CHAIN_2 == eCurrentSelect)
+						{
+							presenter->getRecorderInfo()->stereo2 = TRUE;
+						}
+
+						PUBSUB_Publish(PUBSUB_TOPIC_REC, presenter->getRecorderInfo(), sizeof(RecorderInfo_t));
+
 						application().gotoRecorderScreenNoTransition();
 						break;
 					default:
@@ -1684,200 +1023,19 @@ void SystemView::btnUpUpdate(BOOLEAN bIsFuncPressed)
 	if(true == modalWindowDelete.isVisible())
 	{
 		do_nothing();
+		return;
 	}
-	else if(true == addModuleWindow.isVisible())
+
+	if(true == addModuleWindow.isVisible())
 	{
 		addModuleWindow.selectUp();
+		return;
 	}
-	else
-	{
-		switch(eCurrentSelect)
-		{
-		case SELECT_MONO_CHAIN_2:
 
-			if(FALSE == bIsMixerAdded
-					|| eMixerPosition != monoChain2.getSelectedModuleNumber())
-			{
-				ePrevSelect = SELECT_MONO_CHAIN_2;
-				monoChain2.deselect(monoChain2.getSelectedModuleNumber());
+	const NAV_CTX tCtx = navCtx();
+	const NAV_POS tOld = currentPos();
 
-				eCurrentSelect = SELECT_MONO_CHAIN_1;
-				monoChain1.select(monoChain2.getSelectedModuleNumber());
-			}
-
-			break;
-
-		case SELECT_MONO_CHAIN_3:
-
-			if(FALSE == bIsMixerAdded
-					|| eMixerPosition != monoChain3.getSelectedModuleNumber())
-			{
-				ePrevSelect = SELECT_MONO_CHAIN_3;
-				monoChain3.deselect(monoChain3.getSelectedModuleNumber());
-
-				if(FALSE == inputType.bIsStereo1)
-				{
-					eCurrentSelect = SELECT_MONO_CHAIN_2;
-					monoChain2.select(monoChain3.getSelectedModuleNumber());
-				}
-				else
-				{
-					eCurrentSelect = SELECT_STEREO_CHAIN_1;
-					stereoChain1.select(monoChain3.getSelectedModuleNumber());
-				}
-			}
-
-			break;
-
-		case SELECT_MONO_CHAIN_4:
-
-			if(FALSE == bIsMixerAdded
-					|| eMixerPosition != monoChain4.getSelectedModuleNumber())
-			{
-				ePrevSelect = SELECT_MONO_CHAIN_4;
-				monoChain4.deselect(monoChain4.getSelectedModuleNumber());
-
-				eCurrentSelect = SELECT_MONO_CHAIN_3;
-				monoChain3.select(monoChain4.getSelectedModuleNumber());
-			}
-
-			break;
-
-		case SELECT_STEREO_CHAIN_2:
-
-			if(FALSE == bIsMixerAdded
-					|| eMixerPosition != stereoChain2.getSelectedModuleNumber())
-			{
-				ePrevSelect = SELECT_STEREO_CHAIN_2;
-				stereoChain2.deselect(stereoChain2.getSelectedModuleNumber());
-
-				if(FALSE == inputType.bIsStereo1)
-				{
-					eCurrentSelect = SELECT_MONO_CHAIN_2;
-					monoChain2.select(stereoChain2.getSelectedModuleNumber());
-				}
-				else
-				{
-					eCurrentSelect = SELECT_STEREO_CHAIN_1;
-					stereoChain1.select(stereoChain2.getSelectedModuleNumber());
-				}
-			}
-
-			break;
-
-		case SELECT_STOMP_BOARD:
-
-			switch(stompBoard.getSelectedFootSwitch())
-			{
-			case FOOT_SWITCH_1:
-
-//				if(SELECT_OUTPUT == ePrevSelect)
-//				{
-//					eCurrentSelect = SELECT_OUTPUT;
-//					outModule.select();
-//				}
-//				else
-//				{
-					if(FALSE == inputType.bIsStereo1)
-					{
-						eCurrentSelect = SELECT_MONO_CHAIN_4;
-						monoChain4.select(CHAIN_MODULE_4);
-
-						if(TRUE == bIsMixerAdded
-								&& eMixerPosition == monoChain4.getSelectedModuleNumber())
-						{
-							mixModule.select();
-						}
-					}
-					else
-					{
-						eCurrentSelect = SELECT_STEREO_CHAIN_2;
-						stereoChain2.select(CHAIN_MODULE_4);
-
-						if(TRUE == bIsMixerAdded
-								&& eMixerPosition == stereoChain2.getSelectedModuleNumber())
-						{
-							mixModule.select();
-						}
-					}
-//				}
-
-				break;
-			case FOOT_SWITCH_2:
-
-				if(FALSE == inputType.bIsStereo1)
-				{
-					eCurrentSelect = SELECT_MONO_CHAIN_4;
-					monoChain4.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded
-							&& eMixerPosition == monoChain4.getSelectedModuleNumber())
-					{
-						mixModule.select();
-					}
-				}
-				else
-				{
-					eCurrentSelect = SELECT_STEREO_CHAIN_2;
-					stereoChain2.select(CHAIN_MODULE_3);
-
-					if(TRUE == bIsMixerAdded
-							&& eMixerPosition == stereoChain2.getSelectedModuleNumber())
-					{
-						mixModule.select();
-					}
-				}
-
-				break;
-			case FOOT_SWITCH_3:
-
-//				if(SELECT_INPUT == ePrevSelect)
-//				{
-//					eCurrentSelect = SELECT_INPUT;
-//					inModule.select();
-//				}
-//				else
-//				{
-					if(FALSE == inputType.bIsStereo1)
-					{
-						eCurrentSelect = SELECT_MONO_CHAIN_4;
-						monoChain4.select(CHAIN_MODULE_1);
-
-						if(TRUE == bIsMixerAdded
-								&& eMixerPosition == monoChain4.getSelectedModuleNumber())
-						{
-							mixModule.select();
-						}
-					}
-					else
-					{
-						eCurrentSelect = SELECT_STEREO_CHAIN_2;
-						stereoChain2.select(CHAIN_MODULE_1);
-
-						if(TRUE == bIsMixerAdded
-								&& eMixerPosition == stereoChain2.getSelectedModuleNumber())
-						{
-							mixModule.select();
-						}
-					}
-//				}
-
-				break;
-			}
-
-			ePrevSelect = SELECT_STOMP_BOARD;
-			stompBoard.deselect();
-
-			break;
-
-		case SELECT_INPUT:
-		case SELECT_OUTPUT:
-		case SELECT_MONO_CHAIN_1:
-		case SELECT_STEREO_CHAIN_1:
-		default:
-			break;
-		}
-	}
+	moveCursor(tOld, Nav_Vertical(&tCtx, tOld, -1));
 }
 
 void SystemView::btnDownUpdate(BOOLEAN bIsFuncPressed)
@@ -1885,250 +1043,17 @@ void SystemView::btnDownUpdate(BOOLEAN bIsFuncPressed)
 	if(true == modalWindowDelete.isVisible())
 	{
 		do_nothing();
+		return;
 	}
-	else if(true == addModuleWindow.isVisible())
+
+	if(true == addModuleWindow.isVisible())
 	{
 		addModuleWindow.selectDown();
+		return;
 	}
-	else
-	{
-		switch(eCurrentSelect)
-		{
-		case SELECT_INPUT:
 
-			ePrevSelect = SELECT_INPUT;
-			inModule.deselect();
+	const NAV_CTX tCtx = navCtx();
+	const NAV_POS tOld = currentPos();
 
-			eCurrentSelect = SELECT_STOMP_BOARD;
-			stompBoard.select(FOOT_SWITCH_3);
-
-			break;
-
-		case SELECT_OUTPUT:
-
-			ePrevSelect = SELECT_OUTPUT;
-			outModule.deselect();
-
-			eCurrentSelect = SELECT_STOMP_BOARD;
-			stompBoard.select(FOOT_SWITCH_1);
-
-			break;
-
-		case SELECT_MONO_CHAIN_1:
-
-			ePrevSelect = SELECT_MONO_CHAIN_1;
-			monoChain1.deselect(monoChain1.getSelectedModuleNumber());
-
-			if(TRUE == bIsMixerAdded
-					&& eMixerPosition == monoChain1.getSelectedModuleNumber())
-			{
-				mixModule.deselect();
-
-				eCurrentSelect = SELECT_STOMP_BOARD;
-				switch(eMixerPosition)
-				{
-				case CHAIN_MODULE_1:
-					stompBoard.select(FOOT_SWITCH_3);
-					break;
-				case CHAIN_MODULE_2:
-				case CHAIN_MODULE_3:
-					stompBoard.select(FOOT_SWITCH_2);
-					break;
-				case CHAIN_MODULE_4:
-					stompBoard.select(FOOT_SWITCH_1);
-					break;
-				}
-			}
-			else
-			{
-				eCurrentSelect = SELECT_MONO_CHAIN_2;
-				monoChain2.select(monoChain1.getSelectedModuleNumber());
-			}
-
-			break;
-
-		case SELECT_MONO_CHAIN_2:
-
-			ePrevSelect = SELECT_MONO_CHAIN_2;
-			monoChain2.deselect(monoChain2.getSelectedModuleNumber());
-
-			if(TRUE == bIsMixerAdded
-					&& eMixerPosition == monoChain2.getSelectedModuleNumber())
-			{
-				mixModule.deselect();
-
-				eCurrentSelect = SELECT_STOMP_BOARD;
-				switch(eMixerPosition)
-				{
-				case CHAIN_MODULE_1:
-					stompBoard.select(FOOT_SWITCH_3);
-					break;
-				case CHAIN_MODULE_2:
-				case CHAIN_MODULE_3:
-					stompBoard.select(FOOT_SWITCH_2);
-					break;
-				case CHAIN_MODULE_4:
-					stompBoard.select(FOOT_SWITCH_1);
-					break;
-				}
-			}
-			else
-			{
-				if(FALSE == inputType.bIsStereo2)
-				{
-					eCurrentSelect = SELECT_MONO_CHAIN_3;
-					monoChain3.select(monoChain2.getSelectedModuleNumber());
-				}
-				else
-				{
-					eCurrentSelect = SELECT_STEREO_CHAIN_2;
-					stereoChain2.select(monoChain2.getSelectedModuleNumber());
-				}
-			}
-
-			break;
-
-		case SELECT_MONO_CHAIN_3:
-
-			ePrevSelect = SELECT_MONO_CHAIN_3;
-			monoChain3.deselect(monoChain3.getSelectedModuleNumber());
-
-			if(TRUE == bIsMixerAdded
-					&& eMixerPosition == monoChain3.getSelectedModuleNumber())
-			{
-				mixModule.deselect();
-
-				eCurrentSelect = SELECT_STOMP_BOARD;
-				switch(eMixerPosition)
-				{
-				case CHAIN_MODULE_1:
-					stompBoard.select(FOOT_SWITCH_3);
-					break;
-				case CHAIN_MODULE_2:
-				case CHAIN_MODULE_3:
-					stompBoard.select(FOOT_SWITCH_2);
-					break;
-				case CHAIN_MODULE_4:
-					stompBoard.select(FOOT_SWITCH_1);
-					break;
-				}
-			}
-			else
-			{
-				eCurrentSelect = SELECT_MONO_CHAIN_4;
-				monoChain4.select(monoChain3.getSelectedModuleNumber());
-			}
-
-			break;
-
-		case SELECT_MONO_CHAIN_4:
-
-			eCurrentSelect = SELECT_STOMP_BOARD;
-			ePrevSelect = SELECT_MONO_CHAIN_4;
-			monoChain4.deselect(monoChain4.getSelectedModuleNumber());
-
-			if(TRUE == bIsMixerAdded
-					&& eMixerPosition == monoChain4.getSelectedModuleNumber())
-			{
-				mixModule.deselect();
-			}
-
-			switch(monoChain4.getSelectedModuleNumber())
-			{
-			case CHAIN_MODULE_1:
-				stompBoard.select(FOOT_SWITCH_3);
-				break;
-
-			case CHAIN_MODULE_2:
-			case CHAIN_MODULE_3:
-				stompBoard.select(FOOT_SWITCH_2);
-				break;
-
-			case CHAIN_MODULE_4:
-				stompBoard.select(FOOT_SWITCH_1);
-				break;
-			default:
-				break;
-			}
-
-			break;
-
-		case SELECT_STEREO_CHAIN_1:
-
-			ePrevSelect = SELECT_STEREO_CHAIN_1;
-			stereoChain1.deselect(stereoChain1.getSelectedModuleNumber());
-
-			if(TRUE == bIsMixerAdded
-					&& eMixerPosition == stereoChain1.getSelectedModuleNumber())
-			{
-				mixModule.deselect();
-
-				eCurrentSelect = SELECT_STOMP_BOARD;
-				switch(eMixerPosition)
-				{
-				case CHAIN_MODULE_1:
-					stompBoard.select(FOOT_SWITCH_3);
-					break;
-				case CHAIN_MODULE_2:
-				case CHAIN_MODULE_3:
-					stompBoard.select(FOOT_SWITCH_2);
-					break;
-				case CHAIN_MODULE_4:
-					stompBoard.select(FOOT_SWITCH_1);
-					break;
-				}
-			}
-			else
-			{
-				if(FALSE == inputType.bIsStereo2)
-				{
-					eCurrentSelect = SELECT_MONO_CHAIN_3;
-					monoChain3.select(stereoChain1.getSelectedModuleNumber());
-				}
-				else
-				{
-					eCurrentSelect = SELECT_STEREO_CHAIN_2;
-					stereoChain2.select(stereoChain1.getSelectedModuleNumber());
-				}
-			}
-
-			break;
-
-		case SELECT_STEREO_CHAIN_2:
-
-			eCurrentSelect = SELECT_STOMP_BOARD;
-			ePrevSelect = SELECT_STEREO_CHAIN_2;
-			stereoChain2.deselect(stereoChain2.getSelectedModuleNumber());
-
-			if(TRUE == bIsMixerAdded
-					&& eMixerPosition == stereoChain2.getSelectedModuleNumber())
-			{
-				mixModule.deselect();
-			}
-
-			switch(stereoChain2.getSelectedModuleNumber())
-			{
-			case CHAIN_MODULE_1:
-				stompBoard.select(FOOT_SWITCH_1);
-				break;
-
-			case CHAIN_MODULE_2:
-			case CHAIN_MODULE_3:
-				stompBoard.select(FOOT_SWITCH_2);
-				break;
-
-			case CHAIN_MODULE_4:
-				stompBoard.select(FOOT_SWITCH_3);
-				break;
-			default:
-				break;
-			}
-
-			break;
-
-		case SELECT_STOMP_BOARD:
-		default:
-			break;
-		}
-	}
+	moveCursor(tOld, Nav_Vertical(&tCtx, tOld, +1));
 }

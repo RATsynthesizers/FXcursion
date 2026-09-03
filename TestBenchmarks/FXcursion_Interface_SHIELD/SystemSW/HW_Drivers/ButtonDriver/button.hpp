@@ -59,10 +59,4 @@ private:
 	/////////////////////////////////////////////////
 };
 
-extern Button btnYes;
-extern Button btnNo;
-extern Button btnUp;
-extern Button btnDown;
-extern Button btnFunc;
-
 #endif /* BUTTON_H_ */

@@ -23,12 +23,11 @@ StatusBarBase::StatusBarBase()
     recBox.setVisible(false);
     add(recBox);
 
-    bpmText.setXY(12, 8);
+    bpmText.setPosition(12, 8, 60, 20);
     bpmText.setColor(touchgfx::Color::getColorFromRGB(255, 255, 255));
     bpmText.setLinespacing(0);
     bpmTextBuffer[0] = 0;
     bpmText.setWildcard(bpmTextBuffer);
-    bpmText.resizeToCurrentText();
     bpmText.setTypedText(touchgfx::TypedText(T___SINGLEUSE_FYCR));
     add(bpmText);
 

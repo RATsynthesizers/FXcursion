@@ -73,7 +73,16 @@ See BSP_SD_ErrorCallback() and BSP_SD_AbortCallback() below
  * Notice: This is applicable only for cortex M7 based platform.
  */
 /* USER CODE BEGIN enableSDDmaCacheMaintenance */
-/* #define ENABLE_SD_DMA_CACHE_MAINTENANCE  1 */
+/*
+ * ON, because the D-cache is now enabled - see MPU_Config in Init.c.
+ *
+ * The SD card is the one DMA user that cannot be fixed by placement: FatFs
+ * hands this driver buffers from wherever they happen to live, including the
+ * stack, so there is no region to mark non-cacheable. This is ST's own
+ * invalidate-after-read / clean-before-write implementation, which was
+ * already sitting here switched off.
+ */
+#define ENABLE_SD_DMA_CACHE_MAINTENANCE  1
 /* USER CODE END enableSDDmaCacheMaintenance */
 
 /*

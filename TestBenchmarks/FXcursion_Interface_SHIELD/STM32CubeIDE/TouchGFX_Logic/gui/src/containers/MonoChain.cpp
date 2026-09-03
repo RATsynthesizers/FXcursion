@@ -11,6 +11,16 @@ const U8 MonoChain::MODULE_X_POSITIONS[4] =
 MonoChain::MonoChain()
 {
 	eSelectedModuleNumber = CHAIN_MODULE_1;
+
+	/*
+	 * eSelectedModuleName was left uninitialised here and only ever assigned
+	 * by select() or addModule(). No current path reads it first - SystemView
+	 * calls select() on the active chain in setupScreen, and consults the
+	 * inactive ones through getModuleName(), which reads aCurrentState - but
+	 * getSelectedModuleName() is public and one refactor away from being
+	 * called on a chain that has never been selected.
+	 */
+	eSelectedModuleName = MODULE_NONE;
 }
 
 void MonoChain::initialize()

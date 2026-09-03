@@ -46,11 +46,16 @@
 #include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
+
+#include "ctrl_link_if.h"
 #include "gpio.h"
 #include "fmc.h"
 #include "app_touchgfx.h"
 #include "w9812g6jh.h"
 #include "usb_device.h"
+#include "pubsub.h"
+#include "Recorder.h"
+#include "LoopSpool.h"
 
 
 /***************************************************************************************************
@@ -106,6 +111,8 @@ static StackType_t xTimerStack[configTIMER_TASK_STACK_DEPTH];
 
 /// System Clock Configuration
 static void SystemClock_Config(void);
+/// Peripheral Clock Configuration
+static void PeriphCommonClock_Config(void);
 /// MPU Configuration
 static void MPU_Config(void);
 /// Creates initialization thread */
@@ -292,11 +299,32 @@ void init_all(void)
 	/* MPU Configuration--------------------------------------------------------*/
 	MPU_Config();
 
+    /*
+     * Caches on, AFTER the MPU so the attributes are already in force.
+     *
+     * The I-cache carries NO coherency risk at all: instructions are never
+     * modified by a DMA, so there is nothing to keep in step. It was simply
+     * never switched on, and TouchGFX spends its time in software blending
+     * loops that benefit from it directly.
+     *
+     * The D-cache is safe because every address in the drawing path is
+     * already non-cacheable: the framebuffer at 0xC0000000 (region 4) and
+     * the FMC window at 0x60000000 (region 2), which is what
+     * flushFrameBuffer MDMAs between. The buffers a DMA touches moved to
+     * RAM_D2 (region 0), and the SD card does its own maintenance - see
+     * ENABLE_SD_DMA_CACHE_MAINTENANCE in sd_diskio.c.
+     */
+    SCB_EnableICache();
+    SCB_EnableDCache();
+
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
 
     /* Configure the system clock */
     SystemClock_Config();
+
+    /* Configure the peripherals common clocks */
+    PeriphCommonClock_Config();
 
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
@@ -319,8 +347,22 @@ void init_all(void)
     MX_JPEG_Init();
     MX_RTC_Init();
 
-    /* Initialize SDRAM */
+    /* Initialize SDRAM - BOTH banks.
+     *
+     * PB5 is FMC_SDCKE1 and PB6 is FMC_SDNE1, so the second device's control
+     * pins are routed and it has simply never been brought up: the only call
+     * here used to be for hsdram1, and the driver named bank 1 in its command
+     * sequence regardless of the handle it was given.
+     *
+     * The two sequences run one after the other rather than together. The
+     * reference manual allows both target bits at once, but sequential is
+     * equivalent here (identical timings, identical mode register) and keeps
+     * the driver taking one handle. */
     W9812G6JH_Init(&hsdram1);
+    W9812G6JH_Init(&hsdram2);
+
+    /* Initialize pubsub service */
+    PUBSUB_Init();
 
     /* Initialize display */
     lcdInit();
@@ -349,7 +391,7 @@ void init_all(void)
  */
 static void CreateInitThread(void)
 {
-    osThreadDef(InitThread, InitThread, osPriorityNormal, 0, 1000U);
+    osThreadDef(InitThread, InitThread, osPriorityBelowNormal, 0, 256U);
     initThreadHandle = osThreadCreate(osThread(InitThread), NULL);
     //osThreadSuspend(initThreadHandle);
 }
@@ -375,22 +417,38 @@ static void InitThread(void const *argument)
 //        printf("PIXEL initialize failed!\n");
 //    }
 
-    osThreadDef(USBThread, USBThread, osPriorityNormal, 0, 1000U);
+
+    /* The card lock and the spool thread, BEFORE RecorderInit: the recorder
+     * takes that lock around every pass at the card, and LoopSpool_SdLock only
+     * short-circuits while the lock does not exist yet. Creating it after the
+     * recorder thread was running would leave a window in which the recorder
+     * wrote unguarded. */
+    LoopSpool_Init();
+
+    RecorderInit();
+
+    /* The control link to the audio controller. Started AFTER RecorderInit so
+     * the recorder side exists before any ACK carrying a slot map can arrive,
+     * and it does not ask for the audio stream - that waits for an explicit
+     * CtrlLinkIf_Stream once the recorder has been armed to the ACKed layout. */
+    CtrlLinkIf_Init();
+
+    osThreadDef(USBThread, USBThread, osPriorityAboveNormal, 0, 512U);
     usbThreadHandle = osThreadCreate(osThread(USBThread), NULL);
 
 	/* definition and creation of TouchGFXTask */
-	osThreadDef(TouchGFXTask, TouchGFX_Task, osPriorityBelowNormal, 0, 4096U);
+	osThreadDef(TouchGFXTask, TouchGFX_Task, osPriorityBelowNormal, 0, 2048U);
 	TouchGFXTaskHandle = osThreadCreate(osThread(TouchGFXTask), NULL);
 
 #ifdef DEBUG
-    osThreadDef(MonitoringThread, MonitoringThread, osPriorityLow, 0, 200U);
+    osThreadDef(MonitoringThread, MonitoringThread, osPriorityBelowNormal, 0, 256U);
     monitoringThreadHandle = osThreadCreate(osThread(MonitoringThread), NULL);
 #endif
 
     for(;;)
     {
         /* Delete the Init Thread */
-        osThreadTerminate(initThreadHandle);
+        osThreadTerminate(NULL);
     }
 }
 
@@ -403,7 +461,6 @@ static void InitThread(void const *argument)
  *
  * @return    None.
  */
-
 static void USBThread(void const *argument)
 {
     MX_FATFS_Init();
@@ -412,13 +469,10 @@ static void USBThread(void const *argument)
 
 	MX_USB_DEVICE_Init();
 
-	static uint8_t current_status = 0; // 0 = No Card, 1 = Card Present
-	static uint8_t prev_status = 1;    // 0 = No Card, 1 = Card Present
-
     for(;;)
     {
-    	// Wait for the signal from any of the 3 ISRs
-		osEvent evt = osSignalWait(0x01, 1000);
+    	// Wait for the signal
+		osEvent evt = osSignalWait(0x01, 100);
 
 		if (evt.status == osEventSignal) {
 			/* 1. Call the library handler */
@@ -427,48 +481,6 @@ static void USBThread(void const *argument)
 			// 2. Re-enable the interrupt so the next USB event can trigger the ISR
 		    HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
 		}
-
-		if (prev_status == 0)
-		{
-			HAL_NVIC_DisableIRQ(SDMMC1_IRQn);
-
-		    HAL_SD_Abort(&hsd1);
-		    HAL_SD_DeInit(&hsd1);
-
-		    __HAL_RCC_SDMMC1_FORCE_RESET();
-		    __HAL_RCC_SDMMC1_RELEASE_RESET();
-
-		    HAL_Delay(10);
-
-		    HAL_SD_Init(&hsd1);
-
-		    HAL_NVIC_EnableIRQ(SDMMC1_IRQn);
-
-			if (HAL_SD_GetCardState(&hsd1) == HAL_SD_CARD_TRANSFER)
-			{
-				current_status = 1;
-			}
-			else
-			{
-				current_status = 0;
-			}
-		}
-		else
-		{
-			if (SD_NOT_PRESENT == BSP_PlatformIsDetected())
-			{
-				current_status = 0;
-			}
-		}
-
-		if (current_status == 1 && prev_status == 0) {
-		   // SUCCESSFUL INSERTION
-		   HAL_PCD_DevDisconnect(&hpcd_USB_OTG_FS);
-		   osDelay(200);
-		   HAL_PCD_DevConnect(&hpcd_USB_OTG_FS);
-		}
-
-		prev_status = current_status;
     }
 }
 
@@ -651,6 +663,32 @@ void SystemClock_Config(void)
   }
 }
 
+/**
+  * @brief Peripherals Common Clock Configuration
+  * @retval None
+  */
+void PeriphCommonClock_Config(void)
+{
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+  /** Initializes the peripherals clock
+  */
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPI2|RCC_PERIPHCLK_SPI1;
+  PeriphClkInitStruct.PLL3.PLL3M = 8;
+  PeriphClkInitStruct.PLL3.PLL3N = 96;
+  PeriphClkInitStruct.PLL3.PLL3P = 4;
+  PeriphClkInitStruct.PLL3.PLL3Q = 4;
+  PeriphClkInitStruct.PLL3.PLL3R = 2;
+  PeriphClkInitStruct.PLL3.PLL3RGE = RCC_PLL3VCIRANGE_3;
+  PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOWIDE;
+  PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
+  PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL3;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
 
 /* MPU Configuration */
 static void MPU_Config(void)
@@ -659,6 +697,33 @@ static void MPU_Config(void)
 
 	/* Disables the MPU */
 	HAL_MPU_Disable();
+
+	/* ==========================================================================
+	 * Region 0 - RAM_D2, the DMA buffers. NON-CACHEABLE.
+	 *
+	 * Needed because the D-cache is now on. Everything in .dma_buffers is
+	 * read or written by a bus master, and write-back caching breaks that in
+	 * both directions: a DMA reads RAM the CPU has only written to cache,
+	 * and dirty lines evict later on top of data a DMA has since written.
+	 *
+	 * Nothing else is placed in RAM_D2, so the whole region is marked
+	 * non-cacheable and no transfer here needs a clean or an invalidate.
+	 * 256 KB is the largest naturally aligned power of two that fits, which
+	 * is why the linker script declares RAM_D2 as 256K to match.
+	 * ======================================================================== */
+	MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+	MPU_InitStruct.Number = MPU_REGION_NUMBER0;
+	MPU_InitStruct.BaseAddress = 0x30000000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_256KB;
+	MPU_InitStruct.SubRegionDisable = 0x0;
+	MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
+	MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
+	MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
+	MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+	MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
 	/** Initializes and configures the Region and the memory to be protected
 	*/
@@ -682,6 +747,41 @@ static void MPU_Config(void)
 	MPU_InitStruct.Enable = MPU_REGION_ENABLE;
 	MPU_InitStruct.Number = MPU_REGION_NUMBER4;
 	MPU_InitStruct.BaseAddress = 0xC0000000;
+	MPU_InitStruct.Size = MPU_REGION_SIZE_64MB;
+	MPU_InitStruct.SubRegionDisable = 0x0;
+	MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
+	MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+	MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+	MPU_InitStruct.IsShareable = MPU_ACCESS_SHAREABLE;
+	MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+	MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+
+	HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+	/* ==========================================================================
+	 * Region 5 - FMC SDRAM BANK 2 at 0xD0000000. NON-CACHEABLE.
+	 *
+	 * Region 4 above covers 0xC0000000 + 64 MB, which stops a long way short of
+	 * bank 2. Without a region of its own, bank 2 falls through to the ARM
+	 * default memory map, which types 0xA0000000..0xDFFFFFFF as DEVICE memory:
+	 * it works, but every access is strongly ordered and unaligned access
+	 * faults - a trap that surfaces as a hard fault inside memcpy rather than
+	 * anywhere near the code that chose the address.
+	 *
+	 * Non-cacheable to match region 4 and for the same reason: everything that
+	 * lands in SDRAM here is touched by a bus master - DMA2D, MDMA, or the SPI
+	 * receive path - and write-back caching breaks that in both directions.
+	 * Making it cacheable is a real optimisation for the CPU-side packing loop,
+	 * but it buys explicit clean/invalidate at every DMA boundary, so it is a
+	 * decision to take on measurements rather than on principle.
+	 *
+	 * 64 MB is a power of two and 0xD0000000 is naturally aligned to it, so the
+	 * region covers the bank exactly with no subregions disabled - and it stays
+	 * exact when the 512 Mbit parts arrive, since those are 64 MB too.
+	 * ======================================================================== */
+	MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+	MPU_InitStruct.Number = MPU_REGION_NUMBER5;
+	MPU_InitStruct.BaseAddress = 0xD0000000;
 	MPU_InitStruct.Size = MPU_REGION_SIZE_64MB;
 	MPU_InitStruct.SubRegionDisable = 0x0;
 	MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;

@@ -67,7 +67,7 @@ extern I2C_HandleTypeDef hi2c2;
 extern I2C_HandleTypeDef hi2c4;
 extern JPEG_HandleTypeDef hjpeg;
 extern MDMA_HandleTypeDef hmdma_mdma_channel0_sw_0;
-extern MDMA_HandleTypeDef hmdma_mdma_channel1_sdmmc1_end_data_0;
+extern MDMA_HandleTypeDef hmdma_mdma_channel1_sw_0;
 extern QSPI_HandleTypeDef hqspi;
 extern SD_HandleTypeDef hsd1;
 extern DMA_HandleTypeDef hdma_spi1_rx;
@@ -80,6 +80,7 @@ extern SPI_HandleTypeDef hspi1;
 extern SPI_HandleTypeDef hspi2;
 extern SPI_HandleTypeDef hspi5;
 extern DMA_HandleTypeDef hdma_tim8_ch1;
+extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim8;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart2_tx;
@@ -355,6 +356,20 @@ void ADC_IRQHandler(void)
   /* USER CODE BEGIN ADC_IRQn 1 */
 
   /* USER CODE END ADC_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM4 global interrupt.
+  */
+void TIM4_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM4_IRQn 0 */
+
+  /* USER CODE END TIM4_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim4);
+  /* USER CODE BEGIN TIM4_IRQn 1 */
+
+  /* USER CODE END TIM4_IRQn 1 */
 }
 
 /**
@@ -708,6 +723,7 @@ void MDMA_IRQHandler(void)
 
   /* USER CODE END MDMA_IRQn 0 */
   HAL_MDMA_IRQHandler(&hmdma_mdma_channel0_sw_0);
+  HAL_MDMA_IRQHandler(&hmdma_mdma_channel1_sw_0);
   /* USER CODE BEGIN MDMA_IRQn 1 */
 
   /* USER CODE END MDMA_IRQn 1 */

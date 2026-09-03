@@ -7,25 +7,27 @@
 
 #include "button.hpp"
 
-Button btnYes(BTN_YES_GPIO_Port,
-			  BTN_YES_Pin);
-
-Button btnNo(BTN_NO_GPIO_Port,
-			 BTN_NO_Pin);
-
-Button btnUp(BTN_UP_GPIO_Port,
-			 BTN_UP_Pin);
-
-Button btnDown(BTN_DOWN_GPIO_Port,
-			   BTN_DOWN_Pin);
-
-Button btnFunc(BTN_FUNC_GPIO_Port,
-			   BTN_FUNC_Pin);
+/*
+ * The button INSTANCES used to live here as well, duplicating the five that
+ * UISurvey.cpp declares. Those were file-static there, so there was no linker
+ * clash and nothing complained - but button.hpp declares no extern for them,
+ * so nothing could reach the copies defined here either. They were five
+ * Button objects constructed at startup, polled by nobody, and a trap for the
+ * first person to write `extern Button btnYes;` and then wonder why it never
+ * changed state.
+ *
+ * Instances belong next to the loop that polls them. See UISurvey.cpp, which
+ * owns all of them including btnRec (never defined here at all). Encoders are
+ * the other way round on purpose: encoder.cpp defines encMenu and encParam and
+ * encoder.hpp declares them extern, because two screens' worth of code reads
+ * the same knob.
+ */
 
 void Button::update(void)
 {
 
-	ButtonState prevState = state;
+	/* prevState used to be latched here and never read - the transition
+	   checks below compare against `state` directly. Removed. */
 	U32 currentTick = HAL_GetTick(); // Get the current time once
 
 	// Read the raw pin value

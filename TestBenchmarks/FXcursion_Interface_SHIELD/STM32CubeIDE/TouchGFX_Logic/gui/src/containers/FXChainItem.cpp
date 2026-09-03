@@ -3,7 +3,14 @@
 
 FXChainItem::FXChainItem()
 {
+	/* Captured from whatever the Designer put in the Base, so this file is not
+	   a second opinion on the normal colour. */
+	activeColor = whiteBox.getColor();
 
+	/* The same grey AddModuleWindow::blockSelect already uses for "you cannot
+	   have this" - one disabled colour across the app rather than two that
+	   nearly match. */
+	bypassedColor = touchgfx::Color::getColorFromRGB(128, 128, 128);
 }
 
 void FXChainItem::initialize()
@@ -20,6 +27,14 @@ void FXChainItem::setEffect(FXChainItemInfo newEffectInfo) {
 	pictRegular.setBitmap(touchgfx::Bitmap(effectInfo.nBitmapRegular));
 	pictSelected.setBitmap(touchgfx::Bitmap(effectInfo.nBitmapSelected));
 	blackBox.setVisible(effectInfo.eEffectNameID != T_EMPTYEFFECT);
+
+	/*
+	 * Bypass rides along with the effect data rather than being a separate
+	 * call, so a reorder repaints it correctly for free - swapEffects only
+	 * moves FXChainItemInfo values and calls setEffect.
+	 */
+	whiteBox.setColor((FALSE != effectInfo.bBypassed) ? bypassedColor
+	                                                  : activeColor);
 
 	if (isSelected)
 	{

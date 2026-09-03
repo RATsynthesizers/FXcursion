@@ -16,6 +16,9 @@
 // Get memmov and memcpy functions
 #include "string.h"
 
+/* For IN_DMA_BUF: these colour buffers are read by SPI DMA. */
+#include "common_cfg.h"
+
 
 /***************************************************************************************************
  * Local module constants
@@ -52,12 +55,14 @@ static LED_WS2812_HANDLE LED_WS2812_xHandle[LED_MODULES_AMOUNT];
 /**
  * @var LED_WS2812_aLooperLedColors[] - array with current looper leds colors
  */
-static U8 LED_WS2812_aLooperLedColors[PIXEL_LOOPER_LED_QUANTITY * LED_WS2812_DATA_BYTES_FOR_ONE_LED + 2];
+/* RAM_D2, non-cacheable: the CPU memsets these and SPI reads them by DMA,
+   which under write-back caching would transmit whatever RAM held before. */
+static U8 LED_WS2812_aLooperLedColors[PIXEL_LOOPER_LED_QUANTITY * LED_WS2812_DATA_BYTES_FOR_ONE_LED + 2] IN_DMA_BUF;
 
 /**
  * @var LED_WS2812_aUILedColors[] - array with current UI leds colors
  */
-static U8 LED_WS2812_aUILedColors[PIXEL_UI_LED_QUANTITY * LED_WS2812_DATA_BYTES_FOR_ONE_LED + 2];
+static U8 LED_WS2812_aUILedColors[PIXEL_UI_LED_QUANTITY * LED_WS2812_DATA_BYTES_FOR_ONE_LED + 2] IN_DMA_BUF;
 
 // This array allows neo pixel makes linear transition between colors
 extern const U8 PIXEL_aLedGamma[256];

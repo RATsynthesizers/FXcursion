@@ -131,6 +131,24 @@ public:
 		model->clearFXChain(channel);
 	}
 
+	void saveRecorderInfo(RecorderInfo_t* recInfoNew)
+	{
+		model->saveRecorderInfo(recInfoNew);
+	}
+	RecorderInfo_t* getRecorderInfo()
+	{
+		return model->getRecorderInfo();
+	}
+
+	/* Re-send the whole machine configuration. Called after anything that
+	   changes the grid - a module added or deleted, the mixer placed or
+	   removed, the input topology changed. See the note above pushConfig in
+	   Model.hpp for why this cannot hang with no audio board attached. */
+	void pushConfig()
+	{
+		model->pushConfig();
+	}
+
 
 private:
     SystemPresenter();

@@ -23,6 +23,18 @@ public:
 
     virtual void encMenuUpdate(S8 nValue) = 0;
     virtual void encParamUpdate(U8 nID, S8 nValue) = 0;
+
+    /*
+     * New telemetry from the audio controller.
+     *
+     * Deliberately NOT pure, unlike everything above it: a screen that draws no
+     * meters should not have to declare that it ignores them, and making this
+     * pure would force an empty override into every existing view.
+     */
+    virtual void telemetryUpdate(const PROTO_TELEMETRY& tTelem)
+    {
+        (void)tTelem;
+    }
 protected:
     Model* model;
 };

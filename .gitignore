@@ -1,3 +1,18 @@
 .settings
 .metadata
 Debug
+
+# CMake / ninja host-test output. Test/build holds the configured cache, the
+# object files and the linked test binary - all regenerable, and the cache
+# embeds absolute paths from whichever machine configured it, so committing it
+# actively breaks the build for anyone else.
+build/
+CMakeCache.txt
+CMakeFiles/
+*.exe
+*.o
+*.obj
+*.elf
+*.map
+*.bin
+*.hex

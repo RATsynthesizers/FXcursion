@@ -17,11 +17,12 @@ void EffectListContainer::beginInit()
 
 void EffectListContainer::endInit()
 {
+	/* The guard that used to be here tested bInitializing on the line after
+	   clearing it, so it was always true. Dropped - the rebuild is
+	   unconditional by definition at the end of a batch. */
 	bInitializing = FALSE;
-	if (!bInitializing)
-	{
-		rebuildVisibleList();
-	}
+
+	rebuildVisibleList();
 }
 
 void EffectListContainer::scrollContents(S8 nScrollAmount)

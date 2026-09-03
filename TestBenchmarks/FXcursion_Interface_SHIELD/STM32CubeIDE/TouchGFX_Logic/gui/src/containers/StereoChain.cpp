@@ -11,6 +11,9 @@ const U8 StereoChain::MODULE_X_POSITIONS[4] =
 StereoChain::StereoChain()
 {
 	eSelectedModuleNumber = CHAIN_MODULE_1;
+
+	/* See the note in MonoChain's constructor. */
+	eSelectedModuleName = MODULE_NONE;
 }
 
 void StereoChain::initialize()

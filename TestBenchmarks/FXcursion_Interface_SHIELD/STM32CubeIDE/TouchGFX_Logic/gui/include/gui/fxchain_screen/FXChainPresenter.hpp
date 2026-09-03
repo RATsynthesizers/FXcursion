@@ -78,6 +78,21 @@ public:
 		model->moveFXParams(channel, effectNum, direction);
 	}
 
+	/* Re-send the whole machine configuration. Called after anything that
+	   changes what the audio graph should be - adding, deleting or reordering
+	   an effect. See the note above pushConfig in Model.hpp. */
+	void pushConfig()
+	{
+		model->pushConfig();
+	}
+
+	/* Reordering uses this so the user hears each step, coalesced to one send
+	   per frame so a fast turn cannot overrun the transmit ring. */
+	void pushConfigDeferred()
+	{
+		model->pushConfigDeferred();
+	}
+
 private:
     FXChainPresenter();
 

@@ -38,6 +38,10 @@
 #error "Wrong program configuration: TOPIC_SUBSCRIBERS_MAX_QTY must be in the range [1 ; 5]"
 #endif // ((TOPIC_SUBSCRIBERS_MAX_QTY > 0U) || (TOPIC_SUBSCRIBERS_MAX_QTY == 0U))
 
+#if ((TOPIC_QUEUE_DEPTH > 64U) || (TOPIC_QUEUE_DEPTH == 0U))
+#error "Wrong program configuration: TOPIC_QUEUE_DEPTH must be in the range [1 ; 64]"
+#endif // ((TOPIC_QUEUE_DEPTH > 64U) || (TOPIC_QUEUE_DEPTH == 0U))
+
 
 
 /***************************************************************************************************
@@ -250,7 +254,7 @@ SUB_HANDLE PUBSUB_Subscribe(char* const pTopicName,
                                 PubSub.aTopics[nTopicNum].aSubscribers[nSubscriberNum].bIsUsed = TRUE;
                                 PubSub.aTopics[nTopicNum].aSubscribers[nSubscriberNum].pNotifyFunc =
                                         pNotifyFunc;
-                                PubSub.aTopics[nTopicNum].aSubscribers[nSubscriberNum].os_mailQ_def.queue_sz = 1;
+                                PubSub.aTopics[nTopicNum].aSubscribers[nSubscriberNum].os_mailQ_def.queue_sz = TOPIC_QUEUE_DEPTH;
                                 PubSub.aTopics[nTopicNum].aSubscribers[nSubscriberNum].os_mailQ_def.item_sz =
                                         PubSub.aTopics[nTopicNum].nDataLength;
                                 PubSub.aTopics[nTopicNum].aSubscribers[nSubscriberNum].os_mailQ_def.cb =

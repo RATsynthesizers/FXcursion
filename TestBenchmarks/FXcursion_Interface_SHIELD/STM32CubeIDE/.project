@@ -156,6 +156,11 @@
 			<type>2</type>
 			<locationURI>SYSTEM_SW_LOC/Services/pubsub</locationURI>
 		</link>
+		<link>
+			<name>Shared</name>
+			<type>2</type>
+			<locationURI>SHARED_LOC</locationURI>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>
@@ -177,6 +182,10 @@
 		<variable>
 			<name>UTILITY_SW_LOC</name>
 			<value>$%7BPARENT-1-PROJECT_LOC%7D/UtilitySW</value>
+		</variable>
+		<variable>
+			<name>SHARED_LOC</name>
+			<value>$%7BPARENT-1-PROJECT_LOC%7D/Shared</value>
 		</variable>
 	</variableList>
 </projectDescription>

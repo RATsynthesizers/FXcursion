@@ -7,29 +7,41 @@
 
 #include "w9812g6jh.h"
 
-FMC_SDRAM_CommandTypeDef command;
+/* static: these used to be external symbols that any translation unit could
+ * collide with. */
+static FMC_SDRAM_CommandTypeDef command;
 
-HAL_StatusTypeDef hal_stat;
+static HAL_StatusTypeDef hal_stat;
 
 void W9812G6JH_Init(SDRAM_HandleTypeDef *hsdram) {
 
+	/* The bank comes from the handle. Naming BANK1 here regardless is what made
+	 * a second call with the bank-2 handle a no-op against the wrong device. */
+	W9812G6JH_InitBank(hsdram,
+	                   (hsdram->Init.SDBank == FMC_SDRAM_BANK2)
+	                       ? FMC_SDRAM_CMD_TARGET_BANK2
+	                       : FMC_SDRAM_CMD_TARGET_BANK1);
+}
+
+void W9812G6JH_InitBank(SDRAM_HandleTypeDef *hsdram, uint32_t nTarget) {
+
 	__IO uint32_t tmpmrd = 0;
 	command.CommandMode = FMC_SDRAM_CMD_CLK_ENABLE;
-	command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+	command.CommandTarget = nTarget;
 	command.AutoRefreshNumber = 1;
 	command.ModeRegisterDefinition = 0;
 	hal_stat = HAL_SDRAM_SendCommand(hsdram, &command, SDRAM_TIMEOUT);
 	HAL_Delay(1);
 
 	command.CommandMode = FMC_SDRAM_CMD_PALL;
-	command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+	command.CommandTarget = nTarget;
 	command.AutoRefreshNumber = 1;
 	command.ModeRegisterDefinition = 0;
 	hal_stat = HAL_SDRAM_SendCommand(hsdram, &command, SDRAM_TIMEOUT);
 	HAL_Delay(1);
 
 	command.CommandMode = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
-	command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+	command.CommandTarget = nTarget;
 	command.AutoRefreshNumber = 8;
 	command.ModeRegisterDefinition = 0;
 	hal_stat = HAL_SDRAM_SendCommand(hsdram, &command, SDRAM_TIMEOUT);
@@ -42,7 +54,7 @@ void W9812G6JH_Init(SDRAM_HandleTypeDef *hsdram) {
 						SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
 
 	command.CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
-	command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+	command.CommandTarget = nTarget;
 	command.AutoRefreshNumber = 1;
 	command.ModeRegisterDefinition = tmpmrd;
 	hal_stat = HAL_SDRAM_SendCommand(hsdram, &command, SDRAM_TIMEOUT);
@@ -50,4 +62,57 @@ void W9812G6JH_Init(SDRAM_HandleTypeDef *hsdram) {
 
 	// Riddle  COUNT = (SDRAM refresh period ⁄ Number of rows) – 20
 	hsdram->Instance->SDRTR |= ((uint32_t)((SDRAM_RFR_COUNT - 1)<< 1));
+}
+
+
+STD_RESULT W9812G6JH_SelfTest(uint32_t nBase)
+{
+	__IO uint32_t* const pMem = (__IO uint32_t*)nBase;
+	uint32_t             nOfs;
+	uint8_t              nBit;
+
+	/* ---- data bus: walking ones at the base ---------------------------------
+	   Catches a data line stuck, open, or shorted to its neighbour. One address,
+	   so an address fault cannot mask a data fault here. */
+	for (nBit = 0U; nBit < 32U; nBit++)
+	{
+		const uint32_t nPattern = (uint32_t)1UL << nBit;
+
+		pMem[0] = nPattern;
+
+		if (pMem[0] != nPattern)
+		{
+			return RESULT_NOT_OK;
+		}
+	}
+
+	/* ---- address bus: one unique value per power-of-two offset ---------------
+	   THE ONE THAT MATTERS FOR A LOOPER. A swapped or stuck address line makes
+	   two different addresses the same cell, so a loop long enough to reach the
+	   aliased offset quietly overwrites its own beginning - which sounds like a
+	   looper bug and is not one.
+
+	   Word offsets, so the loop stops at the bank size in bytes. */
+	for (nOfs = 1UL; (nOfs * 4UL) < (uint32_t)SDRAM_BANK_SIZE_BYTES; nOfs <<= 1U)
+	{
+		pMem[nOfs] = nOfs;
+	}
+
+	/* Base last, so it is not one of the values a stuck line could satisfy. */
+	pMem[0] = 0xAA55AA55UL;
+
+	for (nOfs = 1UL; (nOfs * 4UL) < (uint32_t)SDRAM_BANK_SIZE_BYTES; nOfs <<= 1U)
+	{
+		if (pMem[nOfs] != nOfs)
+		{
+			return RESULT_NOT_OK;
+		}
+	}
+
+	if (pMem[0] != 0xAA55AA55UL)
+	{
+		return RESULT_NOT_OK;
+	}
+
+	return RESULT_OK;
 }

@@ -14,6 +14,9 @@ public:
     virtual void setValue(uint8_t newValue);
     virtual uint8_t getValue();
     virtual void setParamName(TEXTS paramName);
+
+    /** Name straight from the shared effect descriptor. See the .cpp. */
+    virtual void setParamName(const char* pName);
 protected:
     uint8_t rotationSpeed = 15;
     uint8_t value = 127;

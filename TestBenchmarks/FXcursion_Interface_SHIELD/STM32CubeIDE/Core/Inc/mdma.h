@@ -31,10 +31,17 @@
 
 /* MDMA transfer handles -----------------------------------------------------*/
 extern MDMA_HandleTypeDef hmdma_mdma_channel0_sw_0;
-extern MDMA_HandleTypeDef hmdma_mdma_channel1_sdmmc1_end_data_0;
+extern MDMA_HandleTypeDef hmdma_mdma_channel1_sw_0;
+extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_1;
+extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_2;
+extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_3;
+extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_4;
+extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_5;
+extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_6;
+extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_7;
 
 /* USER CODE BEGIN Includes */
-
+#include "common_cfg.h"
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */

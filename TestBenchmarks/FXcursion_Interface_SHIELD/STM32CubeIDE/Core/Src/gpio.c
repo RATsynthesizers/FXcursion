@@ -66,11 +66,11 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PC13 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13;
-  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  /*Configure GPIO pin : BTN_REC_Pin */
+  GPIO_InitStruct.Pin = BTN_REC_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BTN_REC_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PH0 PH1 */
   GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
@@ -84,10 +84,10 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(MY_LCD_TE_EXTI2_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : ENC_PARAM_B_Pin ENC_PARAM_A_Pin MY_FOOT1_Pin BTN_UP_Pin
-                           BTN_DOWN_Pin */
-  GPIO_InitStruct.Pin = ENC_PARAM_B_Pin|ENC_PARAM_A_Pin|BTN_FUNC_Pin|BTN_UP_Pin
-                          |BTN_DOWN_Pin;
+  /*Configure GPIO pins : ENC_PARAM_B_Pin ENC_PARAM_A_Pin BTN_FUNC_Pin BTN_DOWN_Pin
+                           BTN_UP_Pin */
+  GPIO_InitStruct.Pin = ENC_PARAM_B_Pin|ENC_PARAM_A_Pin|BTN_FUNC_Pin|BTN_DOWN_Pin
+                          |BTN_UP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);

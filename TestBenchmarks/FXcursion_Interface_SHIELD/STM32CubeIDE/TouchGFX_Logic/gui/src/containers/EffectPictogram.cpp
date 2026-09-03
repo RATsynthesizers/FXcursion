@@ -1,8 +1,19 @@
 #include <gui/containers/EffectPictogram.hpp>
+#include <touchgfx/Color.hpp>
 
 EffectPictogram::EffectPictogram()
 {
+	bSelected = false;
+	bEditing  = false;
+	bMoving   = false;
 
+	/* Whatever the Designer configured, so this file is not a second opinion
+	   on the normal colour. Same trick Pages uses for its page dots. */
+	normalOutline = selectBoxPainter.getColor();
+
+	/* The same blue StatusBar's moveBox uses, so "this is being moved" reads
+	   as one idea across the screen rather than two unrelated highlights. */
+	movingOutline = touchgfx::Color::getColorFromRGB(21, 0, 255);
 }
 
 void EffectPictogram::initialize()
@@ -27,13 +38,43 @@ FXChainItemInfo EffectPictogram::getEffect()
 
 void EffectPictogram::select(bool select)
 {
-	selectBox.setVisible(select);
-	invalidate();
+	setState(select, bEditing, bMoving);
 }
 
 void EffectPictogram::edit(bool edit)
 {
-	editingBox.setVisible(edit);
-	pictEditing.setVisible(edit);
+	setState(bSelected, edit, bMoving);
+}
+
+void EffectPictogram::move(bool move)
+{
+	setState(bSelected, bEditing, move);
+}
+
+void EffectPictogram::setState(bool bSelect, bool bEdit, bool bMove)
+{
+	if ((bSelect == bSelected) && (bEdit == bEditing) && (bMove == bMoving))
+	{
+		/* Nothing to repaint. Lets the view re-apply the whole row on every
+		   step without paying for the three that did not change. */
+		return;
+	}
+
+	bSelected = bSelect;
+	bEditing  = bEdit;
+	bMoving   = bMove;
+
+	applyState();
+}
+
+void EffectPictogram::applyState()
+{
+	selectBox.setVisible(bSelected);
+
+	editingBox.setVisible(bEditing);
+	pictEditing.setVisible(bEditing);
+
+	selectBoxPainter.setColor(bMoving ? movingOutline : normalOutline);
+
 	invalidate();
 }
