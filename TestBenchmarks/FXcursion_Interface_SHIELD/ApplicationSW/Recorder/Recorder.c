@@ -31,6 +31,10 @@
 /* The card is shared with the loop spooler, which owns the lock. */
 #include "LoopSpool.h"
 
+/* Fills the transmit half during a loop load. Recorder.h does not include this,
+   so the two headers do not cycle. */
+#include "LoopSession.h"
+
 /** One de-interleave destination: which slots, and where they go. */
 typedef struct stREC_ROUTE
 {
@@ -150,6 +154,22 @@ volatile uint32_t recLoopOverruns = 0UL;
 int32_t audioRxBuffer[REC_RX_WORDS] IN_DMA_BUF;
 
 /*
+ * The transmit side of the same frames, for loading a loop INTO the audio
+ * board.
+ *
+ * ARMED FOR THE LIFE OF THE LINK, not just during a load. The SPI is
+ * full-duplex and the master clocks both directions whether or not this side
+ * has anything to say, so there is always something on MISO; the only question
+ * is whether it is meaningful. Arming once and leaving it means the receive
+ * side is never re-armed - and re-arming a positionally framed stream is the
+ * one thing that rotates every recorder channel into the wrong file.
+ *
+ * The cost is 32 KiB of RAM_D2 that spends most of its life full of zeros.
+ * That is the price of never touching a running stream.
+ */
+int32_t audioTxBuffer[REC_RX_WORDS] IN_DMA_BUF;
+
+/*
  * De-interleaved audio, PLANAR: one ring per physical channel, S32.
  *
  * This replaced six rings - four mono plus recorderCh12/recorderCh34 - which
@@ -246,7 +266,16 @@ STD_RESULT RecorderInit()
 	   mid-block rotates every channel into the wrong file, silently and with
 	   plausible audio in it. CtrlLinkIf_Stream is what says "go", and it is
 	   sent later - see the note over PROTO_STREAM. */
-	if (SPI_TP_StartReceive(audioRxBuffer, (U16)REC_RX_WORDS) != RESULT_OK)
+	for(U32 i = 0; i < REC_RX_WORDS; i++)
+	{
+		audioTxBuffer[i] = 0;
+	}
+
+	/* FULL DUPLEX, armed once. Receive carries the recorder stream and, during
+	   a save, the loop; transmit carries a loop being loaded and zeros the rest
+	   of the time. See audioTxBuffer for why it is always armed. */
+	if (SPI_TP_StartTransceive(audioRxBuffer, audioTxBuffer,
+	                           (U16)REC_RX_WORDS) != RESULT_OK)
 	{
 		return RESULT_NOT_OK;
 	}
@@ -1071,6 +1100,31 @@ static void Recorder_OnSpiHalf(const BOOLEAN bSecondHalf)
     halfBufferFlag = (bSecondHalf == TRUE) ? 1U : 0U;
 
     MDMA_Trigger_Deinterleave();
+
+    /*
+     * Refill the transmit half the master has just finished clocking, while it
+     * clocks the other. Filling the half being clocked would put a partly
+     * written frame on the wire.
+     *
+     * The stream width comes from the same ACK the de-interleave used, so the
+     * two directions cannot disagree about where a frame ends.
+     */
+    {
+        PROTO_ACK tAck;
+        const uint8_t nWidth = (CtrlLinkIf_GetAck(&tAck) == RESULT_OK)
+                                   ? tAck.nStreamWidth
+                                   : (uint8_t)REC_SLOTS_PER_FRAME;
+
+        if (nWidth > (uint8_t)REC_SLOTS_PER_FRAME)
+        {
+            const uint32_t nOfs = (bSecondHalf == TRUE)
+                                      ? 0UL
+                                      : ((uint32_t)REC_RX_HALF_FRAMES * nWidth);
+
+            LoopSession_FillTx(&audioTxBuffer[nOfs],
+                               (uint32_t)REC_RX_HALF_FRAMES, nWidth);
+        }
+    }
 }
 
 static void HAL_MDMA_XferCpltCallback(MDMA_HandleTypeDef *hmdma) {

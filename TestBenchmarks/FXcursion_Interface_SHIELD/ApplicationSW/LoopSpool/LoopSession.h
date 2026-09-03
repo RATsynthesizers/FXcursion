@@ -121,6 +121,27 @@ extern void LoopSession_OnStat(const PROTO_LOOP_STAT* const pStat);
  */
 extern void LoopSession_Poll(void);
 
+/**
+ * @brief LOAD: fill one half of the SPI transmit ring with loop bytes.
+ *
+ * Called from the SPI half callback - INTERRUPT CONTEXT - for the half the
+ * master has just finished clocking out, while it clocks the other. Filling the
+ * half being clocked would put a partly written frame on the wire, and a
+ * positionally framed stream has nothing to notice that with.
+ *
+ * The exact mirror of LoopXfer_Block on the audio board: four payload bytes per
+ * slot, loop slots only, recorder slots left alone. When no load is running it
+ * zeroes the loop slots instead - a ring left holding the tail of a finished
+ * transfer would keep sending it.
+ *
+ * @param pFrames  first frame of the half
+ * @param nFrames  frames in the half
+ * @param nStride  slots per frame
+ */
+extern void LoopSession_FillTx(S32* const pFrames,
+                               const U32 nFrames,
+                               const U8  nStride);
+
 /** @brief TRUE while a transfer is negotiating or moving. */
 extern BOOLEAN LoopSession_IsBusy(void);
 

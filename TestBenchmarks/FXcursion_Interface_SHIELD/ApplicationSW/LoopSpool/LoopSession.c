@@ -19,6 +19,9 @@
 #include "fx_crc.h"
 #include "fx_defs.h"
 
+/* REC_SLOTS_PER_FRAME - where the recorder slots end and the loop slots begin. */
+#include "common_cfg.h"
+
 /***************************************************************************************************
 * Definitions of local (private) constants
 ***************************************************************************************************/
@@ -80,6 +83,16 @@ static BOOLEAN bRunning;
 static U32     nPeerCrc;
 static BOOLEAN bPeerDone;
 
+/**
+ * How far a LOAD has got, in bytes handed to the transmit ring.
+ *
+ * The save direction has Recorder_LoopBytesTaken, which counts what the MDMA
+ * actually landed. A load has no such witness on this side - the bytes leave
+ * when the master clocks them - so this counts what was handed over, and the
+ * transfer is finished when the far side says it received them all.
+ */
+static volatile U32 nTxOfs;
+
 /***************************************************************************************************
 * Definitions of local (private) functions
 ***************************************************************************************************/
@@ -109,6 +122,7 @@ static void SessionRelease(const U8 eResult)
        staging slot against a CRC from a loop that is no longer there. */
     bPeerDone   = FALSE;
     nPeerCrc    = 0UL;
+    nTxOfs      = 0UL;
 
     if (eResult != (U8)PROTO_RES_OK)
     {
@@ -145,6 +159,7 @@ STD_RESULT LoopSession_Init(void)
     bRunning    = FALSE;
     bPeerDone   = FALSE;
     nPeerCrc    = 0UL;
+    nTxOfs      = 0UL;
     nFailures   = 0UL;
     eLastResult = (U8)PROTO_RES_OK;
 
@@ -451,6 +466,80 @@ void LoopSession_Poll(void)
     eLastResult = (U8)PROTO_RES_OK;
 
     FxLoop_Reset(&tSession);
+}
+
+
+void LoopSession_FillTx(S32* const pFrames, const U32 nFrames, const U8 nStride)
+{
+    const U8* pSrc;
+    U32       nFrame;
+    U8        nLoopQty;
+
+    if ((pFrames == NULL_PTR) || (nStride <= (U8)REC_SLOTS_PER_FRAME))
+    {
+        return;
+    }
+
+    nLoopQty = (U8)(nStride - (U8)REC_SLOTS_PER_FRAME);
+
+    /*
+     * NOT SENDING: zero the loop slots and leave.
+     *
+     * The ring is armed for the life of the link, so whatever is in it goes out
+     * on every lap. A half still holding the tail of a finished load would send
+     * that tail again, forever, into a looper that has moved on.
+     */
+    if ((bRunning == FALSE) || (tSession.eDir != (U8)LOOP_DIR_LOAD))
+    {
+        for (nFrame = 0UL; nFrame < nFrames; nFrame++)
+        {
+            U8 s;
+
+            for (s = 0U; s < nLoopQty; s++)
+            {
+                pFrames[(nFrame * (U32)nStride) + (U32)REC_SLOTS_PER_FRAME + s] = 0L;
+            }
+        }
+
+        return;
+    }
+
+    pSrc = LoopSpool_Buffer(nSlot);
+
+    if (pSrc == NULL_PTR)
+    {
+        return;
+    }
+
+    /*
+     * Four payload bytes per slot, the exact mirror of the audio board's pack.
+     * The two have to agree byte for byte: this stream carries no framing, so a
+     * disagreement about how many bytes a slot holds does not fail, it just
+     * delivers a loop that is stretched or truncated.
+     */
+    for (nFrame = 0UL; nFrame < nFrames; nFrame++)
+    {
+        U8 s;
+
+        for (s = 0U; s < nLoopQty; s++)
+        {
+            U32 nWord = 0UL;
+            U8  b;
+
+            for (b = 0U; b < 4U; b++)
+            {
+                /* Past the end: pad. The far side stops at nBytesTotal, so
+                   these bytes are clocked but never stored. */
+                if (nTxOfs < tSession.nBytesTotal)
+                {
+                    nWord |= ((U32)pSrc[nTxOfs]) << (8U * b);
+                    nTxOfs++;
+                }
+            }
+
+            pFrames[(nFrame * (U32)nStride) + (U32)REC_SLOTS_PER_FRAME + s] = (S32)nWord;
+        }
+    }
 }
 
 
