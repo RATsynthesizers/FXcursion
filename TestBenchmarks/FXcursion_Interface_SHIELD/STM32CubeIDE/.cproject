@@ -103,6 +103,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Services/JPEG}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Services/pubsub}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Services/pixel_drv}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Services/UART_TP}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Services/SPI_TP}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/assert}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/FreeRTOS/Source/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SystemSW/Lib/FreeRTOS/Source/CMSIS_RTOS}&quot;"/>
@@ -122,7 +124,6 @@
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/texts/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/generated/videos/include"/>
 									<listOptionValue builtIn="false" value="../TouchGFX_Logic/gui/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Shared}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.976723236" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
