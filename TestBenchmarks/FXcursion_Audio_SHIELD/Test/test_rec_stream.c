@@ -22,19 +22,20 @@
 
 
 /*
- * Words a block stages at the NARROW width - REC_SLOT_QTY slots per frame,
- * which is every test in this file.
+ * SOURCE words a block hands in: recorder samples only, REC_SLOT_QTY per frame.
  *
- * This used to be REC_STAGE_WORDS, and the two were the same number until the
- * frame learned to widen for loop transport. Now REC_STAGE_WORDS is the
- * capacity of the staging buffer at the WIDEST frame, and how much of it a
- * given block uses depends on the width that block was staged at. Confusing the
- * two is why these tests failed the first time the frame widened: they checked
- * 1280 words of a buffer holding 256 real ones.
+ * Distinct from the STAGED word count below, and the two must not be confused.
+ * The source is what the audio engine produces - four planes. The staged block
+ * is what goes on the wire - 32 slots, of which four are those planes, one is
+ * the sync word and twenty-seven are loop payload. Mixing them up is why these
+ * tests failed the first time the frame widened.
  */
-#define RS_WORDS    ((U16)(AUDIO_BLOCK_FRAMES * REC_SLOT_QTY))
+#define RS_SRC_WORDS    ((U16)(AUDIO_BLOCK_FRAMES * REC_SLOT_QTY))
 
-static S32 aSrc[RS_WORDS];
+/** Words a full block occupies once staged, at the fixed frame width. */
+#define RS_WORDS        ((U16)(AUDIO_BLOCK_FRAMES * FX_FRAME_SLOT_QTY))
+
+static S32 aSrc[RS_SRC_WORDS];
 
 
 /** A block whose every word identifies the block, so a splice is visible. */
@@ -42,34 +43,64 @@ static void RsFill(const S32 nTag)
 {
     U16 i;
 
-    for (i = 0U; i < RS_WORDS; i++)
+    for (i = 0U; i < RS_SRC_WORDS; i++)
     {
         aSrc[i] = nTag;
     }
 }
 
-/** TRUE when every word of a staged half carries the expected tag. */
+/**
+ * TRUE when a staged half holds exactly the frame it should.
+ *
+ * Checks the LAYOUT, not just the payload: a valid mark in slot 0, the tag in
+ * all four recorder slots, and zeros in the loop slots. Checking only the tag
+ * would pass a build that wrote the planes at the wrong base - which is the
+ * off-by-one the sync slot exists to make impossible, and it would be a poor
+ * showing to let the test miss it.
+ *
+ * The sequence number is NOT checked against a value here. It free-runs across
+ * blocks and across a RecStream_Init, deliberately, so any expectation this
+ * helper hard-coded would be wrong as soon as tests were reordered. Its
+ * continuity is tested directly in Test_Frame.
+ */
 static BOOLEAN RsHalfIs(const U8 nHalf, const S32 nTag)
 {
     const S32* const p = RecStream_Buffer(nHalf);
-    BOOLEAN          bOk = TRUE;
-    U16              i;
+    U16              f;
 
     if (p == NULL_PTR)
     {
         return FALSE;
     }
 
-    for (i = 0U; i < RS_WORDS; i++)
+    for (f = 0U; f < (U16)AUDIO_BLOCK_FRAMES; f++)
     {
-        if (p[i] != nTag)
+        const S32* const pFrame = &p[(U32)f * (U32)FX_FRAME_SLOT_QTY];
+        U8               s;
+
+        if (FX_FRAME_MARK_OF(pFrame[FX_FRAME_SYNC_SLOT]) != (U16)FX_FRAME_SYNC_MARK)
         {
-            bOk = FALSE;
-            break;
+            return FALSE;
+        }
+
+        for (s = 0U; s < (U8)REC_SLOT_QTY; s++)
+        {
+            if (pFrame[(U32)FX_FRAME_REC_SLOT_BASE + s] != nTag)
+            {
+                return FALSE;
+            }
+        }
+
+        for (s = 0U; s < (U8)FX_FRAME_LOOP_SLOT_QTY; s++)
+        {
+            if (pFrame[(U32)FX_FRAME_LOOP_SLOT_BASE + s] != 0L)
+            {
+                return FALSE;
+            }
         }
     }
 
-    return bOk;
+    return TRUE;
 }
 
 
@@ -81,7 +112,7 @@ void Test_RecStream(void)
     RsFill(1);
     /* No transfer may be started, and nothing may be counted as dropped -
        being switched off is not an overrun. */
-    CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY) == (U8)REC_STAGE_NONE);
+    CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY) == (U8)REC_STAGE_NONE);
     CHECK_EQ_U32(RecStream_Stats()->nBlocksDropped, 0UL);
     CHECK_EQ_U32(RecStream_Stats()->nBlocksSent, 0UL);
     TEST_END();
@@ -94,14 +125,14 @@ void Test_RecStream(void)
         U8 nSecond;
 
         RsFill(10);
-        nFirst = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY);
+        nFirst = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY);
         CHECK(nFirst != (U8)REC_STAGE_NONE);
         CHECK(RsHalfIs(nFirst, 10));
         CHECK_EQ_U32((U32)RecStream_Words(nFirst), (U32)RS_WORDS);
 
         /* Nothing has completed, so this one has to wait rather than start. */
         RsFill(11);
-        nSecond = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY);
+        nSecond = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY);
         CHECK(nSecond == (U8)REC_STAGE_NONE);
 
         /* ...but it must have gone into the OTHER half, untouched by the first. */
@@ -122,14 +153,14 @@ void Test_RecStream(void)
         U8 nFirst;
 
         RsFill(20);
-        nFirst = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY);      /* in flight */
+        nFirst = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY);      /* in flight */
         RsFill(21);
-        (void)RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY);         /* waiting   */
+        (void)RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY);         /* waiting   */
 
         /* One in flight, one waiting: there is no half left that is safe to
            write. The block must be dropped and counted. */
         RsFill(22);
-        CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY) == (U8)REC_STAGE_NONE);
+        CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY) == (U8)REC_STAGE_NONE);
         CHECK_EQ_U32(RecStream_Stats()->nBlocksDropped, 1UL);
 
         /* And crucially: NEITHER committed half may carry the dropped tag. */
@@ -158,7 +189,7 @@ void Test_RecStream(void)
 
         for (nIter = 0UL; nIter < 200UL; nIter++)
         {
-            CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY) != (U8)REC_STAGE_NONE);
+            CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY) != (U8)REC_STAGE_NONE);
             CHECK(RecStream_Complete() == (U8)REC_STAGE_NONE);
         }
 
@@ -180,7 +211,7 @@ void Test_RecStream(void)
         U8  nInFlight;
         U32 nIter;
 
-        nInFlight = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY);
+        nInFlight = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY);
         CHECK(nInFlight != (U8)REC_STAGE_NONE);
 
         for (nIter = 0UL; nIter < 200UL; nIter++)
@@ -190,7 +221,7 @@ void Test_RecStream(void)
             const S32 nTag = (S32)(100UL + nIter);
 
             RsFill(nTag);
-            CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY) == (U8)REC_STAGE_NONE);
+            CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY) == (U8)REC_STAGE_NONE);
             CHECK(RsHalfIs(nInFlight, (S32)(99UL + nIter)) || (nIter == 0UL));
 
             /* ...and only now does the transfer finish and hand over. */
@@ -216,7 +247,7 @@ void Test_RecStream(void)
         U8 nNext;
 
         RsFill(30);
-        nFirst = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY);
+        nFirst = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY);
         CHECK(nFirst != (U8)REC_STAGE_NONE);
 
         /* The interface reconfigures: stop, then start again, while the DMA is
@@ -227,7 +258,7 @@ void Test_RecStream(void)
         RecStream_Enable(TRUE);
 
         RsFill(31);
-        nNext = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY);
+        nNext = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY);
 
         CHECK(nNext != nFirst);
         CHECK(RsHalfIs(nFirst, 30));            /* in flight, must be intact */
@@ -245,9 +276,9 @@ void Test_RecStream(void)
         U8 nFirst;
 
         RsFill(40);
-        nFirst = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY);
+        nFirst = RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY);
         RsFill(41);
-        (void)RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY);        /* queued */
+        (void)RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY);        /* queued */
 
         RecStream_Enable(FALSE);
 
@@ -255,7 +286,7 @@ void Test_RecStream(void)
            stale audio on the card. It goes. */
         CHECK(RecStream_Complete() == (U8)REC_STAGE_NONE);
         CHECK(RsHalfIs(nFirst, 40));
-        CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY) == (U8)REC_STAGE_NONE);
+        CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY) == (U8)REC_STAGE_NONE);
     }
     TEST_END();
 
@@ -264,9 +295,9 @@ void Test_RecStream(void)
     RecStream_Enable(TRUE);
     {
         RsFill(50);
-        (void)RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY);
+        (void)RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY);
         RsFill(51);
-        (void)RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY);
+        (void)RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY);
 
         RecStream_Error();
         CHECK_EQ_U32(RecStream_Stats()->nErrors, 1UL);
@@ -275,7 +306,7 @@ void Test_RecStream(void)
            immediately - the alternative is a machine that believes a transfer
            is running forever and never sends anything again. */
         RsFill(52);
-        CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY) != (U8)REC_STAGE_NONE);
+        CHECK(RecStream_Stage(aSrc, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY) != (U8)REC_STAGE_NONE);
     }
     TEST_END();
 
@@ -287,17 +318,17 @@ void Test_RecStream(void)
         U8        nHalf;
 
         RsFill(60);
-        nHalf = RecStream_Stage(aSrc, nFrames, (U8)REC_SLOT_QTY);
+        nHalf = RecStream_Stage(aSrc, nFrames, (U8)FX_FRAME_SLOT_QTY);
         CHECK(nHalf != (U8)REC_STAGE_NONE);
-        CHECK_EQ_U32((U32)RecStream_Words(nHalf), (U32)(nFrames * REC_SLOT_QTY));
+        CHECK_EQ_U32((U32)RecStream_Words(nHalf), (U32)(nFrames * FX_FRAME_SLOT_QTY));
     }
     TEST_END();
 
     TEST_BEGIN("bad arguments are refused without counting a drop");
     CHECK(RecStream_Init() == RESULT_OK);
     RecStream_Enable(TRUE);
-    CHECK(RecStream_Stage(NULL_PTR, (U16)AUDIO_BLOCK_FRAMES, (U8)REC_SLOT_QTY) == (U8)REC_STAGE_NONE);
-    CHECK(RecStream_Stage(aSrc, 0U, (U8)REC_SLOT_QTY) == (U8)REC_STAGE_NONE);
+    CHECK(RecStream_Stage(NULL_PTR, (U16)AUDIO_BLOCK_FRAMES, (U8)FX_FRAME_SLOT_QTY) == (U8)REC_STAGE_NONE);
+    CHECK(RecStream_Stage(aSrc, 0U, (U8)FX_FRAME_SLOT_QTY) == (U8)REC_STAGE_NONE);
 
     /* A width outside the range is a configuration fault, not a runtime
        condition - refused rather than clamped, because clamping down would drop
@@ -312,7 +343,7 @@ void Test_RecStream(void)
     /* A frame count past the block size is clamped, not trusted - it would
        otherwise read off the end of the recorder's own buffer. */
     CHECK(RecStream_Stage(aSrc, (U16)(AUDIO_BLOCK_FRAMES * 4U),
-                          (U8)REC_SLOT_QTY) != (U8)REC_STAGE_NONE);
+                          (U8)FX_FRAME_SLOT_QTY) != (U8)REC_STAGE_NONE);
     TEST_END();
 }
 

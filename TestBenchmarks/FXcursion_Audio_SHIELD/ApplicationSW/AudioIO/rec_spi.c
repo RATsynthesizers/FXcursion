@@ -38,6 +38,10 @@
    how wide the frame is this block, and fills the slots past REC_SLOT_QTY. */
 #include "loop_xfer.h"
 
+/* FX_FRAME_SLOT_QTY, FX_FRAME_LOOP_SLOT_BASE - the frame is fixed and shared,
+ * not negotiated per transfer. */
+#include "fx_frame.h"
+
 
 
 /***************************************************************************************************
@@ -139,14 +143,13 @@ void RecSpi_PushBlock(void)
     pSrc = Recorder_GetStream(&nFrames);
 
     /*
-     * THE FRAME WIDENS FOR THE LIFE OF A LOOP TRANSFER.
+     * THE FRAME NEVER WIDENS. It is FX_FRAME_SLOT_QTY slots, always.
      *
-     * REC_SLOT_QTY when nothing is moving, REC_SLOT_QTY + nSlotQty while a
-     * session runs. Asked once here and used for both the staging stride and
-     * the loop fill, so the two cannot disagree about where a frame ends -
-     * which would put loop samples on top of recorder ones.
+     * This used to be LoopXfer_StreamWidth() - REC_SLOT_QTY when idle, wider
+     * while a session ran - and both ends had to change width on precisely the
+     * same frame. They cannot disagree about a constant.
      */
-    nSlots = LoopXfer_StreamWidth();
+    nSlots = (U8)FX_FRAME_SLOT_QTY;
 
     nPrimask = __get_PRIMASK();
     __disable_irq();
@@ -157,14 +160,19 @@ void RecSpi_PushBlock(void)
      * Fill the loop slots of the half just staged, before it is handed to the
      * transport. Inside the critical section with the staging: until StartTx
      * runs, the completion callback could otherwise hand this half out again.
+     *
+     * Called unconditionally now. LoopXfer_Block writes nothing when no session
+     * is running, and RecStream_Stage has already zeroed those slots - so an
+     * idle link sends 27 slots of zeros rather than narrowing the frame.
      */
-    if ((nStart != (U8)REC_STAGE_NONE) && (nSlots > (U8)REC_SLOT_QTY))
+    if (nStart != (U8)REC_STAGE_NONE)
     {
         S32* const pStage = RecStream_StageSlots(nStart);
 
         if (pStage != NULL_PTR)
         {
-            (void)LoopXfer_Block(&pStage[REC_SLOT_QTY], (U32)nFrames, nSlots);
+            (void)LoopXfer_Block(&pStage[FX_FRAME_LOOP_SLOT_BASE],
+                                 (U32)nFrames, nSlots);
         }
     }
 

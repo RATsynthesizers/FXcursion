@@ -46,12 +46,14 @@ add_executable(fxc_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/test_ctrl_link.c
     ${CMAKE_CURRENT_SOURCE_DIR}/test_rec_stream.c
     ${CMAKE_CURRENT_SOURCE_DIR}/test_interleave.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_frame.c
 
     ${ROOT}/SystemSW/Lib/InterComProtocol/fx_defs.c
     ${ROOT}/SystemSW/Lib/InterComProtocol/fx_crc.c
     ${ROOT}/SystemSW/Lib/InterComProtocol/fx_link.c
     ${ROOT}/SystemSW/Lib/InterComProtocol/fx_interleave.c
     ${ROOT}/SystemSW/Lib/InterComProtocol/fx_loop.c
+    ${ROOT}/SystemSW/Lib/InterComProtocol/fx_frame.c
 
     ${ROOT}/ApplicationSW/AudioEngine/params.c
     ${ROOT}/ApplicationSW/AudioEngine/grid.c

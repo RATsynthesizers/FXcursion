@@ -94,13 +94,9 @@ extern STD_RESULT LoopXfer_OnOpen(const PROTO_LOOP_OPEN* const pOpen,
 /** @brief Handle PROTO_CMD_LOOP_CTL - start or abort. */
 extern STD_RESULT LoopXfer_OnCtl(const PROTO_LOOP_CTL* const pCtl);
 
-/**
- * @brief Slots this block's frame carries, total.
- *
- * REC_SLOT_QTY when no session is running, so the stream builder can use it
- * unconditionally as "the width right now".
- */
-extern U8 LoopXfer_StreamWidth(void);
+/* LoopXfer_StreamWidth removed with the negotiated frame. The width is
+ * FX_FRAME_SLOT_QTY, always; LoopXfer_IsRunning says whether the loop slots
+ * carry payload. See the note in fx_loop.h. */
 
 /**
  * @brief Fill this block's loop slots from the looper, or drain them into it.

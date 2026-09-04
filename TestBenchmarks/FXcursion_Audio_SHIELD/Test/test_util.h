@@ -67,6 +67,7 @@ extern const char* g_pCurrentTest;
 
 /* Test entry points. */
 extern void Test_Protocol(void);
+extern void Test_Frame(void);
 /** Build a valid, empty configuration for the given topology. */
 extern void Test_MakeDefaultCfg(PROTO_CFG* const pCfg, const U8 eTopology);
 

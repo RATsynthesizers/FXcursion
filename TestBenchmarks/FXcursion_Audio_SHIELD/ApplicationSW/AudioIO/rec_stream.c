@@ -51,6 +51,23 @@ static U8      nWaiting IN_DTCM;
 
 static REC_STREAM_STATS tStats IN_DTCM;
 
+/*
+ * Frame sequence number for the sync slot. Free-running, 16-bit, wrapping.
+ *
+ * NOT reset by ResetMachine, and that is deliberate. It numbers frames put on
+ * the wire, so if the staging machine restarts - a dropped block, a disabled
+ * stream, an aborted transfer - the counter keeps going and the receiver sees
+ * a GAP of exactly the right size. Resetting it would tell the receiver the
+ * link had restarted from frame zero, which is a different fault with a
+ * different response, and would hide however many frames were actually lost.
+ *
+ * Wraps every 65536 frames, 1.37 s at 48 kHz. The receiver's check is
+ * "expected + 1" in 16-bit arithmetic, so the wrap costs nothing; a gap is only
+ * ambiguous if more than 65535 consecutive frames are lost, by which point the
+ * link has been down for over a second and the counter is not the diagnosis.
+ */
+static U16 nSeq IN_DTCM;
+
 
 
 /***************************************************************************************************
@@ -184,17 +201,17 @@ U8 RecStream_Stage(const S32* const pSrc, const U16 nFrames, const U8 nTotalSlot
     }
 
     /*
-     * A width outside the range would run off the end of the staging buffer,
-     * and below REC_SLOT_QTY would drop recorder channels silently. Both are
-     * configuration faults rather than runtime conditions, so refuse the block
-     * rather than clamp into something that half works.
+     * Exactly the frame width, not a range. The frame is fixed, so anything
+     * else is a caller that disagrees with fx_frame.h about the wire - and a
+     * disagreement about where a frame ends is the one error this stream cannot
+     * survive.
      *
      * NOT counted as a dropped block, for the same reason a NULL pointer is
      * not: nBlocksDropped means the link could not keep up and audio was lost,
      * and it is the number you look at when a recording has a gap. A caller
      * bug inflating it sends you to investigate the wrong thing.
      */
-    if ((nTotalSlots < (U8)REC_SLOT_QTY) || (nTotalSlots > (U8)REC_STREAM_SLOT_MAX))
+    if (nTotalSlots != (U8)FX_FRAME_SLOT_QTY)
     {
         return (U8)REC_STAGE_NONE;
     }
@@ -213,13 +230,20 @@ U8 RecStream_Stage(const S32* const pSrc, const U16 nFrames, const U8 nTotalSlot
     nWords = (U16)(nUse * (U16)nTotalSlots);
 
     /*
-     * Frame by frame at the wire stride: REC_SLOT_QTY recorder samples, then
-     * the loop slots zeroed for the transport to overwrite.
+     * Frame by frame at the wire stride: the sync word, REC_SLOT_QTY recorder
+     * samples, then the loop slots zeroed for the transport to overwrite.
      *
-     * The zeroing is not tidiness. Without it an aborted or finished loop
-     * transfer leaves its last block in the staging buffer, and the next frame
-     * carries that stale audio in slots the interface is still routing - which
-     * it cannot detect, because the stream has no framing to check against.
+     * THE SYNC WORD IS THE FIRST THING WRITTEN, and the receiver checks it
+     * before it trusts anything else in the frame. It is what makes a slipped
+     * word show up as a counted dropout instead of every channel silently
+     * moving one place to the left. nSeq free-runs across blocks and across
+     * sessions, so a gap in it measures frames LOST rather than frames not
+     * sent.
+     *
+     * The zeroing of the loop slots is not tidiness. Without it an aborted or
+     * finished loop transfer leaves its last block in the staging buffer, and
+     * the next frame carries that stale audio in slots the interface is still
+     * routing.
      */
     for (f = 0U; f < nUse; f++)
     {
@@ -227,14 +251,17 @@ U8 RecStream_Stage(const S32* const pSrc, const U16 nFrames, const U8 nTotalSlot
         const U16 nSrc = (U16)(f * (U16)REC_SLOT_QTY);
         U8        s;
 
+        aStage[nFree][nDst + (U16)FX_FRAME_SYNC_SLOT] = FX_FRAME_SYNC_WORD(nSeq);
+        nSeq++;
+
         for (s = 0U; s < (U8)REC_SLOT_QTY; s++)
         {
-            aStage[nFree][nDst + s] = pSrc[nSrc + s];
+            aStage[nFree][nDst + (U16)FX_FRAME_REC_SLOT_BASE + s] = pSrc[nSrc + s];
         }
 
-        for (s = (U8)REC_SLOT_QTY; s < nTotalSlots; s++)
+        for (s = 0U; s < (U8)FX_FRAME_LOOP_SLOT_QTY; s++)
         {
-            aStage[nFree][nDst + s] = 0L;
+            aStage[nFree][nDst + (U16)FX_FRAME_LOOP_SLOT_BASE + s] = 0L;
         }
     }
 

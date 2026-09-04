@@ -476,75 +476,95 @@ void LoopSession_Poll(void)
 }
 
 
+/*
+ * Sequence number for the frames THIS board sends. Independent of the one the
+ * audio board sends - the two directions are separate streams that happen to
+ * share a clock, and pairing their counters would only invent a coupling the
+ * hardware does not have.
+ *
+ * Free-running from boot and never reset by a session starting or ending: it
+ * numbers frames on the wire, not payload, so an idle link keeps counting. That
+ * is what lets the far side tell "nothing to send" from "the link stopped".
+ */
+static U16 nTxSeq = 0U;
+
 void LoopSession_FillTx(S32* const pFrames, const U32 nFrames, const U8 nStride)
 {
-    const U8* pSrc;
+    const U8* pSrc  = NULL_PTR;
+    BOOLEAN   bSend = FALSE;
     U32       nFrame;
-    U8        nLoopQty;
 
-    if ((pFrames == NULL_PTR) || (nStride <= (U8)REC_SLOTS_PER_FRAME))
+    if ((pFrames == NULL_PTR) || (nStride != (U8)FX_FRAME_SLOT_QTY))
     {
         return;
     }
 
-    nLoopQty = (U8)(nStride - (U8)REC_SLOTS_PER_FRAME);
-
     /*
-     * NOT SENDING: zero the loop slots and leave.
+     * SENDING or not, every slot of every frame is written.
      *
      * The ring is armed for the life of the link, so whatever is in it goes out
      * on every lap. A half still holding the tail of a finished load would send
-     * that tail again, forever, into a looper that has moved on.
+     * that tail again, forever, into a looper that has moved on - so the idle
+     * case is not "skip", it is "write zeros".
+     *
+     * Writing the whole half unconditionally costs about 1% of one core and
+     * removes a class of bug outright: there is no state that says which slots
+     * are stale, because none of them ever are.
      */
-    if ((bRunning == FALSE) || (tSession.eDir != (U8)LOOP_DIR_LOAD))
+    if ((bRunning != FALSE) && (tSession.eDir == (U8)LOOP_DIR_LOAD))
     {
-        for (nFrame = 0UL; nFrame < nFrames; nFrame++)
-        {
-            U8 s;
+        pSrc = LoopSpool_Buffer(nSlot);
 
-            for (s = 0U; s < nLoopQty; s++)
-            {
-                pFrames[(nFrame * (U32)nStride) + (U32)REC_SLOTS_PER_FRAME + s] = 0L;
-            }
-        }
-
-        return;
+        bSend = (pSrc != NULL_PTR) ? TRUE : FALSE;
     }
 
-    pSrc = LoopSpool_Buffer(nSlot);
-
-    if (pSrc == NULL_PTR)
-    {
-        return;
-    }
-
-    /*
-     * Four payload bytes per slot, the exact mirror of the audio board's pack.
-     * The two have to agree byte for byte: this stream carries no framing, so a
-     * disagreement about how many bytes a slot holds does not fail, it just
-     * delivers a loop that is stretched or truncated.
-     */
     for (nFrame = 0UL; nFrame < nFrames; nFrame++)
     {
-        U8 s;
+        S32* const pFrame = &pFrames[nFrame * (U32)nStride];
+        U8         s;
 
-        for (s = 0U; s < nLoopQty; s++)
+        /*
+         * Slot 0 first. The far side reads this before it trusts anything else
+         * in the frame, and a frame written without it is a frame that will be
+         * discarded - so it is not optional even on an idle link.
+         */
+        pFrame[FX_FRAME_SYNC_SLOT] = FX_FRAME_SYNC_WORD(nTxSeq);
+        nTxSeq++;
+
+        /* This board sends no recorder audio; those slots are the audio
+           controller's, in the other direction. */
+        for (s = 0U; s < (U8)FX_FRAME_REC_SLOT_QTY; s++)
+        {
+            pFrame[(U32)FX_FRAME_REC_SLOT_BASE + s] = 0L;
+        }
+
+        /*
+         * Four payload bytes per slot, the exact mirror of the audio board's
+         * pack. The two have to agree byte for byte: a disagreement about how
+         * many bytes a slot holds does not fail, it just delivers a loop that
+         * is stretched or truncated.
+         */
+        for (s = 0U; s < (U8)FX_FRAME_LOOP_SLOT_QTY; s++)
         {
             U32 nWord = 0UL;
-            U8  b;
 
-            for (b = 0U; b < 4U; b++)
+            if (bSend != FALSE)
             {
-                /* Past the end: pad. The far side stops at nBytesTotal, so
-                   these bytes are clocked but never stored. */
-                if (nTxOfs < tSession.nBytesTotal)
+                U8 b;
+
+                for (b = 0U; b < 4U; b++)
                 {
-                    nWord |= ((U32)pSrc[nTxOfs]) << (8U * b);
-                    nTxOfs++;
+                    /* Past the end: pad. The far side stops at nBytesTotal, so
+                       these bytes are clocked but never stored. */
+                    if (nTxOfs < tSession.nBytesTotal)
+                    {
+                        nWord |= ((U32)pSrc[nTxOfs]) << (8U * b);
+                        nTxOfs++;
+                    }
                 }
             }
 
-            pFrames[(nFrame * (U32)nStride) + (U32)REC_SLOTS_PER_FRAME + s] = (S32)nWord;
+            pFrame[(U32)FX_FRAME_LOOP_SLOT_BASE + s] = (S32)nWord;
         }
     }
 }

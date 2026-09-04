@@ -95,6 +95,11 @@
 /* FX_LOOP_SLOT_QTY_MAX - the widest the frame may get during a transfer. */
 #include "fx_loop.h"
 
+/* FX_FRAME_* - the frame layout the staging writes. Included directly rather
+ * than leaned on through fx_loop.h, because everything below is derived from
+ * it. */
+#include "fx_frame.h"
+
 
 
 /***************************************************************************************************
@@ -105,24 +110,27 @@
 #define REC_STAGE_QTY                   (2U)
 
 /**
- * Widest frame this staging can hold, in slots.
+ * The frame this staging holds, in slots. FIXED - see fx_frame.h.
  *
- * The frame is REC_SLOT_QTY recorder slots followed by up to
- * FX_LOOP_SLOT_QTY_MAX loop slots, and it WIDENS for the life of a loop
- * transfer and narrows again afterwards. Staged at the maximum because the
- * buffer cannot be resized at run time - what varies is how much of it a given
- * block uses, which RecStream_Words reports.
+ * One sync slot, REC_SLOT_QTY recorder slots, then the loop slots. It no longer
+ * widens for the life of a transfer and narrow afterwards: renegotiating the
+ * width mid-stream required both ends to switch on precisely the same frame,
+ * and disagreeing by one rotated every slot permanently with nothing in the
+ * stream able to reveal it.
+ *
+ * So this is now the width rather than a ceiling, and every staged block uses
+ * all of it.
  */
-#define REC_STREAM_SLOT_MAX             (REC_SLOT_QTY + FX_LOOP_SLOT_QTY_MAX)
+#define REC_STREAM_SLOT_MAX             (FX_FRAME_SLOT_QTY)
 
 /**
  * 32-bit words in one staged block.
  *
- * 64 frames x 20 slots = 1280 words, 5 KiB per half, 10 KiB for both. It was
- * 64 x 4 = 1 KiB before the loop slots existed; the extra 8 KiB buys a loop
- * transfer that does not need its own SPI transaction, which would mean
- * re-arming the interface's circular receive between bursts - the one thing
- * that rotates a positionally framed stream into the wrong channels.
+ * 64 frames x 32 slots = 2048 words, 8 KiB per half, 16 KiB for both. It was
+ * 64 x 4 = 1 KiB before the loop slots existed; the extra buys a loop transfer
+ * that does not need its own SPI transaction, which would mean re-arming the
+ * interface's circular receive between bursts - the one thing that rotates a
+ * positionally framed stream into the wrong channels.
  */
 #define REC_STAGE_WORDS                 (AUDIO_BLOCK_FRAMES * REC_STREAM_SLOT_MAX)
 

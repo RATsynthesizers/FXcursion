@@ -26,7 +26,15 @@
 /* Stream geometry, shared byte for byte with the audio controller so the two
    boards cannot disagree about where a slot is. */
 #include "fx_interleave.h"
+
+/* FxFrame_Scan - the sync slot is what makes a rotated stream detectable
+ * instead of silently recording the wrong channel. */
+#include "fx_frame.h"
+
 #include "ctrl_link_if.h"
+
+/* memset, for the silence written into a half the sync slot rejected. */
+#include "string.h"
 
 /* The card is shared with the loop spooler, which owns the lock. */
 #include "LoopSpool.h"
@@ -75,17 +83,34 @@ FXC_STATIC_ASSERT(REC_RX_HALF_FRAMES <= 4096U, rec_half_fits_mdma_block_repeat);
 /* Below this the writer would never wake, because the difference between the
    two counters can never reach the threshold. */
 /*
- * The widest frame a session can negotiate must divide the half-ring, or its
- * half boundary lands mid-frame and the de-interleave is rotated. The run-time
- * check in MDMA_Trigger_Deinterleave catches an ACK that asks for anything
- * else; this catches a configuration that could never work, at build time,
- * which is where a geometry mistake belongs.
+ * THE FRAME MUST DIVIDE THE HALF-RING.
+ *
+ * If it does not, the half-transfer interrupt fires in the middle of a frame
+ * and every slot after it is rotated. This was once a run-time check against a
+ * negotiated width; the frame is fixed now, so it is a build-time fact and the
+ * only place it can go wrong is here.
  */
-FXC_STATIC_ASSERT((REC_RX_HALF_WORDS % (REC_SLOTS_PER_FRAME + FX_LOOP_SLOT_QTY_MAX)) == 0U,
-                  rec_widest_frame_divides_half_ring);
+FXC_STATIC_ASSERT((REC_RX_HALF_WORDS % FX_FRAME_SLOT_QTY) == 0U,
+                  rec_frame_divides_half_ring);
 
-FXC_STATIC_ASSERT((REC_RX_HALF_WORDS % REC_SLOTS_PER_FRAME) == 0U,
-                  rec_narrow_frame_divides_half_ring);
+/* The four planes plus the sync slot plus the loop run are the whole frame -
+   no slack, no gap. A mismatch here would leave slots nothing reads or, worse,
+   have two routes overlap. */
+FXC_STATIC_ASSERT((FX_FRAME_SYNC_SLOT_QTY + FX_FRAME_REC_SLOT_QTY +
+                   FX_FRAME_LOOP_SLOT_QTY) == FX_FRAME_SLOT_QTY,
+                  rec_frame_slots_account_exactly);
+
+FXC_STATIC_ASSERT(REC_SLOTS_PER_FRAME == FX_FRAME_REC_SLOT_QTY,
+                  rec_planes_match_frame_layout);
+
+/*
+ * The absorption depth the product promises. Five seconds was the requirement;
+ * this is what the ring actually holds, and it is checked here because the two
+ * constants that set it (REC_CHUNKS and the frame width) move independently and
+ * a chunk is now eight times smaller than it used to be.
+ */
+FXC_STATIC_ASSERT((REC_CHUNKS * REC_CHUNK_SAMPLES) >= (5U * SAMPLE_RATE),
+                  rec_ring_absorbs_five_seconds);
 
 FXC_STATIC_ASSERT(REC_WRITE_CHUNKS < REC_CHUNKS, rec_write_batch_fits_ring);
 FXC_STATIC_ASSERT(REC_WRITE_CHUNKS >= 1U, rec_write_batch_nonzero);
@@ -123,6 +148,49 @@ volatile uint32_t recRdChunks = 0UL;
    can be watched without ceremony: anything but zero means audio is missing
    from the take, and the card or REC_CHUNKS is where to look. */
 volatile uint32_t recOverruns = 0UL;
+
+/*
+ * ======== SYNC-SLOT DIAGNOSTICS ========
+ *
+ * The whole point of spending a slot per frame on a sync word is that these
+ * counters exist. Before, a slipped word rotated every channel permanently and
+ * NOTHING here moved - the recording just quietly contained the wrong
+ * instrument. Now the fault is named, counted, and localised.
+ *
+ * All non-static so they can be read from a debugger or pushed into telemetry
+ * without adding an accessor for each.
+ *
+ *   recSyncBadHalves   halves discarded and written as silence. Non-zero means
+ *                      audio was LOST, and it is audible - which is the point.
+ *   recSyncMarkFaults  of those, how many were a rotation or corruption.
+ *   recSyncSeqFaults   how many were whole frames going missing with the
+ *                      alignment still intact. A different cause entirely.
+ *   recSyncLastPhase   word offset the mark was actually found at, for the most
+ *                      recent mark fault. 1 is a single slipped word; a large
+ *                      value or FX_FRAME_PHASE_NONE points at corruption.
+ *   recSyncLastGap     frames lost, for the most recent sequence fault.
+ *   recSyncLastWord    the raw offending word, for when the two above are not
+ *                      enough to explain what happened.
+ *   recSyncResyncs     times the receiver gave up predicting and re-adopted
+ *                      whatever sequence number arrived.
+ */
+volatile uint32_t recSyncBadHalves  = 0UL;
+volatile uint32_t recSyncMarkFaults = 0UL;
+volatile uint32_t recSyncSeqFaults  = 0UL;
+volatile uint32_t recSyncResyncs    = 0UL;
+volatile uint32_t recSyncLastWord   = 0UL;
+volatile uint16_t recSyncLastGap    = 0U;
+volatile uint8_t  recSyncLastPhase  = 0U;
+
+/*
+ * Sequence number expected at the START of the next half.
+ *
+ * FX_FRAME_SEQ_ANY means "adopt whatever arrives" - the state after boot and
+ * after any fault, because once the stream is known to be wrong there is
+ * nothing left to predict against. Held as U32 rather than U16 precisely so
+ * that sentinel has somewhere to live.
+ */
+static uint32_t recSyncExpect = FX_FRAME_SEQ_ANY;
 
 /*
  * TRUE while files are open. Without it "is the recorder caught up" cannot be
@@ -225,8 +293,11 @@ static uint32_t RecorderClaimChunks(void);
 static void Recorder_OnSpiHalf(const BOOLEAN bSecondHalf);
 
 static STD_RESULT RecorderLoopDest(uint32_t* const pnAddr,
-                                   const uint8_t nSlotQty,
-                                   const uint8_t nWidth);
+                                   const uint8_t nSlotQty);
+
+/* Writes one chunk of silence into every plane, for a half the sync slot says
+   cannot be trusted. Defined beside the de-interleave that calls it. */
+static void RecorderSilenceChunk(void);
 
 static void RecorderThreadWrapper(void const *arg);
 
@@ -763,25 +834,23 @@ uint32_t Recorder_LoopBytesTaken(void)
  * writing past the end of the staging area.
  */
 static STD_RESULT RecorderLoopDest(uint32_t* const pnAddr,
-                                   const uint8_t nSlotQty,
-                                   const uint8_t nWidth)
+                                   const uint8_t nSlotQty)
 {
     /*
-     * One block of loop slots: nSlotQty words per frame, over however many
-     * frames this half holds AT THIS WIDTH.
+     * One block of loop slots: nSlotQty words per frame, over the frames this
+     * half holds.
      *
-     * Both numbers have to come in rather than be assumed. The slot count is
-     * negotiated per session, and the frame count depends on the width - a
-     * fixed step would advance the destination at the wrong rate for every
-     * width but one, and the symptom would be a loop file with silence woven
-     * through it rather than an obvious failure.
+     * The frame count is a constant now. It used to be a parameter, because the
+     * frame widened for the life of a transfer and the destination had to
+     * advance at whatever rate the current width delivered - a fixed step would
+     * have woven silence through the loop file. With a fixed frame there is one
+     * rate and nothing to get wrong.
      */
     const uint32_t nStep = (uint32_t)nSlotQty
-                         * (uint32_t)REC_FRAMES_PER_HALF(nWidth)
+                         * (uint32_t)REC_FRAMES_PER_HALF
                          * sizeof(int32_t);
 
-    if ((bLoopDstArmed == 0U) || (pnAddr == NULL_PTR) ||
-        (nSlotQty == 0U) || (REC_WIDTH_IS_LEGAL(nWidth) == 0U))
+    if ((bLoopDstArmed == 0U) || (pnAddr == NULL_PTR) || (nSlotQty == 0U))
     {
         return RESULT_NOT_OK;
     }
@@ -930,6 +999,54 @@ static uint32_t RecorderDrainChunks(REC_SINK* const aSink,
 
 //--------------------------------------------------------------------------------------------------
 
+/**
+ * @brief   Write one chunk of silence into every plane and advance the ring.
+ *
+ * @details Called instead of the de-interleave when the sync slot says this
+ *          half cannot be trusted.
+ *
+ *          THE RING STILL ADVANCES. That is the whole reason this is not simply
+ *          a `return`: a discarded half has to leave a hole of the right LENGTH
+ *          in the file, or the recording silently runs fast and every take
+ *          after the fault is shorter than the performance was. A gap that
+ *          keeps time is a fault a musician can point at; audio that drifts is
+ *          one nobody can.
+ *
+ *          Runs in the SPI half-transfer interrupt, so it is a bounded memset
+ *          and nothing else: 128 samples x 4 planes x 4 B = 2 KiB. SDRAM here
+ *          is mapped non-cacheable, so these stores are visible to the writer
+ *          thread without any cache maintenance - and there is no concurrent
+ *          MDMA into this chunk, because the caller returns instead of starting
+ *          one.
+ */
+static void RecorderSilenceChunk(void)
+{
+    const uint32_t nOffs = (recWrChunks % (uint32_t)REC_CHUNKS)
+                         * (uint32_t)REC_CHUNK_SAMPLES;
+    uint8_t i;
+
+    for (i = 0U; i < (uint8_t)REC_SLOTS_PER_FRAME; i++)
+    {
+        (void)memset(&recorder[i][nOffs], 0,
+                     (size_t)REC_CHUNK_SAMPLES * sizeof(int32_t));
+    }
+
+    /*
+     * Advanced here rather than in the MDMA completion callback, because no
+     * MDMA ran. Same counter, same single-writer rule - this function and that
+     * callback are both in interrupt context on the same core and cannot
+     * interleave with each other.
+     */
+    recWrChunks++;
+
+    if ((recWrChunks - recRdChunks) >= (uint32_t)REC_WRITE_CHUNKS)
+    {
+        osSemaphoreRelease(sem_RecorderData);
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+
 void MDMA_Trigger_Deinterleave()
 {
     /* Four nodes plus the channel = five routes: one per recorder plane, and
@@ -950,52 +1067,20 @@ void MDMA_Trigger_Deinterleave()
     /* One extra for the loop route. */
     REC_ROUTE  aRoute[REC_SLOTS_PER_FRAME + 1U];
     FX_IL_XFER aXfer[REC_SLOTS_PER_FRAME + 1U];
-    PROTO_ACK  tAck;
+    FX_FRAME_SCAN tScan;
     uint8_t    nRoutes = 0U;
-    uint8_t    nStreamWidth;
-    uint32_t   nHalfFrames;
+    const uint8_t nStreamWidth = (uint8_t)FX_FRAME_SLOT_QTY;
+    const uint32_t nHalfFrames = (uint32_t)REC_FRAMES_PER_HALF;
     uint32_t   nSrcBase;
     uint32_t   nDstOffs;
     uint8_t    i;
 
     /*
-     * The stream width comes from the audio controller's ACK rather than from a
-     * constant here, because the ACK reports what it actually committed to.
-     * Until one has arrived the compiled-in default is all there is to go on -
-     * and nothing is recorded before then anyway.
+     * The width is a constant and the frame count with it. Both used to be
+     * derived from a PROTO_ACK, because the frame widened for the life of a
+     * loop transfer; the run-time legality check that went with that is now a
+     * static assert at the top of this file.
      */
-    nStreamWidth = (CtrlLinkIf_GetAck(&tAck) == RESULT_OK)
-                       ? tAck.nStreamWidth
-                       : (uint8_t)REC_SLOTS_PER_FRAME;
-
-    /*
-     * THE WIDTH MUST DIVIDE THE HALF.
-     *
-     * The half-transfer interrupt fires at a fixed WORD, so a width that does
-     * not divide the half puts that boundary in the middle of a frame - and
-     * every slot after it is rotated, silently, because the stream carries no
-     * framing that could reveal it.
-     *
-     * Refused rather than clamped: a width this side cannot de-interleave is a
-     * width that should never have been ACKed, so transfer nothing and leave
-     * the count for a human to find. Clamping would record plausible audio from
-     * the wrong channels, which is far worse than a gap.
-     */
-    if (REC_WIDTH_IS_LEGAL(nStreamWidth) == 0U)
-    {
-        recDeinterleaveRefused++;
-        return;
-    }
-
-    /*
-     * Frames in this half, AT THIS WIDTH.
-     *
-     * Not REC_RX_HALF_FRAMES. That constant is the frame count at the narrow
-     * width only, and using it unconditionally was a five-times buffer overrun
-     * the moment the frame widened: 1024 frames of a 20-slot frame is 81,920
-     * bytes read out of a half that holds 16,384.
-     */
-    nHalfFrames = (uint32_t)REC_FRAMES_PER_HALF(nStreamWidth);
 
     /* Source: the half the SPI DMA is NOT filling. Half the ring in BYTES,
        which is a property of the ring rather than of the frame width. */
@@ -1019,6 +1104,63 @@ void MDMA_Trigger_Deinterleave()
     nDstOffs = (recWrChunks % (uint32_t)REC_CHUNKS)
              * (uint32_t)REC_CHUNK_SAMPLES * sizeof(int32_t);
 
+    /*
+     * ---- IS THIS HALF WHERE WE THINK IT IS? -------------------------------
+     *
+     * One load and one compare per frame, reading slot 0 and nothing else -
+     * 128 words out of the 4096 in the half. RAM_D2 is mapped non-cacheable so
+     * the SPI DMA's writes are already visible; no invalidate is needed here.
+     *
+     * ALL-OR-NOTHING, PER HALF, AND DELIBERATELY SO.
+     *
+     * A slipped word rotates the stream permanently, so a half with one bad
+     * frame has every later frame bad too - and the next half after it, and
+     * every one after that until the link is restarted. Salvaging the good
+     * prefix would rescue at most 2.7 ms once, in the single half where the
+     * slip began, in exchange for a partial MDMA and a second write path into
+     * the same chunk. Not worth it. The whole half becomes silence.
+     *
+     * Silence is the RIGHT failure. It is audible, so it gets reported; it is
+     * counted, so it can be found; and it keeps the file time-aligned, because
+     * the chunk still advances. The alternative - what this code did until now
+     * - was to record plausible audio from the wrong channel and say nothing.
+     */
+    (void)FxFrame_Scan((const int32_t*)nSrcBase, (uint16_t)nHalfFrames,
+                       recSyncExpect, &tScan);
+
+    if (tScan.nGoodFrames != (uint16_t)nHalfFrames)
+    {
+        recSyncBadHalves++;
+        recSyncLastWord = tScan.nBadWord;
+
+        if (tScan.eFault == FX_FRAME_FAULT_SEQ)
+        {
+            recSyncSeqFaults++;
+            recSyncLastGap = tScan.nSeqGap;
+        }
+        else
+        {
+            recSyncMarkFaults++;
+            recSyncLastPhase = tScan.nPhase;
+        }
+
+        /*
+         * Stop predicting. Whatever the audio side is now sending, this side
+         * has lost track of it, so the next half adopts the sequence number it
+         * finds rather than reporting a fault for every frame from here on -
+         * which would bury the ONE event that mattered under thousands.
+         */
+        recSyncExpect = FX_FRAME_SEQ_ANY;
+        recSyncResyncs++;
+
+        /* Silence, and advance the ring so the take stays time-aligned. */
+        RecorderSilenceChunk();
+        return;
+    }
+
+    /* Good half. Predict the next one. */
+    recSyncExpect = (uint32_t)tScan.nNextSeq;
+
     /* ---- routing ---------------------------------------------------------- */
     /*
      * One slot to one plane, every time. Nothing here consults recInfo any
@@ -1026,10 +1168,15 @@ void MDMA_Trigger_Deinterleave()
      * stereo differ only in how the WRITER reads these planes. That removed
      * four branches and, with them, the possibility of a stereo destination
      * offset being doubled in one place and not the other.
+     *
+     * PLANE i IS AT SLOT i + FX_FRAME_REC_SLOT_BASE, not at slot i. Slot 0 is
+     * the sync word; routing plane 0 to slot 0 would file the mark as channel
+     * 0's audio and shift every other channel by one - which is the very fault
+     * the sync slot was added to catch, committed by the code that reads it.
      */
     for (nRoutes = 0U; nRoutes < (uint8_t)REC_SLOTS_PER_FRAME; nRoutes++)
     {
-        aRoute[nRoutes].nSlot    = nRoutes;
+        aRoute[nRoutes].nSlot    = (uint8_t)(nRoutes + (uint8_t)FX_FRAME_REC_SLOT_BASE);
         aRoute[nRoutes].nWidth   = 1U;
         aRoute[nRoutes].nDstAddr = (uint32_t)&recorder[nRoutes][0] + nDstOffs;
     }
@@ -1042,24 +1189,21 @@ void MDMA_Trigger_Deinterleave()
      * the only reason this fits - four planes plus one loop run is five routes,
      * exactly the channel plus four nodes.
      *
-     * nStreamWidth already came from the ACK above, so it is the width the
-     * audio board actually committed to rather than what this side hopes for.
-     * A stale width would put the loop route over the recorder's slots, which
-     * is why it is not recomputed here.
+     * The slot base and the run length are both fixed by the frame layout now.
+     * They used to be computed from the ACKed width, and a stale width would
+     * have put this route on top of the recorder's slots.
+     *
+     * The route is omitted when no session is armed - RecorderLoopDest says so
+     * - and the audio side sends zeros in those slots meanwhile. The frame does
+     * not narrow; nothing reads them.
      */
     {
-        uint32_t nLoopDst  = 0UL;
-        uint8_t  nLoopQty  = 0U;
+        uint32_t nLoopDst = 0UL;
 
-        nLoopQty = (nStreamWidth > (uint8_t)REC_SLOTS_PER_FRAME)
-                       ? (uint8_t)(nStreamWidth - (uint8_t)REC_SLOTS_PER_FRAME)
-                       : 0U;
-
-        if ((nLoopQty > 0U) &&
-            (RecorderLoopDest(&nLoopDst, nLoopQty, nStreamWidth) == RESULT_OK))
+        if (RecorderLoopDest(&nLoopDst, (uint8_t)FX_FRAME_LOOP_SLOT_QTY) == RESULT_OK)
         {
-            aRoute[nRoutes].nSlot    = (uint8_t)REC_SLOTS_PER_FRAME;
-            aRoute[nRoutes].nWidth   = nLoopQty;
+            aRoute[nRoutes].nSlot    = (uint8_t)FX_FRAME_LOOP_SLOT_BASE;
+            aRoute[nRoutes].nWidth   = (uint8_t)FX_FRAME_LOOP_SLOT_QTY;
             aRoute[nRoutes].nDstAddr = nLoopDst;
 
             nRoutes++;
@@ -1157,28 +1301,21 @@ static void Recorder_OnSpiHalf(const BOOLEAN bSecondHalf)
      * clocks the other. Filling the half being clocked would put a partly
      * written frame on the wire.
      *
-     * The stream width comes from the same ACK the de-interleave used, so the
-     * two directions cannot disagree about where a frame ends.
+     * UNCONDITIONALLY, every half, whether or not a session is running. The
+     * frame is the same 32 slots in both directions and it never narrows, so
+     * this half has to be written even when there is nothing to send - if it
+     * were skipped, the DMA would clock out whatever the previous lap left
+     * there, and the audio side would see a stale sequence number rather than
+     * an idle link.
      */
     {
-        PROTO_ACK tAck;
-        const uint8_t nWidth = (CtrlLinkIf_GetAck(&tAck) == RESULT_OK)
-                                   ? tAck.nStreamWidth
-                                   : (uint8_t)REC_SLOTS_PER_FRAME;
+        const uint32_t nOfs = (bSecondHalf == TRUE)
+                                  ? 0UL
+                                  : (uint32_t)REC_RX_HALF_WORDS;
 
-        if ((nWidth > (uint8_t)REC_SLOTS_PER_FRAME) &&
-            (REC_WIDTH_IS_LEGAL(nWidth) != 0U))
-        {
-            /* Half the ring in WORDS - a property of the ring, not of the
-               width. This was REC_RX_HALF_FRAMES * nWidth, which at width 16
-               is 16384 words into an 8192-word buffer. */
-            const uint32_t nOfs = (bSecondHalf == TRUE)
-                                      ? 0UL
-                                      : (uint32_t)REC_RX_HALF_WORDS;
-
-            LoopSession_FillTx(&audioTxBuffer[nOfs],
-                               (uint32_t)REC_FRAMES_PER_HALF(nWidth), nWidth);
-        }
+        LoopSession_FillTx(&audioTxBuffer[nOfs],
+                           (uint32_t)REC_FRAMES_PER_HALF,
+                           (uint8_t)FX_FRAME_SLOT_QTY);
     }
 }
 

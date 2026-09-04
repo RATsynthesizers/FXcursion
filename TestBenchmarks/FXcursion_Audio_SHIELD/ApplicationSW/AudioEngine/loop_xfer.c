@@ -200,10 +200,7 @@ STD_RESULT LoopXfer_OnCtl(const PROTO_LOOP_CTL* const pCtl)
 }
 
 
-U8 LoopXfer_StreamWidth(void)
-{
-    return FxLoop_StreamWidth(&tSession);
-}
+/* LoopXfer_StreamWidth removed with the negotiated frame - see loop_xfer.h. */
 
 
 BOOLEAN LoopXfer_IsRunning(void)

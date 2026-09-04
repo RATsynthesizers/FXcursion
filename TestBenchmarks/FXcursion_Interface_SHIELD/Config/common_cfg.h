@@ -25,6 +25,11 @@
 // Get general definitions
 #include "general.h"
 
+/* The wire frame layout is shared with the audio controller, so it comes from
+ * the protocol library rather than being restated here. Everything in the
+ * recorder geometry below is derived from it. */
+#include "fx_frame.h"
+
 /***************************************************************************************************
 * Definitions of global (public) constants
 ***************************************************************************************************/
@@ -73,68 +78,69 @@
  * length). Those two readings agreed only while a sample was 2 bytes and the
  * write was half the ring - a coincidence that does not survive S32.
  *
- * The wire format is fixed by the audio controller: REC_SLOT_QTY slots per
- * frame, one S32 per slot carrying a 24-bit value. See fx_interleave.h.
+ * The wire format is fixed by the audio controller and by fx_frame.h: a sync
+ * slot, REC_SLOTS_PER_FRAME recorder planes, then the loop slots. One S32 per
+ * slot carrying a 24-bit value. See fx_interleave.h for the strides.
  */
-#define REC_SLOTS_PER_FRAME     (4U)
-#define REC_BYTES_PER_SLOT      (4U)
-#define REC_BYTES_PER_FRAME     (REC_SLOTS_PER_FRAME * REC_BYTES_PER_SLOT)
+#define REC_SLOTS_PER_FRAME     (FX_FRAME_REC_SLOT_QTY)
+#define REC_BYTES_PER_SLOT      (FX_FRAME_BYTES_PER_SLOT)
 
-/* The SPI receive ring, in frames. Held at 2048 across the move from 16 to
-   32 bit so every downstream ratio below is unchanged - only the buffer got
-   bigger, from 16 KiB to 32 KiB. */
-#define REC_RX_FRAMES           (2048U)
-#define REC_RX_HALF_FRAMES      (REC_RX_FRAMES / 2U)
+/**
+ * Bytes per WIRE frame - all 32 slots, not just the recorder's four.
+ *
+ * This used to be REC_SLOTS_PER_FRAME * 4 = 16, which was the whole frame back
+ * when the recorder was the only thing on the link. It is 128 now, and the
+ * distinction matters: the recorder's share is REC_SLOTS_PER_FRAME slots, the
+ * STRIDE between one plane's samples is the full frame.
+ */
+#define REC_BYTES_PER_FRAME     (FX_FRAME_BYTES)
 
-/* S32 words in the whole ring - what the SPI DMA counts, since SPI1 is
-   SPI_DATASIZE_32BIT. Named in FRAMES above only because that is how the size
-   was originally chosen; the ring is a fixed number of WORDS and how many
-   frames fit depends on how wide the frame is. */
-#define REC_RX_WORDS            (REC_RX_FRAMES * REC_SLOTS_PER_FRAME)
+/* S32 words in the whole SPI receive ring - what the DMA counts, since SPI1 is
+   SPI_DATASIZE_32BIT. 8192 words is 32 KiB. */
+#define REC_RX_WORDS            (8192U)
 
 /**
  * Words in one half of the ring. The half-transfer interrupt fires here.
  *
- * THIS, NOT A FRAME COUNT, IS THE FIXED QUANTITY. The frame widens during a
- * loop transfer, so the number of frames in a half changes with it - which is
- * exactly the thing that was assumed constant and was not.
+ * THIS IS THE FIXED QUANTITY the frame has to divide. 4096 / 32 = 128 frames,
+ * exactly, which is why the frame is 32 slots wide and not 20.
  */
 #define REC_RX_HALF_WORDS       (REC_RX_WORDS / 2U)
 
 /**
- * Frames in one half, at a given wire width.
+ * Frames in one half of the ring. A CONSTANT again.
  *
- * Use this everywhere a frame count is needed. REC_RX_HALF_FRAMES below is the
- * same thing at the narrow width and is kept only for the paths that genuinely
- * cannot widen.
+ * This was REC_FRAMES_PER_HALF(w), a division by a width that arrived in an
+ * ACK, because the frame widened for the life of a loop transfer. The frame is
+ * fixed now, so the compiler knows this number - and the bug where the
+ * de-interleave was told 1024 frames of a half holding 128 cannot be written.
  */
-#define REC_FRAMES_PER_HALF(w)  (REC_RX_HALF_WORDS / (w))
+#define REC_FRAMES_PER_HALF     (REC_RX_HALF_WORDS / FX_FRAME_SLOT_QTY)
 
-/**
- * TRUE when a width divides the half evenly.
- *
- * A width that does not divide puts the half boundary in the MIDDLE of a frame.
- * The de-interleave would then hand over a half whose last frame is cut in two,
- * and every slot after it is rotated - silently, because the stream carries no
- * framing that could reveal it.
- *
- * Checked at run time against the ACKed width, because the width is negotiated
- * rather than compiled in.
- */
-#define REC_WIDTH_IS_LEGAL(w)   (((w) != 0U) && ((REC_RX_HALF_WORDS % (w)) == 0U))
+/* Kept as the same number under its old name: the ring holds this many frames
+   in a half, and now nothing can change that at run time. */
+#define REC_RX_HALF_FRAMES      (REC_FRAMES_PER_HALF)
+#define REC_RX_FRAMES           (REC_RX_WORDS / FX_FRAME_SLOT_QTY)
 
 /* One de-interleave moves half the SPI ring, so a per-channel ring of
    REC_CHUNKS of them wraps after REC_CHUNKS half-buffers. One chunk is
-   1024 samples, 21.3 ms of audio. */
-#define REC_CHUNK_SAMPLES       (REC_RX_HALF_FRAMES)
+   128 samples, 2.67 ms of audio. */
+#define REC_CHUNK_SAMPLES       (REC_FRAMES_PER_HALF)
 
 /*
  * Ring depth, and therefore how long the card may stall before audio is lost.
  * Sized for five seconds, rounded up to the power of two that lands the ring
  * exactly on the 4 MiB SDRAM_REC region:
  *
- *   256 * 1024 samples / 48000        = 5.46 s
- *   256 * 1024 * 4 planes * 4 B       = 4194304 B = 4 MiB
+ *   2048 * 128 samples / 48000       = 5.46 s
+ *   2048 * 128 * 4 planes * 4 B      = 4194304 B = 4 MiB
+ *
+ * 2048, not the old 256, because a chunk is one half-buffer and the frame is
+ * now 32 slots wide instead of 4 - so a half holds 128 frames rather than
+ * 1024. The RING IS THE SAME 4 MiB and still absorbs the same 5.46 s; only the
+ * granularity changed. Get this wrong and the absorption silently becomes
+ * 0.68 s, which is the sort of thing that only shows up as a dropout when a
+ * card stalls in the field.
  *
  * A power of two also turns the ring wrap in RecorderDrainChunks and
  * MDMA_Trigger_Deinterleave into a mask rather than a division - the latter
@@ -143,7 +149,7 @@
  * Changing this moves the region: SDRAM_REC in the linker script has to match,
  * and ld says so if it does not.
  */
-#define REC_CHUNKS              (256U)
+#define REC_CHUNKS              (2048U)
 
 /* Samples per mono channel in the SDRAM ring. */
 #define RECORD_BUF_SAMPLES      (REC_CHUNKS * REC_CHUNK_SAMPLES)
@@ -167,14 +173,19 @@
  * only the threshold at which it is worth waking; once awake it drains
  * everything available, so a slow card is caught up on rather than dropped.
  *
- *   16 chunks * 1024 samples / 48000 = 341 ms per wake
+ *   128 chunks * 128 samples / 48000 = 341 ms per wake
  *   mono file   16384 samples * 3 B  = 49152 B per pass
  *   stereo file                      = 98304 B per pass
  *
- * REC_CHUNKS can now be raised on its own, and is the only thing that needs
+ * 128, not the old 16, for the same reason REC_CHUNKS moved: a chunk is eight
+ * times smaller now. Left at 16 the writer would have woken every 42 ms with
+ * 2048-sample batches - eight times the f_write calls for the same audio,
+ * which is exactly the coupling the comment above says to avoid.
+ *
+ * REC_CHUNKS can be raised on its own, and is the only thing that needs
  * changing to grow the ring.
  */
-#define REC_WRITE_CHUNKS        (16U)
+#define REC_WRITE_CHUNKS        (128U)
 
 /* 24-bit on the card: the codec is 24-bit and so is the wire, and a take a
    musician will gain-stage in a DAW should not be truncated to 16 on the way

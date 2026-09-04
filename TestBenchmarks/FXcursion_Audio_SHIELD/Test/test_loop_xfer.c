@@ -123,8 +123,19 @@ void Test_LoopXfer(void)
     }
     TEST_END();
 
-    TEST_BEGIN("loop_xfer: the stream only widens while a transfer runs");
+    TEST_BEGIN("loop_xfer: a session runs and stops without moving the frame");
     {
+        /*
+         * This used to assert that the stream WIDENED while a transfer ran and
+         * narrowed after. It no longer does, and that is the point: the frame
+         * is FX_FRAME_SLOT_QTY slots at all times, so the only thing a session
+         * changes is whether the loop slots carry payload or zeros.
+         *
+         * What is checked instead is the running flag, because that is now the
+         * whole of the state a session contributes to the wire - and the
+         * transitions still have to be exactly right, since the interface uses
+         * them to decide whether to route the loop slots anywhere.
+         */
         PROTO_LOOP_OPEN tOpen;
         PROTO_LOOP_STAT tStat;
         PROTO_LOOP_CTL  tCtl;
@@ -134,21 +145,19 @@ void Test_LoopXfer(void)
         CHECK(LoopXfer_Init() == RESULT_OK);
         FxLoop_Reset(&tIf);
 
-        CHECK_EQ_U32(LoopXfer_StreamWidth(), (U32)REC_SLOT_QTY);
+        CHECK(LoopXfer_IsRunning() == FALSE);
 
         CHECK(FxLoop_Open(&tIf, 4U, LOOP_DIR_SAVE, 0U, 2U,
                           LOOP_FMT_S24, 6U, 0UL, &tOpen) == RESULT_OK);
         CHECK(LoopXfer_OnOpen(&tOpen, 48000UL, &tStat) == RESULT_OK);
 
         /* Negotiated, but not started - the interface has not routed yet. */
-        CHECK_EQ_U32(LoopXfer_StreamWidth(), (U32)REC_SLOT_QTY);
         CHECK(LoopXfer_IsRunning() == FALSE);
 
         tCtl.nSession = 4U;
         tCtl.eAction  = LOOP_ACT_START;
         CHECK(LoopXfer_OnCtl(&tCtl) == RESULT_OK);
 
-        CHECK_EQ_U32(LoopXfer_StreamWidth(), (U32)(REC_SLOT_QTY + 6U));
         CHECK(LoopXfer_IsRunning() == TRUE);
 
         /* A control for a session that has gone must not touch this one. */
@@ -160,7 +169,6 @@ void Test_LoopXfer(void)
         tCtl.nSession = 4U;
         CHECK(LoopXfer_OnCtl(&tCtl) == RESULT_OK);
         CHECK(LoopXfer_IsRunning() == FALSE);
-        CHECK_EQ_U32(LoopXfer_StreamWidth(), (U32)REC_SLOT_QTY);
     }
     TEST_END();
 

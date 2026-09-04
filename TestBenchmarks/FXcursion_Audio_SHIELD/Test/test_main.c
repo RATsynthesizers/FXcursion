@@ -62,6 +62,7 @@ int main(void)
 
     printf("shared contract\n");
     Test_Protocol();
+    Test_Frame();
 
     printf("engine\n");
     Test_Identity();

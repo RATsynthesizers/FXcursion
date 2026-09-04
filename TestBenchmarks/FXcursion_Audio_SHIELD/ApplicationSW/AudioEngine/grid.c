@@ -30,6 +30,12 @@
 #include "mixer.h"
 #include "looper.h"
 #include "recorder.h"
+
+/* FX_FRAME_SLOT_QTY - the width reported in the ACK is the shared frame's, so
+ * a mismatched pair of binaries is caught at handshake rather than by a
+ * rotated recording. */
+#include "fx_frame.h"
+
 #include "Effects/fx_common.h"
 
 
@@ -465,14 +471,19 @@ STD_RESULT Grid_Apply(const PROTO_CFG* const pCfg, PROTO_ACK* const pAck)
         pAck->eResult  = (U8)eResult;
         pAck->eEchoCmd = (U8)PROTO_CMD_SET_CONFIG;
 
-        // The SPI stream to the interface always carries REC_SLOT_QTY slots at a
-        // fixed stride, with silence in unused ones. Keeping the stride constant
-        // means the interface never has to reprogram its de-interleave descriptor
-        // when the slot COUNT changes - only if the bit depth ever changes. The
-        // map below is informational: it tells the interface which chain landed
-        // in which slot, so recordings get the right names.
+        // The SPI stream to the interface always carries FX_FRAME_SLOT_QTY slots
+        // at a fixed stride, with silence in unused ones. Keeping the stride
+        // constant means the interface never has to reprogram its de-interleave
+        // descriptor when the slot COUNT changes - only if the bit depth ever
+        // changes. The map below is informational: it tells the interface which
+        // chain landed in which slot, so recordings get the right names.
+        //
+        // The width is reported even though both sides compile it from the same
+        // shared header. It is not used to configure anything any more; it is
+        // there so a MISMATCHED PAIR OF BINARIES is caught at handshake time
+        // rather than by a recording that came out rotated.
         pAck->nRecSlotQty  = 0U;
-        pAck->nStreamWidth = (U8)REC_SLOT_QTY;
+        pAck->nStreamWidth = (U8)FX_FRAME_SLOT_QTY;
 
         for (nChain = 0U; nChain < CHAIN_MAX_QTY; nChain++)
         {
