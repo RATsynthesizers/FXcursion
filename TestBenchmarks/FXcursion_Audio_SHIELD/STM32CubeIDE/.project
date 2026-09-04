@@ -43,12 +43,67 @@
 		<link>
 			<name>SystemSW</name>
 			<type>2</type>
-			<locationURI>SYSTEM_SW_LOC</locationURI>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>UtilitySW</name>
 			<type>2</type>
 			<locationURI>UTILITY_SW_LOC</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/HW_Drivers</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/Include</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC/Include</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/Lib</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/Services</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/HW_Drivers/W9812G6JH</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC/HW_Drivers/W9812G6JH</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/HW_Drivers/WM8731</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC/HW_Drivers/WM8731</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/Lib/InterComProtocol</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC/Lib/InterComProtocol</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/Lib/assert</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC/Lib/assert</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/Lib/std</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC/Lib/std</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/Services/SPI_TP</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC/Services/SPI_TP</locationURI>
+		</link>
+		<link>
+			<name>SystemSW/Services/UART_TP</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC/Services/UART_TP</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>

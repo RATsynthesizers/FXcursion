@@ -50,6 +50,8 @@
 									<listOptionValue builtIn="false" value="../Core/Inc"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/Config}"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/SystemSW/Lib/InterComProtocol}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/SystemSW/Services/SPI_TP}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/SystemSW/Services/UART_TP}"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/ApplicationSW/AudioEngine}"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/ApplicationSW/AudioIO}"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/ApplicationSW/CtrlLink}"/>
@@ -147,6 +149,8 @@
 									<listOptionValue builtIn="false" value="../Core/Inc"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/Config}"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/SystemSW/Lib/InterComProtocol}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/SystemSW/Services/SPI_TP}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/SystemSW/Services/UART_TP}"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/ApplicationSW/AudioEngine}"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/ApplicationSW/AudioIO}"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/ApplicationSW/CtrlLink}"/>
