@@ -100,6 +100,25 @@ static BOOLEAN bPeerDone;
  */
 static volatile U32 nTxOfs;
 
+/**
+ * @brief Polls since this session last moved a byte, and what it had moved.
+ *
+ * The stall watchdog in LoopSession_Poll - see there for why it counts polls
+ * rather than milliseconds, and why it watches progress rather than age.
+ */
+static U32 nStallPolls;
+static U32 nLastProgress;
+
+/**
+ * @brief How long a session may move nothing at all before it is failed.
+ *
+ * Three seconds. Well past any legitimate pause: the link moves a 20-second
+ * take in about 1.1 s, and the card is the only slow part of a save - and the
+ * card is not in this path, the spooler takes it afterwards.
+ */
+#define LOOPSESSION_STALL_MS            (3000U)
+#define LOOPSESSION_STALL_POLLS         (LOOPSESSION_STALL_MS / CTRL_IF_POLL_MS)
+
 /***************************************************************************************************
 * Definitions of local (private) functions
 ***************************************************************************************************/
@@ -130,6 +149,9 @@ static void SessionRelease(const U8 eResult)
     bPeerDone   = FALSE;
     nPeerCrc    = 0UL;
     nTxOfs      = 0UL;
+
+    nStallPolls   = 0UL;
+    nLastProgress = 0UL;
 
     if (eResult != (U8)PROTO_RES_OK)
     {
@@ -169,6 +191,9 @@ STD_RESULT LoopSession_Init(void)
     nTxOfs      = 0UL;
     nFailures   = 0UL;
     eLastResult = (U8)PROTO_RES_OK;
+
+    nStallPolls   = 0UL;
+    nLastProgress = 0UL;
 
     (void)memset(aName, 0, sizeof(aName));
 
@@ -343,12 +368,31 @@ void LoopSession_OnStat(const PROTO_LOOP_STAT* const pStat)
 
             if (tSession.eDir == (U8)LOOP_DIR_SAVE)
             {
-                U8* const pBuf = LoopSpool_Buffer(nSlot);
+                U8* const pBuf  = LoopSpool_Buffer(nSlot);
+                const U32 nStep  = Recorder_LoopRouteBytes();
+                U32       nArm   = tSession.nBytesTotal;
+
+                /*
+                 * Rounded UP to the route's granularity. The route moves a
+                 * whole half of loop slots at a time and a loop almost never
+                 * ends on that boundary, so bounding it to the exact byte
+                 * count has RecorderLoopDest refuse the final half - the
+                 * count never reaches nBytesTotal and the save never finishes.
+                 *
+                 * The padding is the audio board's own, and both the CRC and
+                 * the file below stop at nBytesTotal, so it is never read.
+                 * One extra half always fits: a slot is 5 767 168 B against a
+                 * 5 760 000 B maximum loop, and a half is 13 824 B.
+                 */
+                if ((nStep != 0UL) && ((nArm % nStep) != 0UL))
+                {
+                    nArm += nStep - (nArm % nStep);
+                }
 
                 if ((pBuf == NULL_PTR) ||
-                    (tSession.nBytesTotal > LoopSpool_SlotBytes()) ||
+                    (nArm > LoopSpool_SlotBytes()) ||
                     (Recorder_ArmLoopDest((U32)(uintptr_t)pBuf,
-                                          tSession.nBytesTotal) != RESULT_OK))
+                                          nArm) != RESULT_OK))
                 {
                     SessionRelease((U8)PROTO_RES_NO_SPACE);
                     return;
@@ -397,6 +441,57 @@ void LoopSession_Poll(void)
 {
     U32 nTaken;
     U32 nCrc;
+    U32 nProgress;
+
+    if (tSession.eState == (U8)FX_LOOP_IDLE)
+    {
+        nStallPolls    = 0UL;
+        nLastProgress  = 0UL;
+        return;
+    }
+
+    /*
+     * THE WATCHDOG, and it covers OPENING as well as RUNNING.
+     *
+     * Nothing on this path had a deadline. A session waited on a byte count or
+     * on a reply, and if the audio board reset in between it waited for the
+     * rest of the run - holding a staging slot, so every later transfer was
+     * refused as busy. That is the failure this exists for, and it needs no
+     * new clock: Poll is called once per CTRL_IF_POLL_MS by the CtrlLink task.
+     *
+     * Progress, not elapsed time. A slow card or a busy link must not fail a
+     * transfer that is still moving, so the counter resets on every byte that
+     * lands. Only a session that has moved NOTHING for the whole window is
+     * declared dead.
+     */
+    nProgress = (tSession.eDir == (U8)LOOP_DIR_SAVE)
+                    ? Recorder_LoopBytesTaken()
+                    : nTxOfs;
+
+    if (nProgress != nLastProgress)
+    {
+        nLastProgress = nProgress;
+        nStallPolls   = 0UL;
+    }
+    else
+    {
+        nStallPolls++;
+    }
+
+    /*
+     * A dead peer is decided immediately - there is no point waiting out the
+     * stall window for a board that has stopped answering pings at all.
+     */
+    if ((nStallPolls > (U32)LOOPSESSION_STALL_POLLS) ||
+        (CtrlLinkIf_IsPeerAlive() == FALSE))
+    {
+        /* Best effort: if the peer is gone this will not arrive, and if it is
+           merely wedged this is what unwedges it. */
+        (void)SendCtl((U8)LOOP_ACT_ABORT);
+
+        SessionRelease((U8)PROTO_RES_TIMEOUT);
+        return;
+    }
 
     if (bRunning == FALSE)
     {
@@ -412,11 +507,31 @@ void LoopSession_Poll(void)
          * folded into the save path, because the two really are different
          * machines and pretending otherwise is how one of them gets the other's
          * completion test.
+         *
+         * THE FAR SIDE'S REPORT IS THE ONLY SIGNAL. This used to wait on the
+         * local eState reaching COMPLETE, which nothing on a load ever sets:
+         * FxLoop_Advance is driven by bytes ARRIVING, and on a load they are
+         * leaving. The session sat in RUNNING for good, and with the slot never
+         * released the next load was refused as busy.
          */
-        if (tSession.eState == (U8)FX_LOOP_COMPLETE)
+        if (bPeerDone == FALSE)
         {
-            SessionRelease((U8)PROTO_RES_OK);
+            return;
         }
+
+        bRunning = FALSE;
+
+        /*
+         * The far side checksummed what it received; this side checksums what
+         * it was asked to send. Same comparison as a save, in the same place,
+         * for the same reason - the SPI stream carries no CRC of its own, so
+         * this is the only thing standing between marginal wiring and a loop
+         * that plays back as noise.
+         */
+        nCrc = Crc32_Ieee(LoopSpool_Buffer(nSlot), tSession.nBytesTotal, 0UL);
+
+        SessionRelease((nCrc == nPeerCrc) ? (U8)PROTO_RES_OK
+                                          : (U8)PROTO_RES_BAD_PARAM);
         return;
     }
 

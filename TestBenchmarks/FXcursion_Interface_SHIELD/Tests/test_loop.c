@@ -190,7 +190,8 @@ static void test_save_session(void)
 
     /* Interface opens with nBytes 0 - only the audio board knows the length. */
     CHECK(FxLoop_Open(&tIf, 7U, (U8)LOOP_DIR_SAVE, 0U, 2U,
-                      (U8)LOOP_FMT_S24, 8U, 0UL, &tOpen) == RESULT_OK,
+                      (U8)LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL,
+                      &tOpen) == RESULT_OK,
           "open refused");
     CHECK(tIf.eState == (U8)FX_LOOP_OPENING, "state %u, want OPENING", tIf.eState);
 
@@ -210,14 +211,16 @@ static void test_save_session(void)
           (unsigned long)tIf.nBytesTotal, (unsigned long)tAu.nBytesTotal);
     CHECK(tIf.nSlotQty == tAu.nSlotQty, "sides disagree on slots");
 
-    /* Width is only widened while the bulk actually moves. */
-    CHECK(FxLoop_StreamWidth(&tIf) == (U8)REC_SLOT_QTY,
-          "stream widened before START");
+    /*
+     * The frame NEVER widens - it is FX_FRAME_SLOT_QTY slots at all times, and
+     * FxLoop_StreamWidth is gone with the negotiation that used to change it.
+     * What a session still decides is whether the loop slots carry payload or
+     * zeros, which is exactly what IsStreaming reports.
+     */
+    CHECK(FxLoop_IsStreaming(&tIf) == FALSE, "streaming before START");
 
     CHECK(FxLoop_Start(&tIf) == RESULT_OK, "if start refused");
     CHECK(FxLoop_Start(&tAu) == RESULT_OK, "au start refused");
-    CHECK(FxLoop_StreamWidth(&tIf) == (U8)(REC_SLOT_QTY + 8U),
-          "width %u, want %u", FxLoop_StreamWidth(&tIf), REC_SLOT_QTY + 8U);
     CHECK(FxLoop_IsStreaming(&tIf) == TRUE, "not streaming while RUNNING");
 
     /*
@@ -261,9 +264,9 @@ static void test_save_session(void)
               (unsigned long)tIf.nCrc, (unsigned long)tAu.nCrc);
     }
 
-    /* Completion narrows the stream again. */
-    CHECK(FxLoop_StreamWidth(&tIf) == (U8)REC_SLOT_QTY,
-          "stream stayed wide after COMPLETE");
+    /* Completion stops the payload, though the frame is the same size. */
+    CHECK(FxLoop_IsStreaming(&tIf) == FALSE,
+          "still streaming after COMPLETE");
 
     /* A CRC is only reported once it covers everything. */
     FxLoop_Report(&tAu, &tStat);
@@ -335,15 +338,15 @@ static void test_sequencing(void)
     /* A second OPEN while one is live. */
     FxLoop_Reset(&tS);
     CHECK(FxLoop_Open(&tS, 1U, (U8)LOOP_DIR_SAVE, 0U, 2U,
-                      (U8)LOOP_FMT_S24, 4U, 0UL, &tOpen) == RESULT_OK, "open 1");
+                      (U8)LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL, &tOpen) == RESULT_OK, "open 1");
     CHECK(FxLoop_Open(&tS, 2U, (U8)LOOP_DIR_SAVE, 0U, 2U,
-                      (U8)LOOP_FMT_S24, 4U, 0UL, &tOpen) != RESULT_OK,
+                      (U8)LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL, &tOpen) != RESULT_OK,
           "second open accepted over a live session");
 
     /* Bad geometry is refused at the negotiation, with a reason. */
     FxLoop_Reset(&tS);
     CHECK(FxLoop_Open(&tS, 1U, (U8)LOOP_DIR_SAVE, LOOPER_QTY, 2U,
-                      (U8)LOOP_FMT_S24, 4U, 0UL, &tOpen) != RESULT_OK,
+                      (U8)LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL, &tOpen) != RESULT_OK,
           "looper index past the end accepted");
     CHECK(FxLoop_Open(&tS, 1U, (U8)LOOP_DIR_SAVE, 0U, 2U,
                       (U8)LOOP_FMT_S24, 0U, 0UL, &tOpen) != RESULT_OK,
@@ -355,14 +358,14 @@ static void test_sequencing(void)
     /* A LOAD must state a size; only a SAVE may ask. */
     FxLoop_Reset(&tS);
     CHECK(FxLoop_Open(&tS, 1U, (U8)LOOP_DIR_LOAD, 0U, 2U,
-                      (U8)LOOP_FMT_S24, 4U, 0UL, &tOpen) != RESULT_OK,
+                      (U8)LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL, &tOpen) != RESULT_OK,
           "LOAD with unknown size accepted");
 
     /* A load that will not fit is refused with NO_SPACE, and says so. */
     FxLoop_Reset(&tAu);
     FxLoop_Reset(&tS);
     CHECK(FxLoop_Open(&tS, 3U, (U8)LOOP_DIR_LOAD, 0U, 2U,
-                      (U8)LOOP_FMT_S24, 4U, 1000000UL, &tOpen) == RESULT_OK,
+                      (U8)LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 1000000UL, &tOpen) == RESULT_OK,
           "valid LOAD refused");
     CHECK(FxLoop_Accept(&tAu, &tOpen, 500000UL, &tStat) != RESULT_OK,
           "oversized LOAD accepted");
@@ -374,7 +377,7 @@ static void test_sequencing(void)
     FxLoop_Reset(&tAu);
     FxLoop_Reset(&tS);
     (void)FxLoop_Open(&tS, 4U, (U8)LOOP_DIR_SAVE, 0U, 2U,
-                      (U8)LOOP_FMT_S24, 4U, 0UL, &tOpen);
+                      (U8)LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL, &tOpen);
     CHECK(FxLoop_Accept(&tAu, &tOpen, 0UL, &tStat) != RESULT_OK,
           "empty loop accepted");
 
@@ -382,10 +385,10 @@ static void test_sequencing(void)
     FxLoop_Reset(&tAu);
     FxLoop_Reset(&tS);
     (void)FxLoop_Open(&tS, 5U, (U8)LOOP_DIR_SAVE, 0U, 2U,
-                      (U8)LOOP_FMT_S24, 4U, 0UL, &tOpen);
+                      (U8)LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL, &tOpen);
     CHECK(FxLoop_Accept(&tAu, &tOpen, 96000UL, &tStat) == RESULT_OK, "accept");
     (void)FxLoop_Open(&tS, 6U, (U8)LOOP_DIR_SAVE, 0U, 2U,
-                      (U8)LOOP_FMT_S24, 4U, 0UL, &tOpen);
+                      (U8)LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL, &tOpen);
     CHECK(FxLoop_Accept(&tAu, &tOpen, 96000UL, &tStat) != RESULT_OK,
           "second session accepted while one was live");
     CHECK(tStat.eResult == (U8)PROTO_RES_BUSY, "result %u, want BUSY",
@@ -411,7 +414,7 @@ static void test_stale_reply_ignored(void)
 
     FxLoop_Reset(&tIf);
     CHECK(FxLoop_Open(&tIf, 42U, (U8)LOOP_DIR_SAVE, 0U, 2U,
-                      (U8)LOOP_FMT_S24, 4U, 0UL, &tOpen) == RESULT_OK, "open");
+                      (U8)LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL, &tOpen) == RESULT_OK, "open");
 
     /* A refusal belonging to session 41, arriving late. */
     memset(&tStale, 0, sizeof(tStale));

@@ -151,8 +151,15 @@ static void Dispatch(const U8 eCmd, const U8* const pPayload, const U8 nLength)
                 /* Handed straight over rather than republished. A loop transfer
                    is a conversation with one owner, not a value several screens
                    might want - and it has to be answered in order, which a
-                   topic cannot guarantee. */
-                LoopSession_OnStat((const PROTO_LOOP_STAT*)(const void*)pPayload);
+                   topic cannot guarantee.
+
+                   Copied out of the byte array first: pPayload is U8-aligned,
+                   and reading a U32 field through a cast to it is an unaligned
+                   access that faults wherever the MPU forbids one. */
+                PROTO_LOOP_STAT tStat;
+
+                (void)memcpy(&tStat, pPayload, sizeof(tStat));
+                LoopSession_OnStat(&tStat);
             }
             break;
 

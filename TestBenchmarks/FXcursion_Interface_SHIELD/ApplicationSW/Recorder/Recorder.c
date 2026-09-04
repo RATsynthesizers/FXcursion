@@ -825,6 +825,17 @@ uint32_t Recorder_LoopBytesTaken(void)
 }
 
 
+uint32_t Recorder_LoopRouteBytes(void)
+{
+    /* The granularity the loop route advances in - one half's worth of loop
+       slots. A destination has to be armed to a multiple of this or its last
+       transfer does not fit and is dropped; see RecorderLoopDest. */
+    return (uint32_t)FX_FRAME_LOOP_SLOT_QTY
+         * (uint32_t)REC_FRAMES_PER_HALF
+         * sizeof(int32_t);
+}
+
+
 /**
  * @brief Next destination for the loop route, and advance past it.
  *

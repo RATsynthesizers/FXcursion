@@ -61,6 +61,14 @@ BOOLEAN Recorder_IsCaughtUp(void);
 STD_RESULT Recorder_ArmLoopDest(const uint32_t nBase, const uint32_t nBytes);
 
 /**
+ * @brief Granularity the loop route advances in, in bytes.
+ *
+ * Recorder_ArmLoopDest must be given a multiple of this: the route moves a
+ * whole half of loop slots per transfer and omits one that will not fit.
+ */
+uint32_t Recorder_LoopRouteBytes(void);
+
+/**
  * @brief Stop routing loop slots.
  *
  * Disarm BEFORE the stream narrows. While armed, the route keeps writing
