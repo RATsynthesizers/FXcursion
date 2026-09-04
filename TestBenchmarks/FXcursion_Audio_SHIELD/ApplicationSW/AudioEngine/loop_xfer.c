@@ -39,6 +39,17 @@ static U32 nByteOfs;
 static U8  nPlaneBase;
 
 /**
+ * @brief Blocks this session may still take before it is failed.
+ *
+ * Set at START from the negotiated size, decremented once per block. See
+ * LoopXfer_OnCtl for why the deadline is counted in blocks.
+ */
+static U32 nBlockBudget;
+
+/** Extra blocks on top of the computed need, for dropped frames. */
+#define LOOPXFER_BUDGET_MARGIN          (256UL)
+
+/**
  * Set when the session ends, cleared when the super-loop collects it.
  *
  * volatile because the audio block sets it and the super-loop reads it.
@@ -102,6 +113,7 @@ STD_RESULT LoopXfer_Init(void)
     nByteOfs       = 0UL;
     nPlaneBase     = 0U;
     bReportPending = FALSE;
+    nBlockBudget   = 0UL;
 
     return RESULT_OK;
 }
@@ -196,6 +208,33 @@ STD_RESULT LoopXfer_OnCtl(const PROTO_LOOP_CTL* const pCtl)
 
     nByteOfs = 0UL;
 
+    /*
+     * A DEADLINE, COUNTED IN AUDIO BLOCKS.
+     *
+     * Nothing on this path had one. A save drives itself and finishes, but a
+     * LOAD only advances when the interface puts bytes on MISO - so an
+     * interface that reset mid-transfer left this side in RUNNING for good,
+     * and every later LOOP_OPEN was refused as BUSY.
+     *
+     * Blocks rather than milliseconds because this module has no clock and
+     * does not want one: LoopXfer_Block is called exactly once per audio
+     * block, which makes the block counter the most accurate timer available
+     * here and costs no dependency.
+     *
+     * Sized at twice the blocks the transfer should need, plus a margin for
+     * the frames the transport may drop under load. A save takes about 834
+     * blocks per 20-second take, so the budget is generous by design - it is
+     * here to break a wedge, not to police throughput.
+     */
+    {
+        const U32 nPerBlock = (U32)AUDIO_BLOCK_FRAMES
+                            * (U32)FX_LOOP_SLOT_QTY_MAX
+                            * 4UL;
+
+        nBlockBudget = ((tSession.nBytesTotal / nPerBlock) * 2UL)
+                     + LOOPXFER_BUDGET_MARGIN;
+    }
+
     return FxLoop_Start(&tSession);
 }
 
@@ -236,7 +275,7 @@ STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames, const U8 nStride
        A stride too small would have each frame's loop slots overwrite the next
        frame's recorder samples - silently, since nothing downstream can tell a
        corrupted sample from a quiet one. */
-    if (nStride < (U8)(nSlots + (U8)REC_SLOT_QTY))
+    if (nStride < (U8)(nSlots + (U8)FX_FRAME_LOOP_SLOT_BASE))
     {
         return RESULT_INVALID_PARAM_3;
     }
@@ -245,6 +284,22 @@ STD_RESULT LoopXfer_Block(S32* const pSlots, const U32 nFrames, const U8 nStride
     {
         return RESULT_NOT_OK;
     }
+
+    /*
+     * Out of blocks. The transfer has had twice as long as it needed and has
+     * still not finished, which on a load means the far side stopped feeding
+     * it. Failed here rather than left running, so the session reaches a
+     * terminal state, gets reported, and releases the session id.
+     */
+    if (nBlockBudget == 0UL)
+    {
+        FxLoop_Abort(&tSession, (U8)PROTO_RES_TIMEOUT);
+        bReportPending = TRUE;
+
+        return RESULT_NOT_OK;
+    }
+
+    nBlockBudget--;
 
     /*
      * ---- THE WALKING POINTER --------------------------------------------
@@ -444,6 +499,16 @@ BOOLEAN LoopXfer_TakeCompletion(PROTO_LOOP_STAT* const pStat)
     bReportPending = FALSE;
 
     FxLoop_Report(&tSession, pStat);
+
+    /* Reported, so the session is finished with. COMPLETE and FAILED both
+       leave the machine out of IDLE, and only a reset brings it back - without
+       this the next LOOP_OPEN is refused as BUSY for the rest of the run. The
+       report is built first, so the result still reaches the far side. */
+    if ((tSession.eState == (U8)FX_LOOP_COMPLETE) ||
+        (tSession.eState == (U8)FX_LOOP_FAILED))
+    {
+        FxLoop_Reset(&tSession);
+    }
 
     return TRUE;
 }

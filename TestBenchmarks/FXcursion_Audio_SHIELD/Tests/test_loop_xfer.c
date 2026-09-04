@@ -16,7 +16,8 @@
  *              - the CRCs match when the bytes match, and differ when they do not
  *              - a stale message cannot kill the session that replaced it
  *
- *            The wire is 32-bit slots carrying three payload bytes each, so the
+ *            The wire is 32-bit slots carrying FOUR payload bytes each - the
+ *            loop payload is a byte stream, not one sample per slot - so the
  *            pack and unpack are the part most likely to be subtly wrong. A
  *            round trip is the only honest way to test that: pack from a
  *            looper, hand the words over, unpack into another looper, compare.
@@ -31,15 +32,20 @@
 #include "fx_loop.h"
 
 /*
- * One block's worth of WIRE FRAMES at the widest a session may ask for.
+ * One block's worth of WIRE FRAMES, at the real frame geometry.
  *
- * Not just the loop slots: the frame is REC_SLOT_QTY recorder slots followed by
- * the loop slots, and the loop slots of consecutive frames are therefore a
- * stride apart rather than adjacent. Modelling the whole frame here is the
- * point - a test that packed the loop slots contiguously would pass while the
- * firmware wrote every loop sample on top of a recorder one.
+ * Not just the loop slots: the frame is one sync slot, then REC_SLOT_QTY
+ * recorder slots, then the loop slots, so the loop slots of consecutive frames
+ * are a stride apart rather than adjacent. Modelling the whole frame here is
+ * the point - a test that packed the loop slots contiguously would pass while
+ * the firmware wrote every loop sample on top of a recorder one.
+ *
+ * This was REC_SLOT_QTY + FX_LOOP_SLOT_QTY_MAX, which is 31 and predates the
+ * sync slot, and it based the loop run at index REC_SLOT_QTY instead of
+ * FX_FRAME_LOOP_SLOT_BASE. The test therefore modelled a frame the firmware
+ * has not sent since the sync word was added.
  */
-#define TEST_XFER_STRIDE                (REC_SLOT_QTY + FX_LOOP_SLOT_QTY_MAX)
+#define TEST_XFER_STRIDE                (FX_FRAME_SLOT_QTY)
 
 static S32 aSlots[AUDIO_BLOCK_FRAMES * TEST_XFER_STRIDE];
 
@@ -68,7 +74,8 @@ void Test_LoopXfer(void)
 
         /* Interface asks without knowing the length. */
         CHECK(FxLoop_Open(&tIf, 1U, LOOP_DIR_SAVE, 0U, 2U,
-                          LOOP_FMT_S24, 8U, 0UL, &tOpen) == RESULT_OK);
+                          LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL,
+                          &tOpen) == RESULT_OK);
 
         CHECK(LoopXfer_OnOpen(&tOpen, nFrames, &tStat) == RESULT_OK);
 
@@ -96,7 +103,8 @@ void Test_LoopXfer(void)
         FxLoop_Reset(&tIf);
 
         CHECK(FxLoop_Open(&tIf, 2U, LOOP_DIR_SAVE, 0U, 2U,
-                          LOOP_FMT_S24, 4U, 0UL, &tOpen) == RESULT_OK);
+                          LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL,
+                          &tOpen) == RESULT_OK);
 
         /* Nothing recorded. Creating a zero-length WAV and calling it a take is
            the failure this prevents. */
@@ -115,7 +123,8 @@ void Test_LoopXfer(void)
         CHECK(LoopXfer_Init() == RESULT_OK);
         FxLoop_Reset(&tIf);
 
-        CHECK(FxLoop_Open(&tIf, 3U, LOOP_DIR_LOAD, 0U, 2U, LOOP_FMT_S24, 4U,
+        CHECK(FxLoop_Open(&tIf, 3U, LOOP_DIR_LOAD, 0U, 2U, LOOP_FMT_S24,
+                          FX_LOOP_SLOT_QTY_MAX,
                           LoopMem_PlaneBytes() * 4UL, &tOpen) == RESULT_OK);
 
         CHECK(LoopXfer_OnOpen(&tOpen, 0UL, &tStat) != RESULT_OK);
@@ -148,7 +157,8 @@ void Test_LoopXfer(void)
         CHECK(LoopXfer_IsRunning() == FALSE);
 
         CHECK(FxLoop_Open(&tIf, 4U, LOOP_DIR_SAVE, 0U, 2U,
-                          LOOP_FMT_S24, 6U, 0UL, &tOpen) == RESULT_OK);
+                          LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL,
+                          &tOpen) == RESULT_OK);
         CHECK(LoopXfer_OnOpen(&tOpen, 48000UL, &tStat) == RESULT_OK);
 
         /* Negotiated, but not started - the interface has not routed yet. */
@@ -172,6 +182,89 @@ void Test_LoopXfer(void)
     }
     TEST_END();
 
+    TEST_BEGIN("loop_xfer: the frame's slot count is the only one accepted");
+    {
+        /*
+         * The last hole the fixed frame left open. A session could negotiate
+         * fewer loop slots than the frame carries, and the two ends then
+         * disagreed silently: the audio board packed nSlotQty per frame while
+         * the interface routed all of them into staging, so the difference
+         * arrived as zeros spliced through the take. Nothing between them
+         * could notice - the SPI stream has no CRC.
+         */
+        PROTO_LOOP_OPEN tOpen;
+        FX_LOOP_SESSION tIf;
+        U8              nQty;
+
+        for (nQty = 0U; nQty < (U8)(FX_LOOP_SLOT_QTY_MAX + 2U); nQty++)
+        {
+            FxLoop_Reset(&tIf);
+
+            if (nQty == (U8)FX_LOOP_SLOT_QTY_MAX)
+            {
+                CHECK(FxLoop_Open(&tIf, 9U, LOOP_DIR_SAVE, 0U, 2U,
+                                  LOOP_FMT_S24, nQty, 0UL, &tOpen) == RESULT_OK);
+            }
+            else
+            {
+                CHECK(FxLoop_Open(&tIf, 9U, LOOP_DIR_SAVE, 0U, 2U,
+                                  LOOP_FMT_S24, nQty, 0UL, &tOpen) != RESULT_OK);
+            }
+        }
+    }
+    TEST_END();
+
+    TEST_BEGIN("loop_xfer: a reported session frees the machine for the next");
+    {
+        /*
+         * A session that RUNS TO COMPLETION leaves the machine out of IDLE,
+         * and only a reset brings it back. Without one the first transfer of a
+         * run was the only one: every later LOOP_OPEN was refused as BUSY. The
+         * old tests hid it by calling LoopXfer_Init between cases, which the
+         * firmware never does.
+         *
+         * A REFUSED open is not this case and must not be confused with it -
+         * FxLoop_Accept writes FAILED into the reply and leaves the session
+         * untouched, so a refusal costs nothing and needs no reset.
+         */
+        PROTO_LOOP_OPEN tOpen;
+        PROTO_LOOP_STAT tStat;
+        PROTO_LOOP_CTL  tCtl;
+        FX_LOOP_SESSION tIf;
+        const U32       nFrames = 100UL;    /* 600 B - one block finishes it */
+
+        CHECK(LoopMem_Init()  == RESULT_OK);
+        CHECK(LoopXfer_Init() == RESULT_OK);
+        FxLoop_Reset(&tIf);
+
+        CHECK(FxLoop_Open(&tIf, 21U, LOOP_DIR_SAVE, 0U, 2U,
+                          LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL,
+                          &tOpen) == RESULT_OK);
+        CHECK(LoopXfer_OnOpen(&tOpen, nFrames, &tStat) == RESULT_OK);
+
+        tCtl.nSession = 21U;
+        tCtl.eAction  = LOOP_ACT_START;
+        CHECK(LoopXfer_OnCtl(&tCtl) == RESULT_OK);
+
+        CHECK(LoopXfer_Block(&aSlots[FX_FRAME_LOOP_SLOT_BASE],
+                             AUDIO_BLOCK_FRAMES,
+                             (U8)TEST_XFER_STRIDE) == RESULT_OK);
+        CHECK(LoopXfer_IsRunning() == FALSE);
+
+        /* The report is what hands the machine back. */
+        CHECK(LoopXfer_TakeCompletion(&tStat) == TRUE);
+        CHECK_EQ_U32(tStat.eState, (U32)FX_LOOP_COMPLETE);
+
+        /* And now a second session is possible - WITHOUT a re-init. */
+        FxLoop_Reset(&tIf);
+        CHECK(FxLoop_Open(&tIf, 22U, LOOP_DIR_SAVE, 0U, 2U,
+                          LOOP_FMT_S24, FX_LOOP_SLOT_QTY_MAX, 0UL,
+                          &tOpen) == RESULT_OK);
+        CHECK(LoopXfer_OnOpen(&tOpen, nFrames, &tStat) == RESULT_OK);
+        CHECK_EQ_U32(tStat.eState, (U32)FX_LOOP_READY);
+    }
+    TEST_END();
+
     TEST_BEGIN("loop_xfer: a save round trips through the wire slots");
     {
         /*
@@ -188,7 +281,7 @@ void Test_LoopXfer(void)
         PROTO_LOOP_STAT tStat;
         PROTO_LOOP_CTL  tCtl;
 
-        const U8  nSlots  = 8U;
+        const U8  nSlots  = (U8)FX_LOOP_SLOT_QTY_MAX;
         const U32 nFrames = 700UL;              /* not a slot multiple, on purpose */
         U32       nBytes  = 0UL;
         U32       i;
@@ -251,9 +344,11 @@ void Test_LoopXfer(void)
 
                 (void)memset(aSlots, 0, sizeof(aSlots));
 
-                /* Exactly as rec_spi does it: the frame base plus REC_SLOT_QTY,
-                   with the full frame width as the stride. */
-                CHECK(LoopXfer_Block(&aSlots[REC_SLOT_QTY], AUDIO_BLOCK_FRAMES,
+                /* Exactly as rec_spi does it: the frame base plus
+                   FX_FRAME_LOOP_SLOT_BASE, with the full frame width as the
+                   stride. */
+                CHECK(LoopXfer_Block(&aSlots[FX_FRAME_LOOP_SLOT_BASE],
+                                     AUDIO_BLOCK_FRAMES,
                                      (U8)TEST_XFER_STRIDE) == RESULT_OK);
 
                 /* Unpack exactly the way the interface will: three bytes out of
@@ -265,7 +360,8 @@ void Test_LoopXfer(void)
                     for (s = 0U; (s < nSlots) && (nGot < nBytes); s++)
                     {
                         const U32 nWord =
-                            (U32)aSlots[(f * (U32)TEST_XFER_STRIDE) + REC_SLOT_QTY + s];
+                            (U32)aSlots[(f * (U32)TEST_XFER_STRIDE)
+                                        + FX_FRAME_LOOP_SLOT_BASE + s];
                         U8        b;
 
                         /* ALL FOUR bytes of each slot: the loop payload is a

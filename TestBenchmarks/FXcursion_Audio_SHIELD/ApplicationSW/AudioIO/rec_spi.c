@@ -27,6 +27,11 @@
 
 #include "recorder.h"
 
+/* IN_DMA_BUF and MEM_ALIGN, for the receive staging below. Not reached through
+   rec_spi.h -> rec_stream.h, which stops at fx_frame.h, so it has to be named
+   here - rec_stream.c includes it directly for the same reason. */
+#include "mem_map.h"
+
 /* The SPI peripheral, its clock and its callbacks belong to the transport now.
    spi.h is no longer needed here: nothing in this file touches hspi1. main.h
    still is - it is what pulls in the CMSIS core intrinsics for __get_PRIMASK,
@@ -51,6 +56,39 @@
 /* Defined below, registered with the transport in RecSpi_Init above them. */
 static void RecSpi_OnSent(void);
 static void RecSpi_OnError(void);
+
+static BOOLEAN LoopIsLoading(void);
+
+
+
+/***************************************************************************************************
+* Definitions of local (private) data
+***************************************************************************************************/
+
+/**
+ * @brief Where a LOAD's words land.
+ *
+ * Mirrors the transmit staging, half for half, because a full-duplex burst
+ * moves both directions at once and the two cannot share a buffer.
+ *
+ * In RAM_D2 and 32-byte aligned for the same reason the transmit staging is:
+ * MPU region 0 maps it non-cacheable, so no maintenance is needed around the
+ * DMA. See mem_map.h.
+ *
+ * Only touched while a LOAD is running. A save clocks MISO and discards it,
+ * exactly as before.
+ */
+static S32 aRxStage[REC_STAGE_QTY][REC_STAGE_WORDS] IN_DMA_BUF MEM_ALIGN(32);
+
+/**
+ * @brief Which receive half is in flight, or REC_STAGE_NONE for a send-only
+ *        frame.
+ *
+ * This is how the completion knows whether there is anything to unpack, and
+ * from where. Written before the transfer is armed and cleared as soon as it
+ * has been consumed.
+ */
+static U8 nRxInFlight = (U8)REC_STAGE_NONE;
 
 
 
@@ -77,6 +115,7 @@ static void StartTx(const U8 nHalf)
 {
     const S32* const pBuf   = RecStream_Buffer(nHalf);
     const U16        nWords = RecStream_Words(nHalf);
+    STD_RESULT       eResult;
 
     if ((pBuf == NULL_PTR) || (nWords == 0U))
     {
@@ -84,7 +123,31 @@ static void StartTx(const U8 nHalf)
         return;
     }
 
-    if (SPI_TP_SendFrame(pBuf, nWords) != RESULT_OK)
+    /*
+     * FULL DUPLEX ONLY WHILE A LOAD IS RUNNING.
+     *
+     * A save has nothing to receive - the interface's MISO carries whatever
+     * its transmit ring happens to hold - so asking the DMA to capture it
+     * would burn bandwidth on RAM_D2 for words that are thrown away.
+     *
+     * A load has nothing else. The loop is coming FROM the card, and a master
+     * that only transmits cannot see it: MISO is clocked either way, and
+     * without a receive buffer it is simply discarded. That is what made the
+     * old LOAD path unpack silence - it read the transmit staging, which had
+     * just been zeroed.
+     */
+    if (LoopIsLoading() == TRUE)
+    {
+        nRxInFlight = nHalf;
+        eResult     = SPI_TP_SendRecvFrame(pBuf, aRxStage[nHalf], nWords);
+    }
+    else
+    {
+        nRxInFlight = (U8)REC_STAGE_NONE;
+        eResult     = SPI_TP_SendFrame(pBuf, nWords);
+    }
+
+    if (eResult != RESULT_OK)
     {
         /* The state machine believes a transfer is running. Tell it otherwise,
            or it waits for a completion that will never arrive and the stream
@@ -92,8 +155,26 @@ static void StartTx(const U8 nHalf)
            A RESULT_BUSY here means the previous frame had not finished, which
            SPI_TP counts as a dropped frame - the number that says out loud that
            the frame no longer fits the block at this clock. */
+        nRxInFlight = (U8)REC_STAGE_NONE;
         RecStream_Error();
     }
+}
+
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief TRUE while a loop is being received rather than sent.
+ *
+ * The direction decides which way the loop slots move, and therefore both
+ * whether the frame needs a receive buffer and whether the slots are packed
+ * before the burst or unpacked after it.
+ */
+static BOOLEAN LoopIsLoading(void)
+{
+    const FX_LOOP_SESSION* const pSession = LoopXfer_Session();
+
+    return (((LoopXfer_IsRunning() == TRUE) && (pSession != NULL_PTR) &&
+             (pSession->eDir == (U8)LOOP_DIR_LOAD)) ? TRUE : FALSE);
 }
 
 
@@ -161,11 +242,16 @@ void RecSpi_PushBlock(void)
      * transport. Inside the critical section with the staging: until StartTx
      * runs, the completion callback could otherwise hand this half out again.
      *
-     * Called unconditionally now. LoopXfer_Block writes nothing when no session
-     * is running, and RecStream_Stage has already zeroed those slots - so an
-     * idle link sends 27 slots of zeros rather than narrowing the frame.
+     * Called for every SAVE. LoopXfer_Block writes nothing when no session is
+     * running, and RecStream_Stage has already zeroed those slots - so an idle
+     * link sends 27 slots of zeros rather than narrowing the frame.
+     *
+     * NOT ON A LOAD. In that direction LoopXfer_Block reads the slots and
+     * writes the looper, so calling it here would unpack the TRANSMIT staging
+     * - which RecStream_Stage has just zeroed - straight into the loop. The
+     * load is unpacked from the received buffer in RecSpi_OnSent instead.
      */
-    if (nStart != (U8)REC_STAGE_NONE)
+    if ((nStart != (U8)REC_STAGE_NONE) && (LoopIsLoading() == FALSE))
     {
         S32* const pStage = RecStream_StageSlots(nStart);
 
@@ -216,8 +302,33 @@ const REC_STREAM_STATS* RecSpi_Stats(void)
  */
 static void RecSpi_OnSent(void)
 {
-    U8  nNext;
-    U32 nPrimask = __get_PRIMASK();
+    U8       nNext;
+    U32      nPrimask;
+    const U8 nDone = nRxInFlight;
+
+    /*
+     * A LOAD's words have arrived. The burst is finite, so this callback is
+     * the first moment the whole frame is present in the buffer - and it has
+     * to be unpacked before the transfer below can arm anything.
+     *
+     * The word count comes from the half that was sent, since the two
+     * directions move exactly as many words as each other.
+     */
+    if (nDone != (U8)REC_STAGE_NONE)
+    {
+        const U16 nWords = RecStream_Words(nDone);
+
+        nRxInFlight = (U8)REC_STAGE_NONE;
+
+        if (nWords >= (U16)FX_FRAME_SLOT_QTY)
+        {
+            (void)LoopXfer_Block(&aRxStage[nDone][FX_FRAME_LOOP_SLOT_BASE],
+                                 (U32)(nWords / (U16)FX_FRAME_SLOT_QTY),
+                                 (U8)FX_FRAME_SLOT_QTY);
+        }
+    }
+
+    nPrimask = __get_PRIMASK();
 
     __disable_irq();
 
@@ -253,6 +364,8 @@ static void RecSpi_OnError(void)
      * have a discontinuity in the recording either way, and a discontinuity it
      * can see beats a rotation it cannot.
      */
+    nRxInFlight = (U8)REC_STAGE_NONE;
+
     RecStream_Error();
 }
 

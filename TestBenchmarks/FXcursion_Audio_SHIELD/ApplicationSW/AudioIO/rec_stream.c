@@ -139,6 +139,11 @@ STD_RESULT RecStream_Init(void)
         }
     }
 
+    /* The sync word the far side scans for is built from this. Left
+       uninitialised it starts at whatever DTCM held, which the slave adopts
+       through SEQ_ANY and then treats a later restart as a huge gap. */
+    nSeq = 0U;
+
     bEnabled = FALSE;
 
     tStats.nBlocksSent    = 0UL;
