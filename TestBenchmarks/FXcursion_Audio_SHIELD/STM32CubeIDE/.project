@@ -29,4 +29,44 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>ApplicationSW</name>
+			<type>2</type>
+			<locationURI>APP_SW_LOC</locationURI>
+		</link>
+		<link>
+			<name>Config</name>
+			<type>2</type>
+			<locationURI>CONFIG_LOC</locationURI>
+		</link>
+		<link>
+			<name>SystemSW</name>
+			<type>2</type>
+			<locationURI>SYSTEM_SW_LOC</locationURI>
+		</link>
+		<link>
+			<name>UtilitySW</name>
+			<type>2</type>
+			<locationURI>UTILITY_SW_LOC</locationURI>
+		</link>
+	</linkedResources>
+	<variableList>
+		<variable>
+			<name>APP_SW_LOC</name>
+			<value>$%7BPARENT-1-PROJECT_LOC%7D/ApplicationSW</value>
+		</variable>
+		<variable>
+			<name>CONFIG_LOC</name>
+			<value>$%7BPARENT-1-PROJECT_LOC%7D/Config</value>
+		</variable>
+		<variable>
+			<name>SYSTEM_SW_LOC</name>
+			<value>$%7BPARENT-1-PROJECT_LOC%7D/SystemSW</value>
+		</variable>
+		<variable>
+			<name>UTILITY_SW_LOC</name>
+			<value>$%7BPARENT-1-PROJECT_LOC%7D/UtilitySW</value>
+		</variable>
+	</variableList>
 </projectDescription>
