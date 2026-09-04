@@ -92,7 +92,9 @@
 #include "audio_cfg.h"
 #include "fx_defs.h"
 
-/* FX_LOOP_SLOT_QTY_MAX - the widest the frame may get during a transfer. */
+/* FX_LOOP_SLOT_QTY_MAX - the loop slots the frame always carries. The _MAX in
+ * the name is a leftover from the negotiated frame; it is now a fixed count,
+ * not a ceiling, and a session must ask for exactly it. */
 #include "fx_loop.h"
 
 /* FX_FRAME_* - the frame layout the staging writes. Included directly rather
