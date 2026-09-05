@@ -70,110 +70,97 @@ tr:last-child td{border-bottom:0}
 
 <p>Five knobs, no modes. Menu sets the cursor, four params set start, stop, bars and grid. <b>UP / DOWN</b> zoom, anchored on the cursor. <b>YES</b> opens files. <b>FUNC+UP / FUNC+DOWN</b> are redo and undo.</p>
 
-<div class="cap">640×480 shown · 320×240 actual</div>
+<div class="cap">4 bars · grid lock 1 · playing</div>
 <div class="dev">
-
-  <!-- status 0-34 -->
-  <div style="left:0;top:0;width:640px;height:68px;background:#000;padding:0 16px">
-    <div class="t16" style="left:16px;top:14px;color:#E8E8E8">BPM 120</div>
-    <div class="t16" style="right:16px;top:14px;color:#E8E8E8;left:auto">96%</div>
-  </div>
-
-  <!-- header 34-66, blue -->
-  <div style="left:0;top:68px;width:640px;height:64px;background:#6BA5E7">
-    <div class="t22" style="left:14px;top:4px;color:#000;font-weight:700">STEREO 1 PLAY</div>
-    <div class="t16" style="right:14px;top:12px;left:auto;color:#0E2A47">VERSE.WAV 24B</div>
-  </div>
-
-  <!-- time line 66-92 -->
-  <div style="left:0;top:132px;width:640px;height:52px;background:#303030">
-    <div class="t16" style="left:14px;top:6px;color:#8A8A8A">START <span style="color:#E8E8E8">0:01</span>&nbsp; CUR <span style="color:#E8E8E8">0:04</span>&nbsp; STOP <span style="color:#E8E8E8">0:11</span></div>
-  </div>
-
-  <!-- waveform 92-214 : span x=16..304 (288 px). separators fixed, only the cursor moves -->
-  <div class="wave" style="top:184px;height:244px;background:#141414">
-    <!-- GRID 1/4 over BARS 4 = 16 cells of 18 px. alternating ground, 14 units apart -->
-    <div style="left:32px;top:0;width:576px;height:204px;background:repeating-linear-gradient(90deg,#202020 0 36px,#2E2E2E 36px 72px)"></div>
-    <!-- envelope lanes, inside the span only -->
-    <div style="left:32px;top:26px;width:576px;height:70px;background:repeating-linear-gradient(90deg,#7FB3E8 0 3px,transparent 3px 9px)"></div>
-    <div style="left:32px;top:112px;width:576px;height:70px;background:repeating-linear-gradient(90deg,#7FB3E8 0 3px,transparent 3px 9px)"></div>
-    <!-- bar ruler, BARS 4 -> ticks every 144 -->
-    <div style="left:0;top:204px;width:640px;height:40px;background:#0E0E0E"></div>
-    <div style="left:176px;top:206px;width:2px;height:36px;background:#B0B0B0"></div>
-    <div style="left:320px;top:206px;width:2px;height:36px;background:#B0B0B0"></div>
-    <div style="left:464px;top:206px;width:2px;height:36px;background:#B0B0B0"></div>
-    <!-- fixed separators, drawn once, never invalidated -->
-    <div style="left:24px;top:0;width:8px;height:244px;background:#6BA5E7"></div>
-    <div style="left:608px;top:0;width:8px;height:244px;background:#6BA5E7"></div>
-    <!-- the only moving thing on the screen -->
-    <div class="cur" style="left:268px;top:0;height:204px"></div>
-  </div>
-
-  <!-- bars / grid 214-240 -->
-  <div style="left:0;top:428px;width:640px;height:52px;background:#303030">
-    <div class="t16" style="left:14px;top:2px;color:#8A8A8A">BARS</div>
-    <div class="t16" style="left:250px;top:2px;color:#E8E8E8">4</div>
-    <div class="bar-t" style="left:14px;top:38px;width:296px"></div>
-    <div class="bar-f" style="left:14px;top:38px;width:100px"></div>
-
-    <div class="t16" style="left:334px;top:2px;color:#8A8A8A">GRID</div>
-    <div class="t16" style="left:548px;top:2px;color:#E8E8E8">1/4</div>
-    <div class="bar-t" style="left:334px;top:38px;width:292px"></div>
-    <div class="bar-f" style="left:334px;top:38px;width:186px"></div>
-  </div>
-</div>
-
-<div class="cap">the same loop at 4× · UP pressed twice · cursor anchored</div>
-<div class="dev">
-
   <div style="left:0;top:0;width:640px;height:68px;background:#000">
     <div class="t16" style="left:16px;top:14px;color:#E8E8E8">BPM 120</div>
     <div class="t16" style="right:16px;top:14px;color:#E8E8E8;left:auto">96%</div>
   </div>
-
   <div style="left:0;top:68px;width:640px;height:64px;background:#6BA5E7">
     <div class="t22" style="left:14px;top:4px;color:#000;font-weight:700">STEREO 1 PLAY</div>
     <div class="t16" style="right:14px;top:12px;left:auto;color:#0E2A47">VERSE.WAV 24B</div>
   </div>
-
-  <div style="left:0;top:132px;width:640px;height:52px;background:#303030">
-    <div class="t16" style="left:14px;top:6px;color:#8A8A8A">START <span style="color:#E8E8E8">0:01</span>&nbsp; CUR <span style="color:#E8E8E8">0:04</span>&nbsp; STOP <span style="color:#E8E8E8">0:11</span></div>
+  <div style="left:0;top:132px;width:640px;height:36px;background:#303030">
+    <div class="t16" style="left:14px;top:-2px;color:#8A8A8A;font-size:20px;line-height:36px">START <span style="color:#E8E8E8">0:01</span>&nbsp; CUR <span style="color:#E8E8E8">0:04</span>&nbsp; STOP <span style="color:#E8E8E8">0:11</span></div>
   </div>
-
-  <div class="wave" style="top:184px;height:244px;background:#141414">
-    <!-- 4x: one bar fills the span, grid 1/4 = 4 cells of 144 -->
-    <div style="left:32px;top:0;width:576px;height:204px;background:repeating-linear-gradient(90deg,#202020 0 144px,#2E2E2E 144px 288px)"></div>
-    <!-- envelope, magnified: fewer, wider features -->
-    <div style="left:32px;top:26px;width:576px;height:70px;background:repeating-linear-gradient(90deg,#7FB3E8 0 11px,transparent 11px 34px)"></div>
-    <div style="left:32px;top:112px;width:576px;height:70px;background:repeating-linear-gradient(90deg,#7FB3E8 0 11px,transparent 11px 34px)"></div>
-    <!-- ruler: only one bar boundary falls inside the window now -->
-    <div style="left:0;top:204px;width:640px;height:40px;background:#0E0E0E"></div>
-    <div style="left:320px;top:206px;width:2px;height:36px;background:#B0B0B0"></div>
-    <!-- separators DIM: above 1x they are window edges, not loop bounds -->
-    <div style="left:24px;top:0;width:8px;height:244px;background:#5E5E5E"></div>
-    <div style="left:608px;top:0;width:8px;height:244px;background:#5E5E5E"></div>
-    <!-- cursor held at its screen position - this is the anchor -->
-    <div class="cur" style="left:268px;top:0;height:204px"></div>
+  <!-- LEVELS: two ModuleLevel meters, L and R, 6 segments each -->
+  <div style="left:0;top:168px;width:640px;height:20px;background:#242424">
+    <div class="t16" style="left:14px;top:-8px;color:#8A8A8A;font-size:17px;line-height:20px">L</div>
+    <div style="left:34px;top:0;width:70px;height:16px;background:#0E0E0E"></div><div style="left:36px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:47px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:58px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:69px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:80px;top:4px;width:9px;height:8px;background:#1E1E1E"></div><div style="left:91px;top:4px;width:9px;height:8px;background:#1E1E1E"></div>
+    <div class="t16" style="left:118px;top:-8px;color:#8A8A8A;font-size:17px;line-height:20px">R</div>
+    <div style="left:138px;top:0;width:70px;height:16px;background:#0E0E0E"></div><div style="left:140px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:151px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:162px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:173px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:184px;top:4px;width:9px;height:8px;background:#E2A03F"></div><div style="left:195px;top:4px;width:9px;height:8px;background:#1E1E1E"></div>
+    <div class="t16" style="right:14px;top:-8px;left:auto;color:#5E5E5E;font-size:17px;line-height:20px">-6.0 dB</div>
   </div>
-
+  <div class="wave" style="top:188px;height:240px;background:#141414">
+    <div style="left:32px;top:0;width:576px;height:200px;background:repeating-linear-gradient(90deg,#202020 0 24px,#2A2A2A 24px 48px)"></div>
+    <div style="left:32px;top:24px;width:576px;height:68px;background:repeating-linear-gradient(90deg,#7FB3E8 0 3px,transparent 3px 9px)"></div>
+    <div style="left:32px;top:110px;width:576px;height:68px;background:repeating-linear-gradient(90deg,#7FB3E8 0 3px,transparent 3px 9px)"></div>
+    <div style="left:0;top:200px;width:640px;height:40px;background:#0E0E0E"></div>
+    <div style="left:176px;top:206px;width:2px;height:36px;background:#B0B0B0"></div><div style="left:320px;top:206px;width:2px;height:36px;background:#B0B0B0"></div><div style="left:464px;top:206px;width:2px;height:36px;background:#B0B0B0"></div>
+    <div style="left:24px;top:0;width:8px;height:240px;background:#6BA5E7"></div>
+    <div style="left:608px;top:0;width:8px;height:240px;background:#6BA5E7"></div>
+    <div class="cur" style="left:268px;top:0;height:200px"></div>
+  </div>
   <div style="left:0;top:428px;width:640px;height:52px;background:#303030">
     <div class="t16" style="left:14px;top:2px;color:#8A8A8A">BARS</div>
     <div class="t16" style="left:250px;top:2px;color:#E8E8E8">4</div>
     <div class="bar-t" style="left:14px;top:38px;width:296px"></div>
-    <div class="bar-f" style="left:14px;top:38px;width:100px"></div>
+    <div class="bar-f" style="left:14px;top:38px;width:148px"></div>
     <div class="t16" style="left:334px;top:2px;color:#8A8A8A">GRID</div>
-    <div class="t16" style="left:548px;top:2px;color:#E8E8E8">1/4</div>
+    <div class="t16" style="left:548px;top:2px;color:#E8E8E8">1</div>
     <div class="bar-t" style="left:334px;top:38px;width:292px"></div>
-    <div class="bar-f" style="left:334px;top:38px;width:186px"></div>
+    <div class="bar-f" style="left:334px;top:38px;width:146px"></div>
+  </div>
+</div>
+
+<div class="cap">8 bars · same grid lock · the pattern does not change, only the bar count</div>
+<div class="dev">
+  <div style="left:0;top:0;width:640px;height:68px;background:#000">
+    <div class="t16" style="left:16px;top:14px;color:#E8E8E8">BPM 120</div>
+    <div class="t16" style="right:16px;top:14px;color:#E8E8E8;left:auto">96%</div>
+  </div>
+  <div style="left:0;top:68px;width:640px;height:64px;background:#6BA5E7">
+    <div class="t22" style="left:14px;top:4px;color:#000;font-weight:700">STEREO 1 PLAY</div>
+    <div class="t16" style="right:14px;top:12px;left:auto;color:#0E2A47">VERSE.WAV 24B</div>
+  </div>
+  <div style="left:0;top:132px;width:640px;height:36px;background:#303030">
+    <div class="t16" style="left:14px;top:-2px;color:#8A8A8A;font-size:20px;line-height:36px">START <span style="color:#E8E8E8">0:01</span>&nbsp; CUR <span style="color:#E8E8E8">0:04</span>&nbsp; STOP <span style="color:#E8E8E8">0:11</span></div>
+  </div>
+  <!-- LEVELS: two ModuleLevel meters, L and R, 6 segments each -->
+  <div style="left:0;top:168px;width:640px;height:20px;background:#242424">
+    <div class="t16" style="left:14px;top:-8px;color:#8A8A8A;font-size:17px;line-height:20px">L</div>
+    <div style="left:34px;top:0;width:70px;height:16px;background:#0E0E0E"></div><div style="left:36px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:47px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:58px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:69px;top:4px;width:9px;height:8px;background:#1E1E1E"></div><div style="left:80px;top:4px;width:9px;height:8px;background:#1E1E1E"></div><div style="left:91px;top:4px;width:9px;height:8px;background:#1E1E1E"></div>
+    <div class="t16" style="left:118px;top:-8px;color:#8A8A8A;font-size:17px;line-height:20px">R</div>
+    <div style="left:138px;top:0;width:70px;height:16px;background:#0E0E0E"></div><div style="left:140px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:151px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:162px;top:4px;width:9px;height:8px;background:#49BF47"></div><div style="left:173px;top:4px;width:9px;height:8px;background:#1E1E1E"></div><div style="left:184px;top:4px;width:9px;height:8px;background:#1E1E1E"></div><div style="left:195px;top:4px;width:9px;height:8px;background:#1E1E1E"></div>
+    <div class="t16" style="right:14px;top:-8px;left:auto;color:#5E5E5E;font-size:17px;line-height:20px">-6.0 dB</div>
+  </div>
+  <div class="wave" style="top:188px;height:240px;background:#141414">
+    <div style="left:32px;top:0;width:576px;height:200px;background:repeating-linear-gradient(90deg,#202020 0 24px,#2A2A2A 24px 48px)"></div>
+    <div style="left:32px;top:24px;width:576px;height:68px;background:repeating-linear-gradient(90deg,#7FB3E8 0 3px,transparent 3px 9px)"></div>
+    <div style="left:32px;top:110px;width:576px;height:68px;background:repeating-linear-gradient(90deg,#7FB3E8 0 3px,transparent 3px 9px)"></div>
+    <div style="left:0;top:200px;width:640px;height:40px;background:#0E0E0E"></div>
+    <div style="left:104px;top:206px;width:2px;height:36px;background:#B0B0B0"></div><div style="left:176px;top:206px;width:2px;height:36px;background:#B0B0B0"></div><div style="left:248px;top:206px;width:2px;height:36px;background:#B0B0B0"></div><div style="left:320px;top:206px;width:2px;height:36px;background:#B0B0B0"></div><div style="left:392px;top:206px;width:2px;height:36px;background:#B0B0B0"></div><div style="left:464px;top:206px;width:2px;height:36px;background:#B0B0B0"></div><div style="left:536px;top:206px;width:2px;height:36px;background:#B0B0B0"></div>
+    <div style="left:24px;top:0;width:8px;height:240px;background:#6BA5E7"></div>
+    <div style="left:608px;top:0;width:8px;height:240px;background:#6BA5E7"></div>
+    <div class="cur" style="left:268px;top:0;height:200px"></div>
+  </div>
+  <div style="left:0;top:428px;width:640px;height:52px;background:#303030">
+    <div class="t16" style="left:14px;top:2px;color:#8A8A8A">BARS</div>
+    <div class="t16" style="left:250px;top:2px;color:#E8E8E8">8</div>
+    <div class="bar-t" style="left:14px;top:38px;width:296px"></div>
+    <div class="bar-f" style="left:14px;top:38px;width:296px"></div>
+    <div class="t16" style="left:334px;top:2px;color:#8A8A8A">GRID</div>
+    <div class="t16" style="left:548px;top:2px;color:#E8E8E8">1</div>
+    <div class="bar-t" style="left:334px;top:38px;width:292px"></div>
+    <div class="bar-f" style="left:334px;top:38px;width:146px"></div>
   </div>
 </div>
 
 <div class="note">
-  <div class="h">what changed between the two pictures, and what deliberately did not</div>
-  <p><b>The separators went grey.</b> At 1× they bound the loop <em>and</em> the window, because the loop fills the span exactly. Zoomed, they can only be one of the two — the window edges — so their colour says which. Two <code>setColor</code> calls on a zoom step, nothing per frame.</p>
-  <p><b>The cursor did not move.</b> It is the anchor: the column under it stays put and the take stretches around it. That is why the menu encoder is worth spending on the cursor — one knob gives position at every magnification, and scrolling falls out of it when the cursor reaches an edge.</p>
-  <p><b>The ruler thinned out.</b> Bars still stick to the loop, so at 4× only the boundaries that fall inside the window are drawn. The grid coarsens with it — same 1/4, four cells instead of sixteen, because a cell is a quarter of a bar and there is now a quarter of a bar less on screen per pixel.</p>
-  <p><b>Everything else is identical.</b> Same bands, same type, same 288 px span. Zoom changes what the pixel buffer contains, not what any widget is or where it sits.</p>
+  <div class="h">what the two pictures differ in, and what they deliberately do not</div>
+  <p><b>Only the bar count.</b> Eight ticks instead of four, and the BARS readout. The grid shading is <em>the same cell size in both</em> — it is a fixed backdrop, not a subdivision of the bars.</p>
+  <p><b>GRID is a lock, not a pattern.</b> It says what multiple of bars the loop length snaps to. At <code>OFF</code> the end can land anywhere; at 1 the user can step the bar count from 1 up to whatever the audio quality allows. It never changes what the waveform looks like — which is why it has a value readout and no visual of its own beyond the lock bar.</p>
+  <p><b>The levels are live and the waveform is not.</b> Two <code>ModuleLevel</code> meters, six segments each, sitting between the time line and the loop. They move every frame the signal crosses a segment boundary; the waveform underneath changes only on a detent.</p>
 </div>
 
 <h2>Bands</h2>
@@ -203,7 +190,7 @@ tr:last-child td{border-bottom:0}
 <p>The separators do not move. They sit at <code>x=12</code> and <code>x=304</code>, 4 px wide, and the loop is always everything between them: <b>x=16 to x=304, 288 px</b>. Trimming start or stop does not slide a marker — it rescales what is drawn inside that fixed span.</p>
 <p>288 is chosen, not left over. It divides by 2, 3, 4, 6, 8, 9, 12 and 16, so <em>every</em> plausible bar count gives an integer bar width and every tick lands on a whole pixel:</p>
 <table>
-<thead><tr><th class="n">BARS</th><th class="n">px / bar</th><th class="n">1/4 grid cell</th></tr></thead>
+<thead><tr><th class="n">BARS</th><th class="n">px / bar</th><th>lands on</th></tr></thead>
 <tbody>
 <tr><td class="n">3</td><td class="n">96</td><td class="n">24</td></tr>
 <tr><td class="n">4</td><td class="n">72</td><td class="n">18</td></tr>
@@ -219,7 +206,7 @@ tr:last-child td{border-bottom:0}
 <table>
 <thead><tr><th>Layer</th><th>What</th><th>Changes when</th><th>Cost</th></tr></thead>
 <tbody>
-<tr><td>ground</td><td>grid cells, alternating</td><td>GRID or BARS detent</td><td>rebuild, 1 rect</td></tr>
+<tr><td>ground</td><td>fixed backdrop pattern</td><td>zoom or trim only</td><td>rebuild, 1 rect</td></tr>
 <tr><td>envelope</td><td>two lanes from the peak table</td><td>take loaded, start/stop trim</td><td>rebuild, 1 rect</td></tr>
 <tr><td>ruler</td><td>BARS−1 ticks, 20 px foot</td><td>BARS detent</td><td>rebuild, 1 rect</td></tr>
 <tr><td>separators</td><td>2 Boxes at fixed x</td><td><b>never</b></td><td>0</td></tr>
@@ -245,11 +232,88 @@ tr:last-child td{border-bottom:0}
 <tr><td>band surround</td><td>#232323</td><td><b>#141414</b></td><td class="n">—</td></tr>
 </tbody>
 </table>
-<p>The grid goes from 5 to <b>14</b> units apart — enough to read as alternating blocks at arm's length, still far enough below the envelope that it never competes with it. Bar ticks go from 84 units of separation to <b>162</b>, on their own near-black ruler ground, so they read as structure rather than as more grid.</p>
+<p>The backdrop goes from 5 to <b>14</b> units apart — enough to read as alternating blocks at arm's length, still far enough below the envelope that it never competes with it. Bar ticks go from 84 units of separation to <b>162</b>, on their own near-black ruler ground, so they read as structure rather than as more grid.</p>
 <div class="note">
-  <div class="h">why shading for grid and lines for bars</div>
-  <p>At 1/16 a grid of lines is 15 hairlines fighting the envelope for the same pixels. Alternating ground reads as density instead of clutter, needs no minimum spacing, and degrades gracefully — at 1/32 it becomes texture rather than noise.</p>
+  <div class="h">why a shaded backdrop, and lines only for bars</div>
+  <p>A backdrop of lines would fight the envelope for the same pixels, and would have to be redrawn every time the bar count changed. Alternating ground reads as texture instead of clutter, needs no minimum spacing, and stays identical at every bar count — at 1/32 it becomes texture rather than noise.</p>
   <p>Bar ticks are the exception: there are only BARS−1 of them, they are structural, and the 20 px ruler gives them their own ground so they never cross the waveform. Two different jobs, two different treatments — which is also why raising the bar contrast does not force raising the grid's.</p>
+</div>
+
+<h2>Widgets to add in Designer</h2>
+<p>The looper screen is a 41-line stub today: <code>LooperViewBase</code> holds <code>__background</code>, <code>background</code>, <code>text</code> and <code>statusBar</code>. Everything below is new. Nothing here is a canvas widget, which matters &mdash; see the trap under it.</p>
+<table>
+<thead><tr><th>Widget</th><th class="n">Count</th><th>Geometry</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td class="k">StatusBar</td><td class="n">1</td><td>0, 0, 320&times;34</td><td>existing container, unchanged</td></tr>
+<tr><td class="k">BoxWithBorder</td><td class="n">1</td><td>0, 34, 320&times;32</td><td>header ground</td></tr>
+<tr><td class="k">TextArea</td><td class="n">1</td><td>in header, size 22</td><td><code>STEREO 1 PLAY</code></td></tr>
+<tr><td class="k">TextAreaWithWildcard</td><td class="n">1</td><td>in header, size 16</td><td><code>VERSE.WAV 24B</code> &mdash; filename and quality</td></tr>
+<tr><td class="k">TextAreaWithWildcard</td><td class="n">1</td><td>0, 66, 320&times;18</td><td><code>START &middot; CUR &middot; STOP</code>, one line, three wildcards</td></tr>
+<tr><td class="k"><b>ModuleLevel</b></td><td class="n"><b>2</b></td><td>17, 84 and 69, 84 &middot; 44&times;6</td><td><b>existing container</b> &mdash; L and R, six segments each</td></tr>
+<tr><td class="k">TextArea</td><td class="n">2</td><td>beside each meter</td><td><code>L</code> and <code>R</code> labels</td></tr>
+<tr><td class="k">TextAreaWithWildcard</td><td class="n">1</td><td>right of the meters</td><td>peak dB readout, e.g. <code>-6.0 dB</code></td></tr>
+<tr><td class="k"><b>PixelDataWidget</b></td><td class="n">1</td><td>0, 94, 320&times;120</td><td>waveform band &mdash; grid ground, envelope and bar ruler, all baked</td></tr>
+<tr><td class="k">Box</td><td class="n">2</td><td>12, 94 and 304, 94 &middot; 4&times;120</td><td>the fixed separators. Colour changes on zoom, position never</td></tr>
+<tr><td class="k">Box</td><td class="n">1</td><td>2&times;120, moves</td><td>the cursor. The only thing that moves at frame rate</td></tr>
+<tr><td class="k">BoxWithBorder</td><td class="n">2</td><td>0, 214 and 160, 214 &middot; 160&times;26</td><td>BARS and GRID cells</td></tr>
+<tr><td class="k">TextArea</td><td class="n">2</td><td>in each cell</td><td><code>BARS</code> and <code>GRID</code> labels</td></tr>
+<tr><td class="k">TextAreaWithWildcard</td><td class="n">2</td><td>in each cell, right</td><td>the values</td></tr>
+<tr><td class="k">Box</td><td class="n">4</td><td>6 px, in each cell</td><td>value bar track and fill, two each</td></tr>
+</tbody>
+</table>
+<p class="d">Twenty-four instances, two of them containers you already own. Keep the references in arrays &mdash; <code>aMeter[2]</code>, <code>aCell[2]</code> &mdash; the way <code>customGauges[]</code> and <code>scrollMenu[]</code> already do, so a Designer rename costs one edit rather than several.</p>
+
+<div class="note w">
+  <div class="h">no canvas widget on this screen, at all</div>
+  <p><code>CANVAS_BUFFER_SIZE</code> is declared only in <code>EffectSettingsViewBase</code> and <code>SystemViewBase</code>, and setup and reset are static, called in those screens' constructor and destructor. <code>LooperViewBase</code> declares none &mdash; so a <code>Circle</code>, <code>Line</code> or <code>Shape</code> dropped here renders <b>nothing at all, silently</b>. Every row above is a Box, a text area, or your own pixels.</p>
+</div>
+
+<h2>Levels &mdash; eighty of them, without melting anything</h2>
+<p>The bottleneck is not where it looks. Eighty levels is <b>eighty bytes</b>, and the control link is 921 600 baud. The wire is a rounding error. The redraw is the whole problem.</p>
+
+<h3>1 &middot; On the wire &mdash; one frame, windowed</h3>
+<p><code>PROTO_PAYLOAD_MAX</code> is 96 bytes with 6 of framing, so a windowed update carries <b>up to 94 levels in a single frame</b>:</p>
+<pre><span style="color:var(--dimmer)">PROTO_CMD_LEVELS</span>
+U8 nFirst;          <span style="color:var(--dimmer)">index of the first level in this frame</span>
+U8 nQty;            <span style="color:var(--dimmer)">how many follow</span>
+U8 aLevel[nQty];    <span style="color:var(--dimmer)">one byte each</span></pre>
+<table>
+<thead><tr><th class="n">levels</th><th class="n">bytes / frame</th><th class="n">at 20 Hz</th><th class="n">at 50 Hz</th></tr></thead>
+<tbody>
+<tr><td class="n">40</td><td class="n">48</td><td class="n">1.04 %</td><td class="n">2.60 %</td></tr>
+<tr><td class="n">80</td><td class="n">88</td><td class="n">1.91 %</td><td class="n">4.77 %</td></tr>
+<tr><td class="n">94</td><td class="n">102</td><td class="n">2.21 %</td><td class="n">5.53 %</td></tr>
+</tbody>
+</table>
+<p>The window header is what makes it loose. The receiver copies <code>nQty</code> bytes to offset <code>nFirst</code> and does not care how many exist in total &mdash; so growing past 94 costs a second frame and no protocol change, and a screen needing only eight of them can be served a short frame.</p>
+<div class="note">
+  <div class="h">do not put these in PROTO_TELEMETRY</div>
+  <p>Telemetry is pinned at 48 bytes by a static assert and already carries CPU load, overruns, tuner, transport and loop position. Adding eighty bytes would change a struct both boards agree on by size, forcing a <code>PROTO_VERSION</code> bump and a simultaneous reflash of both. A new appended command needs neither &mdash; the precedent <code>PROTO_STREAM</code> already set.</p>
+</div>
+
+<h3>2 &middot; The unit &mdash; send the decibel, quantise once</h3>
+<p>A <code>ModuleLevel</code> has <b>six segments</b>. That is seven display states in total, so converting a raw 0..65535 peak to a bar position on every arrival would be a logarithm per level per frame for a number with seven outcomes.</p>
+<p>Send the byte as <b>dB, quarter-step, offset</b> &mdash; <code>0</code> is &minus;48 dB, <code>192</code> is 0 dB &mdash; because the numeric readout does want real precision. Then quantise to a segment <em>once</em> on arrival and keep both. The meter compares segments; the readout formats the byte.</p>
+
+<h3>3 &middot; In the Model &mdash; compare, then mark</h3>
+<pre>U8  aLevelDb[80];     <span style="color:var(--dimmer)">as received, for the numeric readout</span>
+U8  aLevelSeg[80];    <span style="color:var(--dimmer)">0..6, quantised once on arrival</span>
+U32 nLevelDirty[3];   <span style="color:var(--dimmer)">96 bits, one per level</span></pre>
+<p>On arrival, quantise and compare against the stored segment, and set a dirty bit <em>only</em> where the segment actually changed. A steady signal sets no bits and costs nothing downstream &mdash; which is most of the time, because six segments over the meter's range is a coarse step and music does not cross those constantly.</p>
+
+<h3>4 &middot; On screen &mdash; the part that actually costs</h3>
+<p>Every invalidated rect is a full <code>lcdSetWindow</code>, a TE wait and an MDMA push. Eighty meters redrawing freely would be ruinous; eighty meters redrawing <em>correctly</em> is nearly free:</p>
+<ul>
+  <li><b>Only visible meters.</b> The looper screen shows two. The busiest grid screen shows on the order of twenty. The other sixty update the Model and draw nothing.</li>
+  <li><b>Only on segment change.</b> The dirty bit already says which.</li>
+  <li><b>Cap the invalidates per frame.</b> Six, then stop and take the rest next frame, round-robin so nothing starves. This is the important one: the framework accumulates into a fixed <b>eight-slot</b> rect vector and coalesces into a bounding rect past that, at which point you repaint area you never dirtied.</li>
+  <li><b>Invalidate the meter, not the segment.</b> A <code>ModuleLevel</code> is 44&times;6 &mdash; 528 bytes. Six of them is 3.2 KB a frame against an FMC that moves 12 MB/s. The rect <em>count</em> is the budget, not the bytes.</li>
+</ul>
+<p>Six meters a frame at 60 Hz is 360 meter updates a second across eighty meters &mdash; so even in the pathological case where every one of them is moving at once, each still refreshes four times a second. No meter can visibly lag.</p>
+
+<div class="note">
+  <div class="h">why not drive them from telemetry's 40 ms tick</div>
+  <p>Because 25 Hz is visible on a meter, and 40 ms of latency is felt when you are setting a gain by ear. Send levels on their own command at <b>50 Hz</b> &mdash; under 5 % of the link even at eighty &mdash; and let the redraw cap decide what reaches the screen. Decoupling them also means a heavy telemetry frame never delays a meter, and a meter burst never delays a transport change.</p>
 </div>
 
 <h2>Controls</h2>
@@ -277,7 +341,8 @@ tr:last-child td{border-bottom:0}
 
 <div class="note">
   <div class="h">grid lock is the coarse mode</div>
-  <p>A step is always ±1. Raw, a 20 s loop is 320 detents end to end — 16 revolutions. Grid-locked to bars at 120 BPM it is <b>10 detents</b>, and every marker lands on a fixed pixel column, which keeps its redraw rect even-aligned for free. Ship locked first; free movement is the special case, not the default.</p>
+  <p>A step is always ±1. With <code>GRID OFF</code> the loop end lands anywhere, so trimming a 20 s take is 320 detents end to end — sixteen revolutions. Locked to bars it becomes <b>one detent per bar</b>, and the readout moves in whole bars instead of milliseconds.</p>
+  <p>That is what the parameter <em>is</em>: a snap quantum for the loop's length, not something you can see. It changes no pixel in the waveform — the backdrop pattern is unaffected and the bar ticks follow BARS, not GRID — which is why it has a value readout and no visual of its own. Ship locked by default; free movement is the special case.</p>
 </div>
 
 <h2>Files — YES</h2>
