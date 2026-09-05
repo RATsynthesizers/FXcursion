@@ -68,7 +68,7 @@ tr:last-child td{border-bottom:0}
 <p class="sub">FXcursion interface · ILI9341 320×240 · TouchGFX 4.25 · PixelizerBold 16 / 22</p>
 <div class="rule"></div>
 
-<p>Five knobs, no modes. Menu sets the cursor, four params set start, stop, bars and grid. <b>YES</b> opens files. <b>FUNC+UP / FUNC+DOWN</b> are redo and undo.</p>
+<p>Five knobs, no modes. Menu sets the cursor, four params set start, stop, bars and grid. <b>UP / DOWN</b> zoom, anchored on the cursor. <b>YES</b> opens files. <b>FUNC+UP / FUNC+DOWN</b> are redo and undo.</p>
 
 <div class="cap">640×480 shown · 320×240 actual</div>
 <div class="dev">
@@ -117,10 +117,63 @@ tr:last-child td{border-bottom:0}
     <div class="bar-f" style="left:14px;top:38px;width:100px"></div>
 
     <div class="t16" style="left:334px;top:2px;color:#8A8A8A">GRID</div>
-    <div class="t16" style="left:530px;top:2px;color:#E8E8E8">1 BAR</div>
+    <div class="t16" style="left:548px;top:2px;color:#E8E8E8">1/4</div>
     <div class="bar-t" style="left:334px;top:38px;width:292px"></div>
     <div class="bar-f" style="left:334px;top:38px;width:186px"></div>
   </div>
+</div>
+
+<div class="cap">the same loop at 4× · UP pressed twice · cursor anchored</div>
+<div class="dev">
+
+  <div style="left:0;top:0;width:640px;height:68px;background:#000">
+    <div class="t16" style="left:16px;top:14px;color:#E8E8E8">BPM 120</div>
+    <div class="t16" style="right:16px;top:14px;color:#E8E8E8;left:auto">96%</div>
+  </div>
+
+  <div style="left:0;top:68px;width:640px;height:64px;background:#6BA5E7">
+    <div class="t22" style="left:14px;top:4px;color:#000;font-weight:700">STEREO 1 PLAY</div>
+    <div class="t16" style="right:14px;top:12px;left:auto;color:#0E2A47">VERSE.WAV 24B</div>
+  </div>
+
+  <div style="left:0;top:132px;width:640px;height:52px;background:#303030">
+    <div class="t16" style="left:14px;top:6px;color:#8A8A8A">START <span style="color:#E8E8E8">0:01</span>&nbsp; CUR <span style="color:#E8E8E8">0:04</span>&nbsp; STOP <span style="color:#E8E8E8">0:11</span></div>
+  </div>
+
+  <div class="wave" style="top:184px;height:244px;background:#141414">
+    <!-- 4x: one bar fills the span, grid 1/4 = 4 cells of 144 -->
+    <div style="left:32px;top:0;width:576px;height:204px;background:repeating-linear-gradient(90deg,#202020 0 144px,#2E2E2E 144px 288px)"></div>
+    <!-- envelope, magnified: fewer, wider features -->
+    <div style="left:32px;top:26px;width:576px;height:70px;background:repeating-linear-gradient(90deg,#7FB3E8 0 11px,transparent 11px 34px)"></div>
+    <div style="left:32px;top:112px;width:576px;height:70px;background:repeating-linear-gradient(90deg,#7FB3E8 0 11px,transparent 11px 34px)"></div>
+    <!-- ruler: only one bar boundary falls inside the window now -->
+    <div style="left:0;top:204px;width:640px;height:40px;background:#0E0E0E"></div>
+    <div style="left:320px;top:206px;width:2px;height:36px;background:#B0B0B0"></div>
+    <!-- separators DIM: above 1x they are window edges, not loop bounds -->
+    <div style="left:24px;top:0;width:8px;height:244px;background:#5E5E5E"></div>
+    <div style="left:608px;top:0;width:8px;height:244px;background:#5E5E5E"></div>
+    <!-- cursor held at its screen position - this is the anchor -->
+    <div class="cur" style="left:268px;top:0;height:204px"></div>
+  </div>
+
+  <div style="left:0;top:428px;width:640px;height:52px;background:#303030">
+    <div class="t16" style="left:14px;top:2px;color:#8A8A8A">BARS</div>
+    <div class="t16" style="left:250px;top:2px;color:#E8E8E8">4</div>
+    <div class="bar-t" style="left:14px;top:38px;width:296px"></div>
+    <div class="bar-f" style="left:14px;top:38px;width:100px"></div>
+    <div class="t16" style="left:334px;top:2px;color:#8A8A8A">GRID</div>
+    <div class="t16" style="left:548px;top:2px;color:#E8E8E8">1/4</div>
+    <div class="bar-t" style="left:334px;top:38px;width:292px"></div>
+    <div class="bar-f" style="left:334px;top:38px;width:186px"></div>
+  </div>
+</div>
+
+<div class="note">
+  <div class="h">what changed between the two pictures, and what deliberately did not</div>
+  <p><b>The separators went grey.</b> At 1× they bound the loop <em>and</em> the window, because the loop fills the span exactly. Zoomed, they can only be one of the two — the window edges — so their colour says which. Two <code>setColor</code> calls on a zoom step, nothing per frame.</p>
+  <p><b>The cursor did not move.</b> It is the anchor: the column under it stays put and the take stretches around it. That is why the menu encoder is worth spending on the cursor — one knob gives position at every magnification, and scrolling falls out of it when the cursor reaches an edge.</p>
+  <p><b>The ruler thinned out.</b> Bars still stick to the loop, so at 4× only the boundaries that fall inside the window are drawn. The grid coarsens with it — same 1/4, four cells instead of sixteen, because a cell is a quarter of a bar and there is now a quarter of a bar less on screen per pixel.</p>
+  <p><b>Everything else is identical.</b> Same bands, same type, same 288 px span. Zoom changes what the pixel buffer contains, not what any widget is or where it sits.</p>
 </div>
 
 <h2>Bands</h2>
