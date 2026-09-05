@@ -1,0 +1,232 @@
+<title>Recorder Screen Design Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --bg:#1C1C1C; --line:#3A3A3A;
+  --ink:#E8E8E8; --dim:#8A8A8A; --dimmer:#5E5E5E;
+  --blue:#6BA5E7; --warn:#E2A03F; --red:#E05A5A;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#F2F2F2; --line:#D2D2D2; --ink:#1C1C1C; --dim:#5E5E5E; --dimmer:#8A8A8A;
+  --blue:#2C6EB5; --warn:#8A6014; --red:#A83232;}}
+:root[data-theme="light"]{
+  --bg:#F2F2F2; --line:#D2D2D2; --ink:#1C1C1C; --dim:#5E5E5E; --dimmer:#8A8A8A;
+  --blue:#2C6EB5; --warn:#8A6014; --red:#A83232;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.page{max-width:880px;margin:0 auto;padding:44px 28px 90px}
+h1{font-size:15px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;margin:0 0 6px}
+.sub{color:var(--dim);margin:0 0 4px}
+.rule{height:2px;background:var(--blue);margin:22px 0 34px}
+h2{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin:44px 0 14px;
+   padding-bottom:7px;border-bottom:1px solid var(--line)}
+p{margin:0 0 13px;max-width:74ch} p.d{color:var(--dim)}
+b{color:var(--ink);font-weight:700} em{color:var(--blue);font-style:normal}
+code{color:var(--ink)}
+ul,ol{margin:0 0 15px;padding-left:18px;max-width:74ch} li{margin-bottom:5px;color:var(--dim)} li b{color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 20px}
+th{text-align:left;font-weight:700;color:var(--dimmer);text-transform:uppercase;letter-spacing:.12em;font-size:11px;
+   padding:0 14px 6px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 14px 7px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--dim)}
+td:first-child{color:var(--ink)}
+td.n,th.n{text-align:right;padding-right:0;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.note{border-left:2px solid var(--blue);padding:11px 0 11px 15px;margin:18px 0;max-width:74ch}
+.note.w{border-left-color:var(--warn)}
+.note .h{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:5px}
+.note.w .h{color:var(--warn)}
+.note p{margin-bottom:0;color:var(--dim)} .note p+p{margin-top:9px}
+.cap{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dimmer);margin:26px 0 8px}
+.dev{width:640px;height:480px;background:#303030;position:relative;overflow:hidden;font-family:var(--mono);outline:1px solid var(--line)}
+.dev div{position:absolute;box-sizing:border-box}
+.t16{font-size:23px;letter-spacing:.5px;line-height:40px;white-space:nowrap}
+.t22{font-size:31px;letter-spacing:.5px;line-height:56px;white-space:nowrap}
+.foot{color:var(--dimmer);font-size:12px;border-top:1px solid var(--line);margin-top:44px;padding-top:18px;line-height:1.9}
+</style>
+
+<div class="page">
+
+<h1>Recorder screen</h1>
+<p class="sub">FXcursion interface · ILI9341 320×240 · TouchGFX 4.25 · PixelizerBold 16 / 22</p>
+<div class="rule"></div>
+
+<p>One recorder, reached through the grid — the same way one looper is. So this is not a mixer view of four channels; it is the <b>looper screen's twin</b>, with a take that grows instead of a loop that repeats.</p>
+<p>Same five bands, same type rule, same 288 px span, same controls. Everything below is the delta.</p>
+
+<div class="note">
+  <div class="h">the thing that makes this screen possible</div>
+  <p>The looper has no envelope on the wire, so its band is flat until peaks exist. <b>The recorder needs nothing from the wire at all</b> — the interface already owns the audio.</p>
+  <p><code>recorder[4][262144]</code> lives in SDRAM <em>on this controller</em>: 4 MiB, 5.46 s per plane, written by MDMA and read by the card writer. A live waveform is a decimation of memory this board already has. No new telemetry, no protocol change, no peak field to add.</p>
+</div>
+
+<div class="cap">640×480 shown · 320×240 actual · recording, stereo pair</div>
+<div class="dev">
+
+  <div style="left:0;top:0;width:640px;height:68px;background:#000">
+    <div class="t16" style="left:16px;top:14px;color:#E8E8E8">BPM 120</div>
+    <div class="t16" style="right:16px;top:14px;left:auto;color:#E8E8E8">96%</div>
+  </div>
+
+  <div style="left:0;top:68px;width:640px;height:64px;background:#6BA5E7">
+    <div class="t22" style="left:14px;top:4px;color:#000;font-weight:700">● REC 02:14</div>
+    <div class="t16" style="right:14px;top:12px;left:auto;color:#0E2A47">STEREO 1 24B</div>
+  </div>
+
+  <div style="left:0;top:132px;width:640px;height:52px;background:#303030">
+    <div class="t16" style="left:14px;top:6px;color:#8A8A8A">TAKE003&nbsp; CARD <span style="color:#E8E8E8">12.4G</span>&nbsp; DROP <span style="color:#E8E8E8">0</span></div>
+  </div>
+
+  <!-- level strip 92-100 : overlay boxes, frame rate -->
+  <div style="left:32px;top:184px;width:576px;height:8px;background:#0E0E0E"></div>
+  <div style="left:32px;top:184px;width:392px;height:8px;background:#6BA5E7"></div>
+  <div style="left:32px;top:194px;width:576px;height:8px;background:#0E0E0E"></div>
+  <div style="left:32px;top:194px;width:436px;height:8px;background:#6BA5E7"></div>
+  <div style="left:468px;top:194px;width:40px;height:8px;background:#E2A03F"></div>
+
+  <!-- waveform 100-214 : grows to the write head -->
+  <div style="left:0;top:204px;width:640px;height:228px;background:#141414">
+    <div style="left:32px;top:0;width:576px;height:188px;background:repeating-linear-gradient(90deg,#202020 0 36px,#2E2E2E 36px 72px)"></div>
+    <!-- written so far, up to the head -->
+    <div style="left:32px;top:22px;width:404px;height:64px;background:repeating-linear-gradient(90deg,#7FB3E8 0 3px,transparent 3px 9px)"></div>
+    <div style="left:32px;top:104px;width:404px;height:64px;background:repeating-linear-gradient(90deg,#7FB3E8 0 3px,transparent 3px 9px)"></div>
+    <!-- bar ruler -->
+    <div style="left:0;top:188px;width:640px;height:40px;background:#0E0E0E"></div>
+    <div style="left:176px;top:190px;width:2px;height:36px;background:#B0B0B0"></div>
+    <div style="left:320px;top:190px;width:2px;height:36px;background:#B0B0B0"></div>
+    <div style="left:464px;top:190px;width:2px;height:36px;background:#B0B0B0"></div>
+    <!-- separators, fixed -->
+    <div style="left:24px;top:0;width:8px;height:228px;background:#6BA5E7"></div>
+    <div style="left:608px;top:0;width:8px;height:228px;background:#5E5E5E"></div>
+    <!-- write head -->
+    <div style="left:436px;top:0;width:4px;height:188px;background:#FFF"></div>
+  </div>
+
+  <div style="left:0;top:432px;width:640px;height:48px;background:#303030">
+    <div class="t16" style="left:14px;top:0;color:#8A8A8A">BARS</div>
+    <div class="t16" style="left:250px;top:0;color:#E8E8E8">4</div>
+    <div style="left:14px;top:36px;width:296px;height:8px;background:#0E0E0E"></div>
+    <div style="left:14px;top:36px;width:100px;height:8px;background:#6BA5E7"></div>
+    <div class="t16" style="left:334px;top:0;color:#8A8A8A">GRID</div>
+    <div class="t16" style="left:530px;top:0;color:#E8E8E8">1 BAR</div>
+    <div style="left:334px;top:36px;width:292px;height:8px;background:#0E0E0E"></div>
+    <div style="left:334px;top:36px;width:186px;height:8px;background:#6BA5E7"></div>
+  </div>
+</div>
+
+<h2>Bands</h2>
+<table>
+<thead><tr><th class="n">y</th><th class="n">h</th><th>Band</th><th>vs looper</th></tr></thead>
+<tbody>
+<tr><td class="n">0</td><td class="n">34</td><td>Status — BPM, battery</td><td>same</td></tr>
+<tr><td class="n">34</td><td class="n">32</td><td><code>● REC 02:14</code> · chain, bit depth</td><td>transport + elapsed replace PLAY</td></tr>
+<tr><td class="n">66</td><td class="n">26</td><td>Take name · card free · <b>DROP</b></td><td>replaces START·CUR·STOP</td></tr>
+<tr><td class="n">92</td><td class="n">8</td><td><b>Level strip</b> — 1 lane mono, 2 stereo</td><td><b>new</b></td></tr>
+<tr><td class="n">100</td><td class="n">114</td><td>Waveform, grows to the write head</td><td>8 px shorter</td></tr>
+<tr><td class="n">214</td><td class="n">26</td><td>BARS · GRID</td><td>same</td></tr>
+</tbody>
+</table>
+<p class="d">34 + 32 + 26 + 8 + 114 + 26 = 240. Span stays x=16..304, 288 px, so flipping between looper and recorder does not shift a single vertical.</p>
+
+<h2>Controls — identical to the looper</h2>
+<table>
+<thead><tr><th>Input</th><th>Does</th><th>While recording</th></tr></thead>
+<tbody>
+<tr><td>MENU</td><td>cursor</td><td>follows the write head</td></tr>
+<tr><td>PARAM 0 / 1</td><td>trim start / stop</td><td>inert — nothing to trim yet</td></tr>
+<tr><td>PARAM 2 / 3</td><td>bars / grid</td><td>live — this is recording to a count</td></tr>
+<tr><td>UP / DOWN</td><td>zoom in / out, anchored on cursor</td><td>live</td></tr>
+<tr><td>FOOT</td><td>start / stop</td><td>—</td></tr>
+<tr><td>YES</td><td>file browser</td><td>disabled</td></tr>
+<tr><td>FUNC + UP / DOWN</td><td>redo / undo take</td><td>disabled</td></tr>
+</tbody>
+</table>
+<p>Nothing needed inventing. A recorder <em>is</em> a looper whose length is the card rather than the RAM, so the same five knobs mean the same five things — and two of them simply have nothing to act on until you stop.</p>
+
+<div class="note">
+  <div class="h">inert, not hidden</div>
+  <p>Trim is meaningless mid-take, but the fields should stay on screen dimmed rather than disappear. Hiding them reflows the band and repaints everything; dimming is a colour change on two labels. It also keeps the two screens visually identical, which is the point of building them as twins.</p>
+</div>
+
+<h2>The growing waveform</h2>
+<p>Same layer rule as the looper — <b>baked if it changes on a detent, overlaid if it changes on a frame</b> — with one addition: the take gets longer while you watch.</p>
+<table>
+<thead><tr><th>Layer</th><th>Changes when</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td>grid ground, bar ruler</td><td>BARS / GRID detent</td><td>rebuild, 1 rect</td></tr>
+<tr><td>envelope up to the head</td><td><b>as it records</b></td><td><b>append only</b></td></tr>
+<tr><td>separators</td><td>never</td><td>0</td></tr>
+<tr><td>write head</td><td>every frame</td><td>4 px column</td></tr>
+<tr><td>level strip</td><td>every frame</td><td>delta column, 1–2 rects</td></tr>
+</tbody>
+</table>
+<p><b>Append, do not rebuild.</b> A new column of envelope is one decimation of the newest ring samples written into the buffer at the head position, then one narrow invalidate. Nothing already drawn is recomputed. At 1× with a 5.46 s window across 288 px, a column is 19 ms of audio — about one new column every frame at 60 Hz, and the head and the column are adjacent so they union into a single rect.</p>
+<p>The full rebuild path still exists, but only three things call it: a BARS or GRID change, a zoom step, and a trim. None of them happen while your hands are on the guitar.</p>
+
+<div class="note">
+  <div class="h">what happens past 5.46 seconds</div>
+  <p>The ring holds 5.46 s per plane and a take is longer than that, so the screen cannot show the whole take from memory. Two honest options, and the choice is yours:</p>
+  <p><b>Scroll</b> — the window is the last 5.46 s and the head sits at the right separator, audio flowing right to left. Truthful about what the board can still see, and it is what a tape machine does.</p>
+  <p><b>Accumulate</b> — keep a second, much coarser envelope of the <em>whole</em> take in .bss, appended as the ring drains to the card, and show all of it. At one min/max pair per 1024 samples that is 2 B per 21 ms, so a ten-minute take costs about 56 KB. This is the better answer if you ever want to trim a long take on the device, and it is cheap.</p>
+</div>
+
+<h2>No peak transfer, ever</h2>
+<p>The looper needs a peak table shipped over SPI because a freshly recorded loop lives only in audio SDRAM. <b>The recorder never does</b>, and the reason is structural rather than lucky: every sample of a recorder take crosses this controller by design, because writing it to the card is what the recorder <em>is</em>.</p>
+<table>
+<thead><tr><th>Range</th><th>Source</th><th>Wire traffic</th></tr></thead>
+<tbody>
+<tr><td>last 5.46 s</td><td><code>recorder[4][262144]</code>, read directly</td><td class="n">none</td></tr>
+<tr><td>the whole take</td><td>coarse envelope appended as the ring drains to the card</td><td class="n">none</td></tr>
+</tbody>
+</table>
+<p>The accumulate option is not a second pass over anything — the writer already walks every chunk on its way to <code>f_write</code>, so a min/max per bucket rides along on a read that is happening regardless. At one pair per 1024 samples a ten-minute take is <b>55 KB</b>, and it is CPU-written only, so unlike the looper's table it can live in <b>RAM_D1</b> where caching helps.</p>
+
+<div class="note">
+  <div class="h">what the two screens share, and what they do not</div>
+  <p>They are never open together, so the <b>84 480 B pixel band is one buffer</b>, declared outside both views — a screen transition destroys the view, not the buffer. The recorder's 320×114 band is the top 72 960 bytes of the looper's 320×132; size the shared allocation to the larger and the duplicate disappears.</p>
+  <p>Nothing else needs arranging. The SPI loop slots are already exclusive — <code>FxLoop</code> permits one session at a time — and neither screen takes a <code>LoopSpool</code> slot for peaks: the looper arms its transfer straight at its table, and the recorder has no transfer to make.</p>
+</div>
+
+<h2>Level strip</h2>
+<p>Eight pixels, one lane for mono, two of four for stereo, on the same 288 px span. It exists because the envelope shows <em>history</em> and setting input gain needs <em>now</em>.</p>
+<ul>
+  <li><code>aPeak[n]</code> from telemetry, <code>0..65535</code> → 288 px. The only thing on this screen that needs the wire.</li>
+  <li>Fill blue, the segment above −6 dBFS amber. Two <code>Box</code> widgets, not a gradient.</li>
+  <li><b>setWidth</b>, then one <code>invalidateRect</code> spanning old to new — a bare store plus a narrow rect, the same trick as the cursor. A 10 px move is 160 B, not 4 608.</li>
+  <li>Quantise to even pixels before comparing; the push rounds x to even anyway, so a change that lands on the same column should produce no rect.</li>
+  <li>Clip latches — once red, it stays until the next take or a FUNC press. A peak you missed is worse than no peak meter.</li>
+</ul>
+
+<div class="note w">
+  <div class="h">DROP is the most valuable field on this screen</div>
+  <p><code>nRecDropped</code> means a staging half was not free and <b>audio was lost</b>. Show it as <code>DROP n</code>, amber above zero. A take with dropped blocks is unrecoverable and the only moment that information is actionable is while recording.</p>
+  <p><code>Recorder_BacklogChunks()</code> is the early warning: the ring absorbs 5.46 s of card stall, so a thin bar that only appears past a quarter full says "the card is struggling" <em>before</em> anything is lost. Hidden below the threshold it costs nothing and never becomes wallpaper.</p>
+</div>
+
+<h2>No canvas, no new widgets</h2>
+<p>Everything here is <code>Box</code>, <code>BoxWithBorder</code>, <code>TextAreaWithWildcard</code> and one <code>PixelDataWidget</code> — 320×114 RGB565, <b>72 960 B</b> in RAM_D2, appended rather than rebuilt.</p>
+<div class="note w">
+  <div class="h">the trap, unchanged</div>
+  <p><code>CANVAS_BUFFER_SIZE</code> exists only in <code>EffectSettingsViewBase</code> and <code>SystemViewBase</code>, and setup/reset are static, called in those screens' constructor and destructor. <code>RecorderViewBase</code> declares none — a <code>Circle</code>, <code>Line</code> or <code>Shape</code> here renders <b>nothing, silently</b>.</p>
+</div>
+
+<h2>Order</h2>
+<ol>
+  <li><b>Clone the looper screen</b> in Designer and change the two text bands. They are twins; build them that way rather than from scratch.</li>
+  <li><b>Level strip</b> from <code>aPeak[]</code>, delta-column invalidate, even-pixel quantiser.</li>
+  <li><b>Append-only envelope</b> from the local SDRAM ring. No wire work, no protocol change.</li>
+  <li><b>FOOT transport</b>, elapsed counter, and <code>DROP</code>.</li>
+  <li><b>Decide scroll vs accumulate</b> past 5.46 s — the only real open question here.</li>
+  <li><b>Trim and file browser</b>, both shared with the looper.</li>
+</ol>
+
+<div class="foot">
+FXcursion · docs/recorder-screen-design-brief.html · 05.09.2026 · twin of looper-screen-design-brief.html<br>
+Local audio from recorder[4][262144] in .sdram_rec; levels from PROTO_TELEMETRY.aPeak[]; buttons from ModelListener.<br>
+Single RGB565 framebuffer in SDRAM, pushed by MDMA — every invalidated rect is one transfer.
+</div>
+
+</div>

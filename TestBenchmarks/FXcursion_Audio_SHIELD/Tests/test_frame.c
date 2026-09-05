@@ -64,14 +64,32 @@ void Test_Frame(void)
         /* If these ever disagree there are slots nothing writes, or two things
            writing one slot. Both are silent on target. */
         CHECK_EQ_U32((U32)(FX_FRAME_SYNC_SLOT_QTY + FX_FRAME_REC_SLOT_QTY +
+                           FX_FRAME_LIVE_SLOT_QTY + FX_FRAME_STAT_SLOT_QTY +
                            FX_FRAME_LOOP_SLOT_QTY),
                      (U32)FX_FRAME_SLOT_QTY);
 
+        /* The regions must also be CONTIGUOUS and in this order. Both sides
+           zero whole spans by walking from one base to the next - a gap would
+           leave slots nobody writes, and an overlap would have the far side
+           read a status word as audio. */
         CHECK_EQ_U32((U32)FX_FRAME_SYNC_SLOT, 0UL);
-        CHECK_EQ_U32((U32)FX_FRAME_REC_SLOT_BASE, 1UL);
-        CHECK_EQ_U32((U32)FX_FRAME_LOOP_SLOT_BASE, 5UL);
-        CHECK_EQ_U32((U32)FX_FRAME_LOOP_SLOT_QTY, 27UL);
-        CHECK_EQ_U32((U32)FX_FRAME_BYTES, 128UL);
+        CHECK_EQ_U32((U32)FX_FRAME_REC_SLOT_BASE,
+                     (U32)(FX_FRAME_SYNC_SLOT + FX_FRAME_SYNC_SLOT_QTY));
+        CHECK_EQ_U32((U32)FX_FRAME_LIVE_SLOT_BASE,
+                     (U32)(FX_FRAME_REC_SLOT_BASE + FX_FRAME_REC_SLOT_QTY));
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_SLOT,
+                     (U32)(FX_FRAME_LIVE_SLOT_BASE + FX_FRAME_LIVE_SLOT_QTY));
+        CHECK_EQ_U32((U32)FX_FRAME_LOOP_SLOT_BASE,
+                     (U32)(FX_FRAME_STAT_SLOT + FX_FRAME_STAT_SLOT_QTY));
+
+        /* The wire contract, as numbers. Both boards must agree on these
+           exactly; a mismatch is a rotated stream, not a build error. */
+        CHECK_EQ_U32((U32)FX_FRAME_REC_SLOT_BASE,  1UL);
+        CHECK_EQ_U32((U32)FX_FRAME_LIVE_SLOT_BASE, 5UL);
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_SLOT,      9UL);
+        CHECK_EQ_U32((U32)FX_FRAME_LOOP_SLOT_BASE, 10UL);
+        CHECK_EQ_U32((U32)FX_FRAME_LOOP_SLOT_QTY,  22UL);
+        CHECK_EQ_U32((U32)FX_FRAME_BYTES,          128UL);
 
         /* THE constraint. The receiver's half is 4096 words and its
            half-transfer interrupt fires at a fixed word, so a frame that does
@@ -115,6 +133,66 @@ void Test_Frame(void)
         CHECK_EQ_U32((U32)FX_FRAME_SEQ_OF(FX_FRAME_SYNC_WORD(0xFFFFU)), 0xFFFFUL);
         CHECK_EQ_U32((U32)FX_FRAME_MARK_OF(FX_FRAME_SYNC_WORD(0xFFFFU)),
                      (U32)FX_FRAME_SYNC_MARK);
+    }
+    TEST_END();
+
+    TEST_BEGIN("the status word round-trips, and its fields do not bleed");
+    {
+        /*
+         * Slot 9 packs four fields into one word, so the failure mode is a
+         * field whose mask is one bit wrong writing into its neighbour: a
+         * playhead that walks when the transport state changes, or a generation
+         * counter that ticks on its own and makes the receiver throw away a
+         * perfectly good waveform.
+         *
+         * Every case below sets ONE field to its extreme with the others at
+         * zero, then reads back all four.
+         */
+        const U32 nPosMax = (U32)FX_FRAME_STAT_POS_MAX;
+        U8  nSel;
+        U8  nGen;
+        U8  nSt;
+
+        /* Each field alone, at its maximum, with the rest still readable. */
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_SEL_OF(FX_FRAME_STAT_WORD(1U, 0U, 0U, 0U)), 1UL);
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_POS_OF(FX_FRAME_STAT_WORD(1U, 0U, 0U, 0U)), 0UL);
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_GEN_OF(FX_FRAME_STAT_WORD(1U, 0U, 0U, 0U)), 0UL);
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_STATE_OF(FX_FRAME_STAT_WORD(1U, 0U, 0U, 0U)), 0UL);
+
+        CHECK_EQ_U32(FX_FRAME_STAT_POS_OF(FX_FRAME_STAT_WORD(0U, nPosMax, 0U, 0U)), nPosMax);
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_SEL_OF(FX_FRAME_STAT_WORD(0U, nPosMax, 0U, 0U)), 0UL);
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_GEN_OF(FX_FRAME_STAT_WORD(0U, nPosMax, 0U, 0U)), 0UL);
+
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_GEN_OF(FX_FRAME_STAT_WORD(0U, 0U, 15U, 0U)), 15UL);
+        CHECK_EQ_U32(FX_FRAME_STAT_POS_OF(FX_FRAME_STAT_WORD(0U, 0U, 15U, 0U)), 0UL);
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_STATE_OF(FX_FRAME_STAT_WORD(0U, 0U, 15U, 0U)), 0UL);
+
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_STATE_OF(FX_FRAME_STAT_WORD(0U, 0U, 0U, 15U)), 15UL);
+        CHECK_EQ_U32((U32)FX_FRAME_STAT_GEN_OF(FX_FRAME_STAT_WORD(0U, 0U, 0U, 15U)), 0UL);
+        CHECK_EQ_U32(FX_FRAME_STAT_POS_OF(FX_FRAME_STAT_WORD(0U, 0U, 0U, 15U)), 0UL);
+
+        /* All four at once, every combination of the small fields against a
+           position that has bits in both its halves. */
+        for (nSel = 0U; nSel < 2U; nSel++)
+        {
+            for (nGen = 0U; nGen < 16U; nGen++)
+            {
+                for (nSt = 0U; nSt < 16U; nSt++)
+                {
+                    const U32 nPos = 0x5A5A5AUL & nPosMax;
+                    const S32 w    = FX_FRAME_STAT_WORD(nSel, nPos, nGen, nSt);
+
+                    CHECK_EQ_U32((U32)FX_FRAME_STAT_SEL_OF(w),   (U32)nSel);
+                    CHECK_EQ_U32(FX_FRAME_STAT_POS_OF(w),        nPos);
+                    CHECK_EQ_U32((U32)FX_FRAME_STAT_GEN_OF(w),   (U32)nGen);
+                    CHECK_EQ_U32((U32)FX_FRAME_STAT_STATE_OF(w), (U32)nSt);
+                }
+            }
+        }
+
+        /* The position field must hold a whole loop with room to spare, or a
+           long take wraps it and the waveform folds back on itself. */
+        CHECK(nPosMax >= (20UL * 48000UL));
     }
     TEST_END();
 

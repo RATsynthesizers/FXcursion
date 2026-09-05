@@ -97,8 +97,32 @@ FXC_STATIC_ASSERT((REC_RX_HALF_WORDS % FX_FRAME_SLOT_QTY) == 0U,
    no slack, no gap. A mismatch here would leave slots nothing reads or, worse,
    have two routes overlap. */
 FXC_STATIC_ASSERT((FX_FRAME_SYNC_SLOT_QTY + FX_FRAME_REC_SLOT_QTY +
+                   FX_FRAME_LIVE_SLOT_QTY + FX_FRAME_STAT_SLOT_QTY +
                    FX_FRAME_LOOP_SLOT_QTY) == FX_FRAME_SLOT_QTY,
                   rec_frame_slots_account_exactly);
+
+/*
+ * THE FILE RUN'S STEP MUST DIVIDE THE STAGING SLOT EXACTLY.
+ *
+ * LoopSession arms the loop destination to a whole number of these steps and
+ * refuses the session when the rounded-up length passes the end of the buffer.
+ * If the step does not divide the slot there is a remainder at the top, and a
+ * long enough take rounds into it - so the longest loop the machine can record
+ * becomes the one loop it cannot save, silently, at exactly the length people
+ * will use.
+ *
+ * 22 slots divides. 23 does not - it overshoots by 3 072 B. 27 did not either;
+ * it survived only because the longest take happened to sit under a multiple.
+ * See REC_LOOP_STEP_BYTES in common_cfg.h.
+ */
+FXC_STATIC_ASSERT((REC_LOOP_SLOT_BYTES % REC_LOOP_STEP_BYTES) == 0U,
+                  rec_loop_step_divides_spool_slot);
+
+/* And the longest take must still fit once rounded up - the check above is
+   necessary but not sufficient if the region ever shrinks below one take. */
+FXC_STATIC_ASSERT((REC_LOOP_SLOT_BYTES / REC_LOOP_STEP_BYTES) * REC_LOOP_STEP_BYTES
+                      >= (20UL * 48000UL * 2UL * 3UL),
+                  rec_loop_slot_holds_longest_take);
 
 FXC_STATIC_ASSERT(REC_SLOTS_PER_FRAME == FX_FRAME_REC_SLOT_QTY,
                   rec_planes_match_frame_layout);
@@ -274,6 +298,14 @@ static void HAL_MDMA_XferErrorCallback(MDMA_HandleTypeDef *hmdma);
 static STD_RESULT RecorderThreadInit(void);
 static void MDMA_Trigger_Deinterleave(void);
 
+/* Gives the hand-added MDMA nodes a valid CTCR before anything programmes a
+   route. Must run before the first de-interleave. */
+static void RecorderPrimeMdmaNodes(void);
+
+/* Destinations for the four live looper planes, or NOT_OK when no consumer has
+   armed them. Defined beside the loop destination it mirrors. */
+static STD_RESULT RecorderLiveDest(uint32_t* const pnAddr, const uint32_t nOfs);
+
 /* Defined below MDMA_Trigger_Deinterleave but called from the recorder
    thread above it, so it needs declaring here. */
 static uint32_t RecorderWritePacked24(FIL* const pFile,
@@ -325,6 +357,11 @@ STD_RESULT RecorderInit()
 
 	HAL_MDMA_RegisterCallback(&hmdma_mdma_channel1_sw_0, HAL_MDMA_XFER_CPLT_CB_ID, HAL_MDMA_XferCpltCallback);
 	HAL_MDMA_RegisterCallback(&hmdma_mdma_channel1_sw_0, HAL_MDMA_XFER_ERROR_CB_ID, HAL_MDMA_XferErrorCallback);
+
+	/* Before any route can be programmed: CubeMX configures only sw_1..sw_3, so
+	   every hand-added node still holds power-up garbage in CTCR. See the note
+	   over the function. */
+	RecorderPrimeMdmaNodes();
 
 	for(U32 i = 0; i < REC_RX_WORDS; i++)
 	{
@@ -844,6 +881,38 @@ uint32_t Recorder_LoopRouteBytes(void)
  * which case the loop route is simply omitted from this block rather than
  * writing past the end of the staging area.
  */
+/**
+ * @brief Where this half's live looper planes should land, if anywhere.
+ *
+ * @details Mirrors RecorderLoopDest for the four positional planes at
+ *          FX_FRAME_LIVE_SLOT_BASE. Returns NOT_OK while nothing is armed,
+ *          which omits the routes entirely - the audio side keeps sending the
+ *          slots and the interface simply does not read them.
+ *
+ *          NO CONSUMER EXISTS YET. The waveform needs a decimated peak table
+ *          rather than the samples themselves, and whether that is built from a
+ *          small rolling window or from a full mirror in SDRAM_LOOP_A/B is still
+ *          open - a 20 s four-plane mirror is 15 360 000 B against 11 534 336 B
+ *          of region, so a full one does not fit alongside the save staging
+ *          without repacking to 24-bit and leaving nothing for saves.
+ *
+ *          Arming is therefore left to that consumer. This function is the seam
+ *          it plugs into, and until it does the frame carries the audio at no
+ *          cost to anything else.
+ *
+ * @param   pnAddr  filled with FX_FRAME_LIVE_SLOT_QTY destinations
+ * @param   nOfs    byte offset into each plane, as for the recorder ring
+ */
+static STD_RESULT RecorderLiveDest(uint32_t* const pnAddr, const uint32_t nOfs)
+{
+    (void)pnAddr;
+    (void)nOfs;
+
+    return RESULT_NOT_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+
 static STD_RESULT RecorderLoopDest(uint32_t* const pnAddr,
                                    const uint8_t nSlotQty)
 {
@@ -1058,26 +1127,85 @@ static void RecorderSilenceChunk(void)
 
 //--------------------------------------------------------------------------------------------------
 
+/*
+ * The de-interleave node table. File scope so RecorderPrimeMdmaNodes and
+ * MDMA_Trigger_Deinterleave share ONE list - the project's usual rule that a
+ * rename should cost one edit, not two.
+ *
+ * The chain is built by hand in the trigger: each node's CLAR points at the
+ * next and the last is terminated with zero, so the list is exactly as long as
+ * nRoutes asks for. This array is a BUDGET, not a hardware ceiling - MDMA walks
+ * an arbitrarily long linked list, and a spare entry costs one 32-byte
+ * descriptor in RAM_D2.
+ *
+ * Ten covers the frame's plausible worst case: four recorder planes, a live
+ * looper run, a loop file run, and room for a topology that splits any of them
+ * further.
+ */
+static MDMA_LinkNodeTypeDef* const apNodes[REC_MDMA_NODE_QTY] =
+{
+    &node_mdma_channel1_sw_1,
+    &node_mdma_channel1_sw_2,
+    &node_mdma_channel1_sw_3,
+    &node_mdma_channel1_sw_4,
+    &node_mdma_channel1_sw_5,
+    &node_mdma_channel1_sw_6,
+    &node_mdma_channel1_sw_7,
+    &node_mdma_channel1_sw_8,
+    &node_mdma_channel1_sw_9,
+    &node_mdma_channel1_sw_10
+};
+
+
+/**
+ * @brief Give every node past the generated three a valid static configuration.
+ *
+ * @details MX_MDMA_Init calls HAL_MDMA_LinkedList_CreateNode for sw_1..sw_3 and
+ *          nothing else, because three is what CubeMX was told to emit. Every
+ *          node added by hand since - sw_4 for the loop route, and now sw_5..10
+ *          - was left with whatever RAM held at power-up.
+ *
+ *          That is not merely untidy. A node is ten registers and the trigger
+ *          rewrites only five of them: CSAR, CDAR, CBNDTR, CBRUR and CLAR. The
+ *          other five - CTCR above all, which carries the source and
+ *          destination data sizes, the increment modes, the transfer length and
+ *          the burst - were never written by anything. The nodes live in
+ *          .dma_buffers, which the linker marks NOLOAD, so they are not even
+ *          zeroed at reset.
+ *
+ *          The loop route has therefore never been correctly programmed. It has
+ *          not shown up because that path has not run on hardware yet; it would
+ *          have presented as the loop payload landing with the wrong element
+ *          size or the wrong stride, which on this link means silently wrong
+ *          audio rather than a fault.
+ *
+ *          Copying sw_3 wholesale is the right source: it is a generated node
+ *          configured for exactly this channel and this transfer shape, and the
+ *          trigger overwrites every field that differs per route immediately
+ *          afterwards.
+ */
+static void RecorderPrimeMdmaNodes(void)
+{
+    uint8_t i;
+
+    for (i = 3U; i < (uint8_t)REC_MDMA_NODE_QTY; i++)
+    {
+        *apNodes[i] = node_mdma_channel1_sw_3;
+    }
+}
+
+//--------------------------------------------------------------------------------------------------
+
 void MDMA_Trigger_Deinterleave()
 {
-    /* Four nodes plus the channel = five routes: one per recorder plane, and
-       one for the loop transport's contiguous slot run. */
-    static MDMA_LinkNodeTypeDef* const apNodes[4] =
-    {
-        &node_mdma_channel1_sw_1,
-        &node_mdma_channel1_sw_2,
-        &node_mdma_channel1_sw_3,
-        &node_mdma_channel1_sw_4
-    };
-
     MDMA_Channel_TypeDef* const ch = hmdma_mdma_channel1_sw_0.Instance;
 
-    /* One route per destination buffer. All REC_SLOTS_PER_FRAME slots are always
-       covered, so there are between two (both pairs stereo) and four (all mono)
-       of them - which is exactly the channel plus up to three nodes. */
-    /* One extra for the loop route. */
-    REC_ROUTE  aRoute[REC_SLOTS_PER_FRAME + 1U];
-    FX_IL_XFER aXfer[REC_SLOTS_PER_FRAME + 1U];
+    /* One route per destination buffer: up to REC_SLOTS_PER_FRAME recorder
+       planes, plus whatever contiguous runs the frame carries. Sized to the
+       channel plus every node, so the geometry check below is the only thing
+       that can refuse a routing - never the array. */
+    REC_ROUTE  aRoute[REC_MDMA_ROUTE_QTY];
+    FX_IL_XFER aXfer[REC_MDMA_ROUTE_QTY];
     FX_FRAME_SCAN tScan;
     uint8_t    nRoutes = 0U;
     const uint8_t nStreamWidth = (uint8_t)FX_FRAME_SLOT_QTY;
@@ -1193,12 +1321,48 @@ void MDMA_Trigger_Deinterleave()
     }
 
     /*
+     * ---- the live looper planes, when a consumer has armed them -----------
+     *
+     * FOUR routes, not one: these are positional planes like the recorder's, so
+     * each goes to its own destination. That is what lets the MDMA separate the
+     * loopers without a CPU pass - the file slots can be one route only because
+     * they are an opaque byte stream nobody has to de-interleave.
+     *
+     * Armed and disarmed by whoever consumes them, exactly like the loop route
+     * below. Until something arms them the routes are omitted and the slots are
+     * simply not read; the audio side sends them regardless and the frame does
+     * not narrow.
+     *
+     * Slot FX_FRAME_STAT_SLOT is deliberately NOT routed. It is one word per
+     * frame carrying a looper's position, generation and transport state, and
+     * it is read by the CPU from the receive ring - an MDMA route would scatter
+     * 128 copies of it per half into a buffer nobody wants.
+     */
+    {
+        uint32_t anLiveDst[FX_FRAME_LIVE_SLOT_QTY];
+
+        if (RecorderLiveDest(anLiveDst, nDstOffs) == RESULT_OK)
+        {
+            uint8_t p;
+
+            for (p = 0U; p < (uint8_t)FX_FRAME_LIVE_SLOT_QTY; p++)
+            {
+                aRoute[nRoutes].nSlot    = (uint8_t)(p + (uint8_t)FX_FRAME_LIVE_SLOT_BASE);
+                aRoute[nRoutes].nWidth   = 1U;
+                aRoute[nRoutes].nDstAddr = anLiveDst[p];
+
+                nRoutes++;
+            }
+        }
+    }
+
+    /*
      * ---- the loop route, when a transfer is running ----------------------
      *
      * ONE route, not one per slot: the loop slots are contiguous on the wire,
-     * so FxInterleave_Xfer can lift the whole run in a single transfer. That is
-     * the only reason this fits - four planes plus one loop run is five routes,
-     * exactly the channel plus four nodes.
+     * so FxInterleave_Xfer can lift the whole run in a single transfer. With the
+     * live planes armed this is the ninth route of eleven - the node table is a
+     * budget now, not the four CubeMX happened to emit.
      *
      * The slot base and the run length are both fixed by the frame layout now.
      * They used to be computed from the ACKed width, and a stale width would
@@ -1270,12 +1434,11 @@ void MDMA_Trigger_Deinterleave()
      * descriptors. Both buffers are already non-cacheable, so only the
      * descriptors need it.
      */
-    SCB_CleanDCache_by_Addr((uint32_t*)(void*)&node_mdma_channel1_sw_1,
-                            sizeof(node_mdma_channel1_sw_1));
-    SCB_CleanDCache_by_Addr((uint32_t*)(void*)&node_mdma_channel1_sw_2,
-                            sizeof(node_mdma_channel1_sw_2));
-    SCB_CleanDCache_by_Addr((uint32_t*)(void*)&node_mdma_channel1_sw_3,
-                            sizeof(node_mdma_channel1_sw_3));
+    for (i = 1U; i < nRoutes; i++)
+    {
+        SCB_CleanDCache_by_Addr((uint32_t*)(void*)apNodes[i - 1U],
+                                (int32_t)sizeof(*apNodes[i - 1U]));
+    }
 
     /* BlockDataLength is BYTES per block and BlockCount is the number of them,
        so this is "move nBytesPerBeat bytes, nBeats times, stepping the source

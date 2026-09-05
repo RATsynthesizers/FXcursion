@@ -646,11 +646,22 @@ void LoopSession_FillTx(S32* const pFrames, const U32 nFrames, const U8 nStride)
         pFrame[FX_FRAME_SYNC_SLOT] = FX_FRAME_SYNC_WORD(nTxSeq);
         nTxSeq++;
 
-        /* This board sends no recorder audio; those slots are the audio
-           controller's, in the other direction. */
-        for (s = 0U; s < (U8)FX_FRAME_REC_SLOT_QTY; s++)
+        /*
+         * Everything between the sync word and the file run belongs to the
+         * other direction: the recorder planes, the live looper planes and the
+         * status word are all things the AUDIO board sends. This board has
+         * nothing to put in them, so it sends zeros.
+         *
+         * One loop rather than three, deliberately. The three regions are
+         * contiguous by construction - the static assert in Recorder.c pins
+         * that they account for the frame exactly - and writing them
+         * individually invites the version where a region is added to
+         * fx_frame.h and this one place still zeroes the old set, leaving the
+         * new slots carrying whatever the previous frame left in them.
+         */
+        for (s = (U8)FX_FRAME_REC_SLOT_BASE; s < (U8)FX_FRAME_LOOP_SLOT_BASE; s++)
         {
-            pFrame[(U32)FX_FRAME_REC_SLOT_BASE + s] = 0L;
+            pFrame[(U32)s] = 0L;
         }
 
         /*

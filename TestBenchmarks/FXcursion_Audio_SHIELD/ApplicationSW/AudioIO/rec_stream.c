@@ -221,6 +221,9 @@ U8 RecStream_Stage(const S32* const pSrc, const U16 nFrames, const U8 nTotalSlot
         return (U8)REC_STAGE_NONE;
     }
 
+    nUse   = (nFrames > (U16)AUDIO_BLOCK_FRAMES) ? (U16)AUDIO_BLOCK_FRAMES : nFrames;
+    nWords = (U16)(nUse * (U16)nTotalSlots);
+
     nFree = FreeHalf();
 
     if (nFree == (U8)REC_STAGE_NONE)
@@ -228,11 +231,29 @@ U8 RecStream_Stage(const S32* const pSrc, const U16 nFrames, const U8 nTotalSlot
         /* Drop the block. Never write a half the DMA might be reading: that
            would not lose a block, it would splice two. */
         tStats.nBlocksDropped++;
+
+        /*
+         * ADVANCE THE SEQUENCE ANYWAY, past the frames that were not sent.
+         *
+         * The contract below is that a gap in nSeq measures frames LOST rather
+         * than frames not sent - and a dropped block is the first kind. This
+         * audio existed and was thrown away because no staging half was free.
+         *
+         * Returning here without advancing made the sequence perfectly
+         * continuous across a transmitter-side drop, so FxFrame_Scan saw
+         * nothing and the receiver spliced two moments together with no gap
+         * reported anywhere on its side. The fault was counted only in
+         * nBlocksDropped, on the board that could least act on it.
+         *
+         * Now the next staged frame carries a sequence nUse ahead of the last
+         * one sent, the receiver reports FX_FRAME_FAULT_SEQ with nSeqGap equal
+         * to exactly the frames it never got, and a drop is as visible as a
+         * slipped word.
+         */
+        nSeq = (U16)(nSeq + nUse);
+
         return (U8)REC_STAGE_NONE;
     }
-
-    nUse   = (nFrames > (U16)AUDIO_BLOCK_FRAMES) ? (U16)AUDIO_BLOCK_FRAMES : nFrames;
-    nWords = (U16)(nUse * (U16)nTotalSlots);
 
     /*
      * Frame by frame at the wire stride: the sync word, REC_SLOT_QTY recorder
@@ -264,9 +285,21 @@ U8 RecStream_Stage(const S32* const pSrc, const U16 nFrames, const U8 nTotalSlot
             aStage[nFree][nDst + (U16)FX_FRAME_REC_SLOT_BASE + s] = pSrc[nSrc + s];
         }
 
-        for (s = 0U; s < (U8)FX_FRAME_LOOP_SLOT_QTY; s++)
+        /*
+         * Everything past the recorder planes starts at zero: the live looper
+         * planes, the status slot, and the file run.
+         *
+         * All three are filled afterwards by whoever owns them - RecSpi_PushBlock
+         * calls the looper for the live planes and the status word, and
+         * LoopXfer_Block for the file run - and any of them may legitimately have
+         * nothing to say this block. Zeroing first is what makes "nothing to say"
+         * mean silence rather than whatever the last block left there. An
+         * aborted transfer or a stopped looper would otherwise keep shipping its
+         * final samples in slots the interface is still routing.
+         */
+        for (s = (U8)FX_FRAME_LIVE_SLOT_BASE; s < (U8)FX_FRAME_SLOT_QTY; s++)
         {
-            aStage[nFree][nDst + (U16)FX_FRAME_LOOP_SLOT_BASE + s] = 0L;
+            aStage[nFree][nDst + (U16)s] = 0L;
         }
     }
 

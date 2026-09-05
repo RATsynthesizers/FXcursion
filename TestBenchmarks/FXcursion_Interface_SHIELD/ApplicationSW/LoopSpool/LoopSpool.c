@@ -444,6 +444,25 @@ STD_RESULT LoopSpool_Init(void)
         return RESULT_ALREDY_INIT;
     }
 
+    /*
+     * THE LINKER AND THE CONSTANT MUST AGREE.
+     *
+     * REC_LOOP_SLOT_BYTES is what the build-time arithmetic in Recorder.c
+     * reasons about - that the loop route's step divides this slot exactly, so
+     * a full-length take can always be armed. The real size is a linker symbol
+     * difference and no static assert can see it.
+     *
+     * Resize SDRAM_LOOP_A in the linker script without touching the constant
+     * and every one of those asserts is still checking the old number, which is
+     * the worst kind of passing test. Fail init instead: a board that will not
+     * start is a bug report, and a board that saves 511 of 512 possible loop
+     * lengths is a mystery.
+     */
+    if (LoopSpool_SlotBytes() != (U32)REC_LOOP_SLOT_BYTES)
+    {
+        return RESULT_NOT_OK;
+    }
+
     for (i = 0U; i < (U8)LOOPSPOOL_SLOT_QTY; i++)
     {
         (void)memset(&aSlot[i], 0, sizeof(aSlot[i]));

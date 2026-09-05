@@ -1,0 +1,341 @@
+<title>Looper Screen Design Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --bg:#1C1C1C; --panel:#252525; --panel-2:#2E2E2E; --line:#3A3A3A;
+  --ink:#E8E8E8; --dim:#8A8A8A; --dimmer:#5E5E5E;
+  --blue:#6BA5E7; --blue-dim:#3D6A99; --warn:#E2A03F;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+:root[data-theme="light"]{
+  --bg:#F2F2F2; --panel:#FFFFFF; --panel-2:#E9E9E9; --line:#D2D2D2;
+  --ink:#1C1C1C; --dim:#5E5E5E; --dimmer:#8A8A8A;
+  --blue:#2C6EB5; --blue-dim:#8FB6DE; --warn:#8A6014;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#F2F2F2; --panel:#FFFFFF; --panel-2:#E9E9E9; --line:#D2D2D2;
+  --ink:#1C1C1C; --dim:#5E5E5E; --dimmer:#8A8A8A;
+  --blue:#2C6EB5; --blue-dim:#8FB6DE; --warn:#8A6014;}}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.page{max-width:880px;margin:0 auto;padding:44px 28px 90px}
+h1{font-size:15px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;margin:0 0 6px}
+.sub{color:var(--dim);margin:0 0 4px}
+.rule{height:2px;background:var(--blue);margin:22px 0 34px}
+h2{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin:44px 0 14px;
+   padding-bottom:7px;border-bottom:1px solid var(--line)}
+p{margin:0 0 13px;max-width:74ch;color:var(--ink)}
+p.d{color:var(--dim)}
+b{color:var(--ink);font-weight:700}
+em{color:var(--blue);font-style:normal}
+ul{margin:0 0 15px;padding-left:18px;max-width:74ch} li{margin-bottom:5px;color:var(--dim)}
+li b{color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 20px}
+th{text-align:left;font-weight:700;color:var(--dimmer);text-transform:uppercase;letter-spacing:.12em;font-size:11px;
+   padding:0 14px 6px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 14px 7px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--dim)}
+td:first-child{color:var(--ink)}
+td.n,th.n{text-align:right;padding-right:0;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.note{border-left:2px solid var(--blue);padding:11px 0 11px 15px;margin:18px 0;max-width:74ch}
+.note.w{border-left-color:var(--warn)}
+.note .h{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:5px}
+.note.w .h{color:var(--warn)}
+.note p{margin-bottom:0;color:var(--dim)} .note p+p{margin-top:9px}
+
+/* ---- device mockup, 2x. size-16 text = 32px box, 8px advance = 16px ---- */
+.cap{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dimmer);margin:26px 0 8px}
+.dev{width:640px;height:480px;background:#303030;position:relative;overflow:hidden;
+     font-family:var(--mono);outline:1px solid var(--line)}
+.dev div{position:absolute;box-sizing:border-box}
+.t16{font-size:23px;letter-spacing:.5px;line-height:40px;white-space:nowrap}
+.t22{font-size:31px;letter-spacing:.5px;line-height:56px;white-space:nowrap}
+.wave{background:#232323;left:0;width:640px}
+.seg{position:absolute;background:#3E3E3E}
+.mark{position:absolute;width:4px;background:var(--blue)}
+.cur{position:absolute;width:4px;background:#FFF}
+.bar-t{position:absolute;height:8px;background:#1A1A1A}
+.bar-f{position:absolute;height:8px;background:var(--blue)}
+.foot{color:var(--dimmer);font-size:12px;border-top:1px solid var(--line);margin-top:44px;padding-top:18px;line-height:1.9}
+</style>
+
+<div class="page">
+
+<h1>Looper screen</h1>
+<p class="sub">FXcursion interface · ILI9341 320×240 · TouchGFX 4.25 · PixelizerBold 16 / 22</p>
+<div class="rule"></div>
+
+<p>Five knobs, no modes. Menu sets the cursor, four params set start, stop, bars and grid. <b>YES</b> opens files. <b>FUNC+UP / FUNC+DOWN</b> are redo and undo.</p>
+
+<div class="cap">640×480 shown · 320×240 actual</div>
+<div class="dev">
+
+  <!-- status 0-34 -->
+  <div style="left:0;top:0;width:640px;height:68px;background:#000;padding:0 16px">
+    <div class="t16" style="left:16px;top:14px;color:#E8E8E8">BPM 120</div>
+    <div class="t16" style="right:16px;top:14px;color:#E8E8E8;left:auto">96%</div>
+  </div>
+
+  <!-- header 34-66, blue -->
+  <div style="left:0;top:68px;width:640px;height:64px;background:#6BA5E7">
+    <div class="t22" style="left:14px;top:4px;color:#000;font-weight:700">STEREO 1 PLAY</div>
+    <div class="t16" style="right:14px;top:12px;left:auto;color:#0E2A47">VERSE.WAV 24B</div>
+  </div>
+
+  <!-- time line 66-92 -->
+  <div style="left:0;top:132px;width:640px;height:52px;background:#303030">
+    <div class="t16" style="left:14px;top:6px;color:#8A8A8A">START <span style="color:#E8E8E8">0:01</span>&nbsp; CUR <span style="color:#E8E8E8">0:04</span>&nbsp; STOP <span style="color:#E8E8E8">0:11</span></div>
+  </div>
+
+  <!-- waveform 92-214 : span x=16..304 (288 px). separators fixed, only the cursor moves -->
+  <div class="wave" style="top:184px;height:244px;background:#141414">
+    <!-- GRID 1/4 over BARS 4 = 16 cells of 18 px. alternating ground, 14 units apart -->
+    <div style="left:32px;top:0;width:576px;height:204px;background:repeating-linear-gradient(90deg,#202020 0 36px,#2E2E2E 36px 72px)"></div>
+    <!-- envelope lanes, inside the span only -->
+    <div style="left:32px;top:26px;width:576px;height:70px;background:repeating-linear-gradient(90deg,#7FB3E8 0 3px,transparent 3px 9px)"></div>
+    <div style="left:32px;top:112px;width:576px;height:70px;background:repeating-linear-gradient(90deg,#7FB3E8 0 3px,transparent 3px 9px)"></div>
+    <!-- bar ruler, BARS 4 -> ticks every 144 -->
+    <div style="left:0;top:204px;width:640px;height:40px;background:#0E0E0E"></div>
+    <div style="left:176px;top:206px;width:2px;height:36px;background:#B0B0B0"></div>
+    <div style="left:320px;top:206px;width:2px;height:36px;background:#B0B0B0"></div>
+    <div style="left:464px;top:206px;width:2px;height:36px;background:#B0B0B0"></div>
+    <!-- fixed separators, drawn once, never invalidated -->
+    <div style="left:24px;top:0;width:8px;height:244px;background:#6BA5E7"></div>
+    <div style="left:608px;top:0;width:8px;height:244px;background:#6BA5E7"></div>
+    <!-- the only moving thing on the screen -->
+    <div class="cur" style="left:268px;top:0;height:204px"></div>
+  </div>
+
+  <!-- bars / grid 214-240 -->
+  <div style="left:0;top:428px;width:640px;height:52px;background:#303030">
+    <div class="t16" style="left:14px;top:2px;color:#8A8A8A">BARS</div>
+    <div class="t16" style="left:250px;top:2px;color:#E8E8E8">4</div>
+    <div class="bar-t" style="left:14px;top:38px;width:296px"></div>
+    <div class="bar-f" style="left:14px;top:38px;width:100px"></div>
+
+    <div class="t16" style="left:334px;top:2px;color:#8A8A8A">GRID</div>
+    <div class="t16" style="left:530px;top:2px;color:#E8E8E8">1 BAR</div>
+    <div class="bar-t" style="left:334px;top:38px;width:292px"></div>
+    <div class="bar-f" style="left:334px;top:38px;width:186px"></div>
+  </div>
+</div>
+
+<h2>Bands</h2>
+<table>
+<thead><tr><th class="n">y</th><th class="n">h</th><th>Band</th><th>Type</th></tr></thead>
+<tbody>
+<tr><td class="n">0</td><td class="n">34</td><td>Status — BPM, battery</td><td>16 / existing</td></tr>
+<tr><td class="n">34</td><td class="n">32</td><td>Header — line, transport, file, quality</td><td>22 left, 16 right</td></tr>
+<tr><td class="n">66</td><td class="n">26</td><td>START · CUR · STOP times</td><td>16, one line</td></tr>
+<tr><td class="n">92</td><td class="n">102</td><td><b>Waveform</b> — two lanes on grid-shaded ground</td><td>—</td></tr>
+<tr><td class="n">194</td><td class="n">20</td><td>Bar ruler — BARS ticks, foot of the same buffer</td><td>—</td></tr>
+<tr><td class="n">214</td><td class="n">26</td><td>BARS · GRID, value right, bar under</td><td>16, one line</td></tr>
+</tbody>
+</table>
+<p class="d">34 + 32 + 26 + 122 + 26 = 240.</p>
+
+<h2>The type rule I got wrong</h2>
+<p>PixelizerBold 16 is the smallest face in the build. Its line box is <b>20 px</b> and a digit advances <b>8 px</b> — <code>0</code> is 8 wide, <code>1</code> is 6, ten rows tall. Size 22 is a 28 px box.</p>
+<p>Two consequences that kill the earlier layout:</p>
+<ul>
+  <li>A <b>20 px band holds exactly one line with zero padding.</b> Label above value is two boxes — 40 px minimum. That is why every readout here is <em>one line, label left dim, value right bright</em>.</li>
+  <li>A full-width line is <b>~40 characters</b> at size 16, ~29 at size 22. <code>START 0:01  CUR 0:04  STOP 0:11</code> is 31. It fits; a fourth field would not.</li>
+</ul>
+<p>Bands are 26 px, not 20: one 20 px box plus 3 px above and below. The 6 px value bar sits inside that padding, full-column width, which is the only reason a proportional indicator is legible at this size at all — it is 296 px long, not 20 px tall.</p>
+
+<h2>Fixed separators — the span is 288</h2>
+<p>The separators do not move. They sit at <code>x=12</code> and <code>x=304</code>, 4 px wide, and the loop is always everything between them: <b>x=16 to x=304, 288 px</b>. Trimming start or stop does not slide a marker — it rescales what is drawn inside that fixed span.</p>
+<p>288 is chosen, not left over. It divides by 2, 3, 4, 6, 8, 9, 12 and 16, so <em>every</em> plausible bar count gives an integer bar width and every tick lands on a whole pixel:</p>
+<table>
+<thead><tr><th class="n">BARS</th><th class="n">px / bar</th><th class="n">1/4 grid cell</th></tr></thead>
+<tbody>
+<tr><td class="n">3</td><td class="n">96</td><td class="n">24</td></tr>
+<tr><td class="n">4</td><td class="n">72</td><td class="n">18</td></tr>
+<tr><td class="n">8</td><td class="n">36</td><td class="n">9</td></tr>
+<tr><td class="n">12</td><td class="n">24</td><td class="n">6</td></tr>
+<tr><td class="n">16</td><td class="n">18</td><td class="n">4</td></tr>
+</tbody>
+</table>
+<p>No rounding, no accumulated drift across the band, and no bar tick ever landing half a pixel off. On a 320 px display that is the difference between a ruler and a smear.</p>
+
+<h2>One moving thing</h2>
+<p>Fixed separators collapse the layer model. Nothing is "outside the selection" any more, so the selection shading disappears — and the separators, being static, are drawn once and never invalidated again.</p>
+<table>
+<thead><tr><th>Layer</th><th>What</th><th>Changes when</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td>ground</td><td>grid cells, alternating</td><td>GRID or BARS detent</td><td>rebuild, 1 rect</td></tr>
+<tr><td>envelope</td><td>two lanes from the peak table</td><td>take loaded, start/stop trim</td><td>rebuild, 1 rect</td></tr>
+<tr><td>ruler</td><td>BARS−1 ticks, 20 px foot</td><td>BARS detent</td><td>rebuild, 1 rect</td></tr>
+<tr><td>separators</td><td>2 Boxes at fixed x</td><td><b>never</b></td><td>0</td></tr>
+<tr><td><b>cursor</b></td><td>1 Box, 2 px</td><td>every frame</td><td><b>4 px column</b></td></tr>
+</tbody>
+</table>
+<p><b>Baked if it changes on a detent, overlaid if it changes on a frame.</b> Grid, bars and envelope are one rebuild of the same buffer — a few hundred microseconds off the cached peak table, one push, on a knob turn. The cursor is the only thing that moves at frame rate, and it costs a 4 px column.</p>
+<div class="note">
+  <div class="h">what trimming looks like now</div>
+  <p>Because the display always normalises to the fixed span, moving start or stop does not move anything on screen — the envelope reshapes and the numbers change. That is why the <code>START · CUR · STOP</code> line is not decoration: with the separators pinned, it is the only statement of where you actually are in the take.</p>
+</div>
+<p class="d">Dropping zoom cost nothing, incidentally: the rebuild path had to exist for BARS, GRID and trimming regardless.</p>
+
+<h2>Grid and bar contrast</h2>
+<p>The previous values were unreadable and you were right to say so. Five units between the alternating greys is invisible on this panel. Corrected:</p>
+<table>
+<thead><tr><th>Element</th><th>Was</th><th>Now</th><th>Δ</th></tr></thead>
+<tbody>
+<tr><td>grid cell A</td><td>#232323</td><td><b>#202020</b></td><td class="n">—</td></tr>
+<tr><td>grid cell B</td><td>#282828</td><td><b>#2E2E2E</b></td><td class="n">14</td></tr>
+<tr><td>bar tick</td><td>#6E6E6E on #1A1A1A</td><td><b>#B0B0B0 on #0E0E0E</b></td><td class="n">162</td></tr>
+<tr><td>envelope</td><td>#4E8CC4</td><td><b>#7FB3E8</b></td><td class="n">—</td></tr>
+<tr><td>band surround</td><td>#232323</td><td><b>#141414</b></td><td class="n">—</td></tr>
+</tbody>
+</table>
+<p>The grid goes from 5 to <b>14</b> units apart — enough to read as alternating blocks at arm's length, still far enough below the envelope that it never competes with it. Bar ticks go from 84 units of separation to <b>162</b>, on their own near-black ruler ground, so they read as structure rather than as more grid.</p>
+<div class="note">
+  <div class="h">why shading for grid and lines for bars</div>
+  <p>At 1/16 a grid of lines is 15 hairlines fighting the envelope for the same pixels. Alternating ground reads as density instead of clutter, needs no minimum spacing, and degrades gracefully — at 1/32 it becomes texture rather than noise.</p>
+  <p>Bar ticks are the exception: there are only BARS−1 of them, they are structural, and the 20 px ruler gives them their own ground so they never cross the waveform. Two different jobs, two different treatments — which is also why raising the bar contrast does not force raising the grid's.</p>
+</div>
+
+<h2>Controls</h2>
+<table>
+<thead><tr><th>Input</th><th>Does</th></tr></thead>
+<tbody>
+<tr><td>MENU</td><td>cursor — where playback starts</td></tr>
+<tr><td>PARAM 0</td><td>start marker</td></tr>
+<tr><td>PARAM 1</td><td>stop marker</td></tr>
+<tr><td>PARAM 2</td><td>bars</td></tr>
+<tr><td>PARAM 3</td><td>grid lock</td></tr>
+<tr><td>UP / DOWN</td><td>zoom in / out, horizontal, anchored on the cursor</td></tr>
+<tr><td>YES</td><td>open file browser</td></tr>
+<tr><td>FUNC + UP / DOWN</td><td>redo / undo</td></tr>
+</tbody>
+</table>
+<p class="d">No pages, no selection state, no highlight to keep in sync. Every handler is a flat <code>switch (nID)</code>.</p>
+
+<div class="note">
+  <div class="h">zoom — and what the separators mean once you use it</div>
+  <p>UP and DOWN magnify horizontally, <b>anchored on the cursor</b>: the column under the cursor stays put and the take stretches around it. FUNC distinguishes them from undo and redo, so no mode is needed.</p>
+  <p>There is one consequence worth deciding rather than discovering. At 1× the separators bound the loop <em>and</em> the window, because the loop fills the span exactly. Zoomed in they can only be one of the two — the window edges — and the loop now continues past them.</p>
+  <p>So <b>colour the separators by state</b>: blue at 1×, where they are true loop bounds; dim grey above 1×, where they are only the edges of what you are looking at. They are already static Boxes that never invalidate, so a state colour costs two <code>setColor</code> calls on a zoom step and nothing at all per frame. Bar ticks keep working unchanged — the ruler simply shows whichever bar boundaries fall inside the window.</p>
+</div>
+
+<div class="note">
+  <div class="h">grid lock is the coarse mode</div>
+  <p>A step is always ±1. Raw, a 20 s loop is 320 detents end to end — 16 revolutions. Grid-locked to bars at 120 BPM it is <b>10 detents</b>, and every marker lands on a fixed pixel column, which keeps its redraw rect even-aligned for free. Ship locked first; free movement is the special case, not the default.</p>
+</div>
+
+<h2>Files — YES</h2>
+<p>Same five bands, same type rule. The list is the encoder-driven scroller this codebase already has: <code>ScrollWheelWithSelectionStyle</code> with <code>DrawableListItems</code> pools, snapping one item per detent — copy <code>EffectListContainer</code>, do not build a new one.</p>
+<ul>
+  <li>MENU scrolls, YES loads, FUNC returns.</li>
+  <li>First row is <b>CREATE NEW</b>, auto-named. The spool already writes <code>loop%u.wav</code> and accepts a null name, so create is one press and no naming UI.</li>
+  <li>Grey out load while a save is queued — the spool refuses it rather than queueing, so a grey control tells the truth.</li>
+</ul>
+<div class="note w">
+  <div class="h">one correction to inherit</div>
+  <p>The existing wheel sits at <code>x=45</code>, which is <b>odd</b>. The display push rounds x down and the right edge up to even, so every scroll step is silently widened. Place the file wheel on even bounds — <code>x=40 w=240</code>, or full width.</p>
+</div>
+<p class="d">Nothing in the application can list the card yet — the spool has acquire, commit, load and busy, but no enumerate. FatFs has <code>f_opendir</code>/<code>f_readdir</code> compiled in. Run the scan on the spool thread and cache it; a load blocks for seconds.</p>
+
+<h2>Drawing</h2>
+<p>The waveform is a <code>PixelDataWidget</code> over your own RGB565 buffer — 320×122 is <b>78 080 B</b> in RAM_D2. A partial invalidate blits only the sub-rect, so a 6×122 column is <b>1 464 B</b>, and nothing is re-rasterised.</p>
+<ul>
+  <li><b>setX</b>, then <em>one</em> <code>invalidateRect</code> spanning old to new. <code>moveTo</code> invalidates twice.</li>
+  <li>Invalidate only when the <b>integer column</b> changes. At 1× the cursor advances 0.27 px per frame — three frames in four cost nothing.</li>
+  <li>Accumulate the tick's encoder events, move once. The queue drains 8 per frame; per-event moves cost 8 pushes and 8 TE waits.</li>
+  <li>Markers 2 px wide at even x. The push rounds to even anyway — take the width free.</li>
+</ul>
+<div class="note w">
+  <div class="h">no canvas buffer on this screen</div>
+  <p><code>CANVAS_BUFFER_SIZE</code> exists only in <code>EffectSettingsViewBase</code> and <code>SystemViewBase</code>, and setup/reset are static, called in those screens' constructor and destructor. <code>LooperViewBase</code> declares none — so a <code>Circle</code>, <code>Line</code> or <code>Shape</code> here renders <b>nothing, silently</b>. Everything above is a Box, a text area, or your own pixels.</p>
+</div>
+
+<h2>Where the peaks come from</h2>
+<p>This used to be the one place the looper was worse off than the recorder. It no longer is: the frame now carries the looper live, so this board gets the samples the same way the recorder's arrive, and the rule collapses to one line.</p>
+<p><b>The audio comes to you. Decimate it as it lands.</b></p>
+<pre>slots <span style="color:var(--blue)">5..8</span>   four looper planes, continuous, 768 kB/s
+slot  <span style="color:var(--blue)">9</span>      sel:1 | pos:23 | gen:4 | state:4, loopers alternating</pre>
+<p>No peak-table transfer, no new format enum, no 400 ms over the control link. A fresh take, an overdub, a loop loaded from the card — all three arrive the same way, and the interface never has to ask for anything twice.</p>
+
+<h2>Sizing the table</h2>
+<p>Buckets are set by how far you want to zoom, not by loop length: <code>buckets = 288 &times; maxZoom</code>. Min and max per bucket as <code>int8</code>, per channel.</p>
+<table>
+<thead><tr><th class="n">zoom</th><th class="n">buckets</th><th class="n">ms / column</th><th class="n">stereo table</th></tr></thead>
+<tbody>
+<tr><td class="n">1&times;</td><td class="n">288</td><td class="n">69.4</td><td class="n">1 152 B</td></tr>
+<tr><td class="n">8&times;</td><td class="n">2 304</td><td class="n">8.7</td><td class="n">9 216 B</td></tr>
+<tr><td class="n">32&times;</td><td class="n">9 216</td><td class="n">2.2</td><td class="n"><b>36 864 B</b></td></tr>
+</tbody>
+</table>
+<p><b>32&times; for 37 KB</b> is the sweet spot &mdash; a column is 2.2 ms, finer than any trim needs, and past that the numeric readout is the precision anyway. <code>int8</code> is not a compromise: the band gives about 52 px per lane, so &plusmn;26 px of travel against <code>int8</code>'s &plusmn;127, five times finer than the display can resolve at any zoom.</p>
+<div class="note">
+  <div class="h">cap zoom at the table, visibly</div>
+  <p>Beyond 32&times; a column would hold fewer frames than a bucket, so zoom must stop &mdash; and stop by refusing the UP press rather than magnifying a lie. The table's resolution is the honest limit of what the screen knows.</p>
+</div>
+
+<h2>The two buffers, and which memory each wants</h2>
+<p>Two stages, and they want opposite things:</p>
+<table>
+<thead><tr><th>Buffer</th><th>Written by</th><th class="n">Size</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>live half, double-buffered</td><td><b>MDMA</b></td><td class="n">4 096 B</td><td><b>RAM_D2</b> &mdash; non-cacheable, DMA-reachable</td></tr>
+<tr><td>peak tables, 2 loopers</td><td><b>CPU</b></td><td class="n">73 728 B</td><td><b>RAM_D1</b> &mdash; cacheable, and caching helps</td></tr>
+</tbody>
+</table>
+<p>The live destination need only survive until the decimation runs, and that happens once per half &mdash; 128 frames &times; 4 planes &times; 4 B, double-buffered, is <b>4 096 bytes</b>. Not a mirror of the take: a window one half wide.</p>
+<p class="d">I had this backwards a revision ago. When the table was going to arrive over SPI it had to be MDMA-writable and therefore non-cacheable; now the MDMA delivers <em>audio</em> and the CPU builds the table, so the table goes back to D1 where the cache is an advantage. The rule is just: whatever DMA touches goes in D2, whatever only the CPU touches goes in D1.</p>
+
+<div class="note">
+  <div class="h">what the status slot buys, concretely</div>
+  <p>Without <code>pos</code>, a live sample cannot be placed &mdash; the take is a ring at a moving head, so sample N belongs to an unknown offset. Without <code>gen</code>, an UNDO or a CLEAR on the audio side rewrites the take and this board goes on drawing peaks that stopped being true, silently, until the playhead happens to re-cross every bucket.</p>
+  <p>Compare the generation counter every frame and invalidate the table when it moves. That is one compare per frame against a word already in the receive ring.</p>
+</div>
+
+<h2>Sharing with the recorder</h2>
+<p>The two <em>screens</em> are never open at once, and that is worth cashing in. The two <em>blocks</em> are a different matter — <code>BLOCK_RECORDER</code> and <code>BLOCK_LOOPER</code> are placed independently in a chain and can sit either side of the effects, so nothing about the audio path may assume they are exclusive.</p>
+<table>
+<thead><tr><th>Resource</th><th>Shared?</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>SPI frame slots</td><td><b>no — both permanent</b></td><td>slots 1–4 and 5–8 tap different points in the chain and carry different audio. There is no arrangement that could share them</td></tr>
+<tr><td>loop file slots 10–31</td><td>already exclusive</td><td><code>FxLoop</code> runs one session at a time; a second OPEN returns BUSY. Nothing to arrange</td></tr>
+<tr><td>LoopSpool slots</td><td>untouched by either</td><td>no peak transfer exists any more — the audio arrives on the live planes</td></tr>
+<tr><td><b>84 480 B pixel band</b></td><td><b>yes — one buffer</b></td><td>whichever screen is up owns it; 73 KB saved outright</td></tr>
+<tr><td>peak tables</td><td>no</td><td>each builds its own locally, from data it already has</td></tr>
+</tbody>
+</table>
+<p>The pixel band is the real win. Declare it once outside both views — a screen transition destroys the view, not the buffer — and the recorder's 320×114 band is simply the top 72 960 bytes of the looper's 320×132. Sizing the shared allocation to the larger of the two costs nothing and removes the duplicate entirely.</p>
+
+<div class="note">
+  <div class="h">the cursor is also the scroll control</div>
+  <p>Zoomed in, the window shows part of the take and something has to move it. Nothing new is needed: <b>the window follows the cursor</b>. When the cursor comes within a few pixels of a separator, the window slides to keep it in view.</p>
+  <p>That is the payoff for spending the menu encoder on the cursor rather than on zoom. One knob gives position at every magnification, scrolling falls out of it for free, and there is no fifth control to find room for.</p>
+</div>
+
+<h2>Undo already exists</h2>
+<p><code>LoopMem_Snapshot(nLooper, nFrames, bRestore)</code> is written, tested, and has <b>zero callers</b>. Each bank's 11 MiB holds two plane-copies per channel precisely so the second can be history — 5.76 MB of take and the same again of undo.</p>
+<ul>
+  <li>The wire has no verb: <code>PROTO_TRANSPORT_ACT</code> stops at <code>CLEAR 4</code>. Undo and redo are values 5 and 6, purely additive, carried by the existing <code>CtrlLinkIf_Transport</code>.</li>
+  <li>It <em>copies</em>, so restoring destroys what you undid. With exactly two copies the primitive you want is a <b>swap</b> — undo exchanges take and undo, redo exchanges back. One level with redo free, no extra memory, and a pointer exchange instead of a 5.7 MB copy.</li>
+</ul>
+
+<h2>Order</h2>
+<ol style="max-width:74ch;padding-left:18px">
+  <li style="color:var(--ink)">Five bands in Designer, waveform a placeholder Box.</li>
+  <li style="color:var(--ink)">PixelDataWidget with a flat length bar and cursor — what the band degrades to anyway.</li>
+  <li style="color:var(--ink)">Markers and the time line. This is where the frame budget is won.</li>
+  <li style="color:var(--ink)">Bars and grid, locked by default.</li>
+  <li style="color:var(--ink)">File browser on YES.</li>
+  <li style="color:var(--ink)">Undo swap, then peaks.</li>
+</ol>
+
+<div class="foot">
+FXcursion · docs/looper-screen-design-brief.html · 05.09.2026<br>
+Single RGB565 framebuffer in SDRAM, pushed by MDMA — every invalidated rect is one transfer.<br>
+Font metrics read from Font_PixelizerBold_16_4bpp_0.cpp; colours and geometry from the generated containers.<br>
+Frame layout per fx_frame.h: 1 sync + 4 recorder + 4 live looper + 1 status + 22 loop file.
+</div>
+
+</div>

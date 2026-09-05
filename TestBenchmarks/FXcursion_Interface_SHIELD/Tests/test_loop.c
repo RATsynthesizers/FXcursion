@@ -24,6 +24,10 @@
 #include "fx_loop.h"
 #include "fx_crc.h"
 
+/* REC_FRAMES_PER_HALF and REC_LOOP_SLOT_BYTES, for the step-divides-slot test.
+   Host-safe: common_cfg.h pulls in general.h and fx_frame.h and nothing else. */
+#include "common_cfg.h"
+
 static int nChecks = 0;
 static int nFails  = 0;
 
@@ -429,6 +433,51 @@ static void test_stale_reply_ignored(void)
 }
 
 
+/* ========================================= the step must divide the slot ==== */
+/*
+ * THE TEST THAT EXISTS SO NOBODY REDISCOVERS THIS.
+ *
+ * The interface arms the loop destination to a whole number of route steps and
+ * refuses a session whose rounded-up length passes the end of the staging slot.
+ * So the step has to divide the slot, or there is a remainder at the top that a
+ * long take rounds into - and the longest loop the machine can record becomes
+ * the one loop it cannot save.
+ *
+ * It is not a theoretical hazard. 27 slots survived only because the longest
+ * take happened to sit under a multiple; 23 slots put it 3 072 bytes past the
+ * end; 22 divides the slot 512 times exactly. Change FX_FRAME_LOOP_SLOT_QTY and
+ * the arithmetic silently re-rolls those dice.
+ */
+static void test_loop_step_divides_the_slot(void)
+{
+    const U32 nStep = (U32)FX_FRAME_LOOP_SLOT_QTY * (U32)REC_FRAMES_PER_HALF * 4UL;
+    const U32 nSlot = (U32)REC_LOOP_SLOT_BYTES;
+    const U32 nTake = 20UL * 48000UL * 2UL * 3UL;   /* longest stereo take, packed 24-bit */
+    U32       nArm;
+
+    printf("The loop route's step divides the staging slot\n");
+
+    CHECK(nStep != 0UL, "step is zero");
+    CHECK((nSlot % nStep) == 0UL,
+          "step %lu does not divide slot %lu - remainder %lu. A take rounding "
+          "into that remainder cannot be saved.",
+          (unsigned long)nStep, (unsigned long)nSlot,
+          (unsigned long)(nSlot % nStep));
+
+    /* The worst case: the longest take, rounded up. It must still fit. */
+    nArm = ((nTake + nStep - 1UL) / nStep) * nStep;
+
+    CHECK(nArm <= nSlot,
+          "longest take %lu rounds up to %lu, past the %lu slot by %lu",
+          (unsigned long)nTake, (unsigned long)nArm, (unsigned long)nSlot,
+          (unsigned long)(nArm - nSlot));
+
+    /* And the slot must hold a whole take at all, not merely divide neatly. */
+    CHECK(nSlot >= nTake, "slot %lu smaller than one take %lu",
+          (unsigned long)nSlot, (unsigned long)nTake);
+}
+
+
 /* ================================================== size disagreement ==== */
 static void test_overrun_is_a_failure(void)
 {
@@ -473,6 +522,7 @@ int main(void)
     test_crc_catches_corruption();
     test_sequencing();
     test_stale_reply_ignored();
+    test_loop_step_divides_the_slot();
     test_overrun_is_a_failure();
 
     printf("\n%d checks, %d failures\n", nChecks, nFails);

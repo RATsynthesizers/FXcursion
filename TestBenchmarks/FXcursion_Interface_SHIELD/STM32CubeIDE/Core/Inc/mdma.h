@@ -36,13 +36,17 @@ extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_1;
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_2;
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_3;
 
-/* The loop transport's route. See the note over its definition in mdma.c for
-   why it lives in the USER CODE block and is configured from Recorder.c. */
-extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_4;
+/* Routes past what CubeMX emits - the loop transport, the live looper run, and
+   headroom. See the note over their definitions in mdma.c for why they live in
+   the USER CODE block and are configured from Recorder.c. The chain length is
+   whatever the route table asks for; these are a budget, not a limit. */
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_4;
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_5;
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_6;
 extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_7;
+extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_8;
+extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_9;
+extern MDMA_LinkNodeTypeDef node_mdma_channel1_sw_10;
 
 /* USER CODE BEGIN Includes */
 #include "common_cfg.h"

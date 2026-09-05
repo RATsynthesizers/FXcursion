@@ -73,21 +73,37 @@ MDMA_LinkNodeTypeDef node_mdma_channel1_sw_2 __attribute__((section(".dma_buffer
 MDMA_LinkNodeTypeDef node_mdma_channel1_sw_3 __attribute__((section(".dma_buffers"), aligned(32)));
 
 /*
- * A FOURTH NODE, for the loop transport.
+ * NODES BEYOND WHAT CUBEMX EMITS.
  *
  * The de-interleave needs one route per destination. Four recorder planes use
  * the channel itself plus nodes 1..3, which is the whole of what CubeMX
  * generates - so a loop transfer, whose slots are contiguous on the wire and
  * therefore ONE route, had nowhere to go.
  *
+ * There is no architectural ceiling here. MDMA walks a linked list through
+ * CLAR, and Recorder.c builds that chain by hand - it writes each node's
+ * CSAR/CDAR/CBNDTR/CBRUR and terminates with CLAR = 0 - so the list is exactly
+ * as long as the route table says. The count below is a budget, not a limit.
+ *
+ * Ten covers the frame's plausible worst case: four recorder planes, a live
+ * looper run, a loop file run, and headroom for a topology that splits any of
+ * them further. Each node is one 32-byte-aligned descriptor in .dma_buffers,
+ * so the whole table costs a few hundred bytes of RAM_D2.
+ *
  * Declared here rather than in MX_MDMA_Init because this block is inside the
  * USER CODE section and survives regeneration; MX_MDMA_Init does not. Nothing
- * initialises it here either: Recorder.c copies node 3's static configuration
- * into it once at start-up and rewrites the dynamic registers every block, the
- * same as it already does for the other three. That keeps the whole
- * arrangement independent of what CubeMX decides to emit.
+ * initialises them here either: Recorder.c copies node 3's static
+ * configuration into each one at start-up and rewrites the dynamic registers
+ * every block, the same as it already does for the generated three. That keeps
+ * the whole arrangement independent of what CubeMX decides to emit.
  */
-MDMA_LinkNodeTypeDef node_mdma_channel1_sw_4 __attribute__((section(".dma_buffers"), aligned(32)));
+MDMA_LinkNodeTypeDef node_mdma_channel1_sw_4  __attribute__((section(".dma_buffers"), aligned(32)));
+MDMA_LinkNodeTypeDef node_mdma_channel1_sw_5  __attribute__((section(".dma_buffers"), aligned(32)));
+MDMA_LinkNodeTypeDef node_mdma_channel1_sw_6  __attribute__((section(".dma_buffers"), aligned(32)));
+MDMA_LinkNodeTypeDef node_mdma_channel1_sw_7  __attribute__((section(".dma_buffers"), aligned(32)));
+MDMA_LinkNodeTypeDef node_mdma_channel1_sw_8  __attribute__((section(".dma_buffers"), aligned(32)));
+MDMA_LinkNodeTypeDef node_mdma_channel1_sw_9  __attribute__((section(".dma_buffers"), aligned(32)));
+MDMA_LinkNodeTypeDef node_mdma_channel1_sw_10 __attribute__((section(".dma_buffers"), aligned(32)));
 /* USER CODE END MDMA_Nodes */
 
 /**

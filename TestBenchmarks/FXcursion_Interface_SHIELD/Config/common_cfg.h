@@ -83,6 +83,51 @@
  * slot carrying a 24-bit value. See fx_interleave.h for the strides.
  */
 #define REC_SLOTS_PER_FRAME     (FX_FRAME_REC_SLOT_QTY)
+
+/*
+ * MDMA de-interleave routes.
+ *
+ * One route per destination buffer. The chain is a linked list assembled by
+ * hand in MDMA_Trigger_Deinterleave, so its length is whatever the routing
+ * asks for - MDMA imposes no ceiling. These are a budget: enough for four
+ * recorder planes, a live looper run, a loop file run, and headroom for a
+ * topology that splits any of them further.
+ *
+ * A route is the channel itself or one node, so there is always exactly one
+ * more route than there are nodes.
+ */
+#define REC_MDMA_NODE_QTY       (10U)
+#define REC_MDMA_ROUTE_QTY      (REC_MDMA_NODE_QTY + 1U)
+
+/**
+ * One LoopSpool staging slot, in bytes. MUST equal SDRAM_LOOP_A and
+ * SDRAM_LOOP_B in the linker script, which are 5632K each.
+ *
+ * It is repeated here because the real value is a linker symbol difference -
+ * LoopSpool_SlotBytes() is _eloopslot_a - _sloopslot_a - and a static assert
+ * cannot see that. LoopSpool_Init checks the two agree at run time; this
+ * constant is what lets the build-time arithmetic below happen at all, and what
+ * lets the host tests reason about a number they have no linker for.
+ */
+#define REC_LOOP_SLOT_BYTES     (5632UL * 1024UL)
+
+/**
+ * Bytes the loop file route moves per half - the granularity the destination
+ * must be armed to.
+ *
+ * THE STEP MUST DIVIDE THE SLOT EXACTLY. LoopSession rounds a session's length
+ * UP to a whole number of these and refuses the session if the result passes
+ * the end of the buffer, so a step that does not divide the slot leaves a
+ * remainder at the top that a long take can land in - and the longest take the
+ * machine can record becomes the one it cannot save.
+ *
+ * At 22 slots: step 11 264 = 11 * 2^10, slot 5 767 168 = 11 * 2^19, so the slot
+ * is 512 steps to the byte and the worst case lands exactly on the end. At 23
+ * it overshot by 3 072 B; at 27 it fitted only because the longest take happened
+ * to sit under a multiple. The assert in LoopSession.c is what keeps this from
+ * being rediscovered.
+ */
+#define REC_LOOP_STEP_BYTES     ((uint32_t)FX_FRAME_LOOP_SLOT_QTY * REC_FRAMES_PER_HALF * 4UL)
 #define REC_BYTES_PER_SLOT      (FX_FRAME_BYTES_PER_SLOT)
 
 /**
