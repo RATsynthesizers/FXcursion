@@ -1,1 +1,0 @@
-cmd.exe /C copy/Y "${BuildArtefactFileBaseName}.elf" "..\QSPI_flashloader_CSP.stldr"
