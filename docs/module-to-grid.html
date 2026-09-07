@@ -1,0 +1,2431 @@
+<title>Module to Grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --bg:          #F6F7F9;
+    --surface:     #FFFFFF;
+    --surface-2:   #EDF0F3;
+    --rule:        #D3D9E0;
+    --rule-soft:   #E4E8ED;
+    --ink:         #14181D;
+    --ink-2:       #3E4650;
+    --ink-3:       #6B747E;
+
+    /* The legend used everywhere: amber = the previous concepts, teal = this
+       engine. Nothing else on the page is coloured. */
+    --old:         #9C5218;
+    --old-soft:    #FBF1E7;
+    --old-rule:    #E3C4A4;
+    --new:         #0B6F79;
+    --new-soft:    #E6F2F3;
+    --new-rule:    #A9CFD3;
+
+    --warn:        #8A2A2A;
+    --warn-soft:   #FBEDED;
+
+    --measure:     68ch;
+    --shadow:      0 1px 2px rgba(20,24,29,.05), 0 8px 24px -12px rgba(20,24,29,.12);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #10141A;
+      --surface:   #171C23;
+      --surface-2: #1E242C;
+      --rule:      #303845;
+      --rule-soft: #232A33;
+      --ink:       #E8ECF1;
+      --ink-2:     #B4BDC7;
+      --ink-3:     #7F8A96;
+      --old:       #E19A5C;
+      --old-soft:  #2A1F14;
+      --old-rule:  #5B4029;
+      --new:       #4FC4CE;
+      --new-soft:  #10262A;
+      --new-rule:  #2B5A60;
+      --warn:      #E88A8A;
+      --warn-soft: #2A1717;
+      --shadow:    0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg:        #10141A;
+    --surface:   #171C23;
+    --surface-2: #1E242C;
+    --rule:      #303845;
+    --rule-soft: #232A33;
+    --ink:       #E8ECF1;
+    --ink-2:     #B4BDC7;
+    --ink-3:     #7F8A96;
+    --old:       #E19A5C;
+    --old-soft:  #2A1F14;
+    --old-rule:  #5B4029;
+    --new:       #4FC4CE;
+    --new-soft:  #10262A;
+    --new-rule:  #2B5A60;
+    --warn:      #E88A8A;
+    --warn-soft: #2A1717;
+    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 16.5px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0 20px 96px;
+  }
+
+  .wrap { max-width: 1060px; margin: 0 auto; }
+  .col  { max-width: var(--measure); }
+
+  header.mast {
+    padding: 68px 0 34px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .kicker {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px; font-weight: 500;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 18px;
+  }
+  h1 {
+    font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.6rem, 7vw, 4.4rem);
+    line-height: .96; letter-spacing: -.02em;
+    text-wrap: balance; margin: 0 0 22px;
+  }
+  h1 .arrow { color: var(--ink-3); font-weight: 600; }
+  .standfirst { font-size: 1.14rem; color: var(--ink-2); max-width: 64ch; margin: 0; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 10px 20px;
+    margin: 30px 0 0; padding: 0; list-style: none;
+    font-family: "IBM Plex Mono", monospace; font-size: 12.5px;
+  }
+  .legend li { display: flex; align-items: center; gap: 9px; color: var(--ink-2); }
+  .sw { width: 26px; height: 10px; border-radius: 2px; flex: none; }
+  .sw.o { background: var(--old); }
+  .sw.n { background: var(--new); }
+
+  /* ---- contents ---- */
+  nav.toc {
+    margin: 34px 0 0; padding: 26px 0 6px;
+    border-top: 1px solid var(--rule-soft);
+  }
+  nav.toc h2 {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px; font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-3);
+    margin: 0 0 16px;
+  }
+  .tocgrid { display: grid; gap: 22px 30px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+  .tocgrid ol { list-style: none; margin: 0; padding: 0; font-size: 14.5px; }
+  .tocgrid li { margin-bottom: 5px; display: flex; gap: 9px; }
+  .tocgrid .n {
+    font-family: "IBM Plex Mono", monospace; font-size: 12px;
+    color: var(--ink-3); flex: none; width: 1.4em;
+    font-variant-numeric: tabular-nums;
+  }
+  .tocgrid strong {
+    display: block; font-family: "IBM Plex Mono", monospace;
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--new); font-weight: 600; margin-bottom: 9px;
+  }
+  nav.toc a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  nav.toc a:hover { border-bottom-color: var(--new); color: var(--new); }
+
+  /* ---- part dividers ---- */
+  .part {
+    margin: 76px 0 0; padding: 30px 0 0;
+    border-top: 2px solid var(--ink);
+  }
+  .part .pn {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px; font-weight: 600; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--ink-3); margin: 0 0 6px;
+  }
+  .part h2 {
+    font-family: "IBM Plex Sans Condensed", sans-serif;
+    font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 700;
+    line-height: 1.05; letter-spacing: -.015em; margin: 0 0 10px;
+  }
+  .part p { color: var(--ink-2); max-width: 62ch; margin: 0; }
+
+  section { padding: 50px 0 0; scroll-margin-top: 20px; }
+  .snum {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px; font-weight: 500; letter-spacing: .12em;
+    color: var(--new); text-transform: uppercase; margin: 0 0 10px;
+  }
+  h3.sh {
+    font-family: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+    font-weight: 700; font-size: clamp(1.5rem, 3.2vw, 2rem);
+    line-height: 1.1; letter-spacing: -.012em;
+    text-wrap: balance; margin: 0 0 18px;
+  }
+  h4 { font-size: 1.02rem; font-weight: 600; margin: 32px 0 10px; }
+  h5.lbl {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px; font-weight: 600; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px;
+  }
+  p { margin: 0 0 16px; }
+  a { color: var(--new); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--new); outline-offset: 3px; border-radius: 2px; }
+
+  code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .875em; background: var(--surface-2);
+    padding: .1em .34em; border-radius: 3px; overflow-wrap: break-word;
+  }
+  .mono { font-family: "IBM Plex Mono", monospace; }
+
+  pre {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px; line-height: 1.55;
+    background: var(--surface); border: 1px solid var(--rule);
+    border-left: 3px solid var(--new); border-radius: 0 5px 5px 0;
+    padding: 16px 18px; overflow-x: auto; margin: 0 0 20px;
+  }
+  pre.old { border-left-color: var(--old); }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  pre .c { color: var(--ink-3); }
+  pre .hl { color: var(--new); font-weight: 600; }
+  pre.old .hl { color: var(--old); }
+
+  .answer {
+    background: var(--new-soft); border: 1px solid var(--new-rule);
+    border-radius: 6px; padding: 22px 24px; margin: 0 0 22px;
+  }
+  .answer h5.lbl { color: var(--new); }
+  .answer p:last-child { margin-bottom: 0; }
+
+  .note {
+    border-left: 3px solid var(--rule); padding: 2px 0 2px 18px;
+    color: var(--ink-2); margin: 0 0 20px;
+  }
+  .note.warn { border-left-color: var(--warn); }
+  .note.warn strong { color: var(--warn); }
+  .note p:last-child { margin-bottom: 0; }
+
+  figure {
+    margin: 26px 0 30px; background: var(--surface);
+    border: 1px solid var(--rule); border-radius: 6px;
+    padding: 22px 22px 0; box-shadow: var(--shadow);
+  }
+  .figscroll { overflow-x: auto; }
+  figure svg { display: block; width: 100%; height: auto; max-width: 100%; }
+  figcaption {
+    font-size: 13.5px; color: var(--ink-2);
+    border-top: 1px solid var(--rule-soft);
+    margin-top: 18px; padding: 14px 0 18px;
+  }
+  figcaption b { color: var(--ink); font-weight: 600; }
+
+  .pair { display: grid; gap: 18px; grid-template-columns: 1fr 1fr; margin: 24px 0 26px; }
+  @media (max-width: 760px) { .pair { grid-template-columns: 1fr; } }
+  .card {
+    border: 1px solid var(--rule); border-radius: 6px;
+    padding: 18px 20px; background: var(--surface);
+  }
+  .card.o { border-top: 3px solid var(--old); }
+  .card.n { border-top: 3px solid var(--new); }
+  .card h5 {
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px;
+    font-weight: 600; letter-spacing: .1em; text-transform: uppercase; margin: 0 0 12px;
+  }
+  .card.o h5 { color: var(--old); }
+  .card.n h5 { color: var(--new); }
+  .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+  .card ul { margin: 0 0 12px; padding-left: 1.1em; }
+  .card li { margin-bottom: 5px; }
+
+  .tscroll { overflow-x: auto; margin: 24px 0 28px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 620px; }
+  caption {
+    text-align: left; font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px; font-weight: 600; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-3); padding-bottom: 12px;
+  }
+  th {
+    text-align: left; font-weight: 600; font-size: 12px;
+    letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3);
+    border-bottom: 1.5px solid var(--rule);
+    padding: 0 14px 9px 0; vertical-align: bottom;
+  }
+  td {
+    border-bottom: 1px solid var(--rule-soft);
+    padding: 10px 14px 10px 0; vertical-align: top; color: var(--ink-2);
+  }
+  td:first-child, th:first-child { padding-left: 0; }
+  td.was { color: var(--old); font-family: "IBM Plex Mono", monospace; font-size: 12.5px; }
+  td.now { color: var(--new); font-family: "IBM Plex Mono", monospace; font-size: 12.5px; }
+  td.verdict { white-space: nowrap; font-size: 12.5px; font-weight: 600; }
+  td.k { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--ink); }
+  tbody tr:last-child td { border-bottom: none; }
+  .num { font-variant-numeric: tabular-nums; text-align: right; }
+  tr.grp td {
+    background: var(--surface-2); font-weight: 600; color: var(--ink);
+    font-family: "IBM Plex Mono", monospace; font-size: 12px;
+    letter-spacing: .06em; text-transform: uppercase;
+    padding-top: 12px; padding-bottom: 8px; padding-left: 8px;
+  }
+  tr.grp td:first-child { padding-left: 8px; }
+
+  .tag {
+    display: inline-block; font-family: "IBM Plex Mono", monospace;
+    font-size: 11px; font-weight: 600; letter-spacing: .04em;
+    padding: 2px 7px; border-radius: 3px; white-space: nowrap;
+  }
+  .tag.keep  { background: var(--new-soft);  color: var(--new); }
+  .tag.moved { background: var(--surface-2); color: var(--ink-2); }
+  .tag.gone  { background: var(--old-soft);  color: var(--old); }
+  .tag.s     { background: var(--new-soft);  color: var(--new); }
+  .tag.m     { background: var(--surface-2); color: var(--ink-2); }
+  .tag.todo  { background: var(--warn-soft); color: var(--warn); }
+
+  .stats {
+    display: grid; gap: 1px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    background: var(--rule); border: 1px solid var(--rule);
+    border-radius: 6px; overflow: hidden; margin: 26px 0 28px;
+  }
+  .stat { background: var(--surface); padding: 16px 18px; }
+  .stat .v {
+    font-family: "IBM Plex Sans Condensed", sans-serif;
+    font-size: 1.85rem; font-weight: 700; line-height: 1;
+    font-variant-numeric: tabular-nums; display: block; margin-bottom: 6px;
+    color: var(--new);
+  }
+  .stat .k2 {
+    font-family: "IBM Plex Mono", monospace; font-size: 11px;
+    letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3);
+  }
+
+  ul.plain { padding-left: 1.15em; margin: 0 0 18px; }
+  ul.plain li { margin-bottom: 8px; }
+  ol.plain { padding-left: 1.3em; margin: 0 0 18px; }
+  ol.plain li { margin-bottom: 8px; }
+
+  hr.big { border: none; border-top: 1px solid var(--rule); margin: 54px 0 0; }
+
+  footer {
+    margin-top: 56px; padding-top: 26px;
+    border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 14px;
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="kicker">FXcursion · audio controller · design documentation</p>
+  <h1>Module <span class="arrow">→</span> Grid</h1>
+  <p class="standfirst">How the FXcursion audio engine works, and where every idea from the C++ module
+  system and the <code>AudioController_C</code> draft ended up in it. Written to be read next to the code in
+  <code>AudioController/AudioController_Claude</code>.</p>
+  <ul class="legend">
+    <li><span class="sw o"></span> the previous concepts</li>
+    <li><span class="sw n"></span> this engine</li>
+  </ul>
+
+  <nav class="toc">
+    <h2>Contents</h2>
+    <div class="tocgrid">
+      <ol>
+        <strong>I · The idea</strong>
+        <li><span class="n">01</span><a href="#s1">Module dissolved</a></li>
+        <li><span class="n">02</span><a href="#s2">Graph as data</a></li>
+        <li><span class="n">03</span><a href="#s3">Why there is no allocator</a></li>
+      </ol>
+      <ol>
+        <strong>II · The machine</strong>
+        <li><span class="n">04</span><a href="#s4">The grid</a></li>
+        <li><span class="n">05</span><a href="#s5">The column loop</a></li>
+        <li><span class="n">06</span><a href="#s6">One block</a></li>
+        <li><span class="n">07</span><a href="#s7">Two contexts</a></li>
+        <li><span class="n">08</span><a href="#s8">Memory</a></li>
+      </ol>
+      <ol>
+        <strong>III · The parts</strong>
+        <li><span class="n">09</span><a href="#s9">Mono and stereo</a></li>
+        <li><span class="n">10</span><a href="#s10">Every parameter</a></li>
+        <li><span class="n">11</span><a href="#s11">FX block, bypass</a></li>
+        <li><span class="n">12</span><a href="#s12">Mixer</a></li>
+        <li><span class="n">13</span><a href="#s13">Looper</a></li>
+        <li><span class="n">14</span><a href="#s14">Recorder</a></li>
+        <li><span class="n">15</span><a href="#s15">Parameters, tempo</a></li>
+        <li><span class="n">16</span><a href="#s16">Control link</a></li>
+      </ol>
+      <ol>
+        <strong>IV · Correspondence</strong>
+        <li><span class="n">17</span><a href="#s17">C++ file by file</a></li>
+        <li><span class="n">18</span><a href="#s18">The C draft</a></li>
+        <li><span class="n">19</span><a href="#s19">What came from you</a></li>
+      </ol>
+      <ol>
+        <strong>V · Practical</strong>
+        <li><span class="n">20</span><a href="#s20">Adding an effect</a></li>
+        <li><span class="n">21</span><a href="#s21">Before hardware</a></li>
+        <li><span class="n">22</span><a href="#s22">Open decisions</a></li>
+        <li><span class="n">23</span><a href="#s23">File map</a></li>
+      </ol>
+    </div>
+  </nav>
+</header>
+
+<div class="stats">
+  <div class="stat"><span class="v">7 814</span><span class="k2">engine lines</span></div>
+  <div class="stat"><span class="v">41</span><span class="k2">source files</span></div>
+  <div class="stat"><span class="v">89 268</span><span class="k2">checks passing</span></div>
+  <div class="stat"><span class="v">0</span><span class="k2">warnings</span></div>
+  <div class="stat"><span class="v">0</span><span class="k2">allocations</span></div>
+  <div class="stat"><span class="v">0</span><span class="k2">locks</span></div>
+</div>
+
+<p class="col">The DSP layer builds and runs on a PC. <code>Platform/audio_io.c</code> is the only file that
+talks to the HAL, and the only one that has never been compiled.</p>
+
+<pre><code>cmake -S Test -B Test/build -G Ninja
+cmake --build Test/build
+./Test/build/fxc_tests</code></pre>
+
+
+<!-- =========================================================================== -->
+<div class="part">
+  <p class="pn">Part I</p>
+  <h2>The idea</h2>
+  <p>Three things explain most of the design. Everything in Parts II and III follows from them.</p>
+</div>
+
+<section id="s1">
+  <p class="snum">01 — the core move</p>
+  <h3 class="sh">Your <code>Module</code> held four things. Each had a better home.</h3>
+
+  <p class="col">This is the diagram to understand before any of the others.</p>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 520" role="img" aria-label="The Module class contained identity, position, state and parameters; each of the four is relocated to a different structure in the new design.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <text x="14" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--old)" letter-spacing="1.4">ONE C++ OBJECT, 60 OF THEM ON THE HEAP</text>
+
+        <rect x="14" y="42" width="300" height="330" rx="6" fill="var(--old-soft)" stroke="var(--old)" stroke-width="1.6"/>
+        <text x="34" y="72" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="600" fill="var(--old)">class Module</text>
+
+        <rect x="34" y="90" width="260" height="60" rx="4" fill="var(--surface)" stroke="var(--old-rule)"/>
+        <text x="48" y="112" font-size="13" font-weight="600" fill="currentColor">identity</text>
+        <text x="48" y="132" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">char* name; vptr</text>
+
+        <rect x="34" y="158" width="260" height="60" rx="4" fill="var(--surface)" stroke="var(--old-rule)"/>
+        <text x="48" y="180" font-size="13" font-weight="600" fill="currentColor">position</text>
+        <text x="48" y="200" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">prevModule, nextModule</text>
+
+        <rect x="34" y="226" width="260" height="60" rx="4" fill="var(--surface)" stroke="var(--old-rule)"/>
+        <text x="48" y="248" font-size="13" font-weight="600" fill="currentColor">state + buffer</text>
+        <text x="48" y="268" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">output[2], private members</text>
+
+        <rect x="34" y="294" width="260" height="60" rx="4" fill="var(--surface)" stroke="var(--old-rule)"/>
+        <text x="48" y="316" font-size="13" font-weight="600" fill="currentColor">parameters</text>
+        <text x="48" y="336" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">Parameter* p</text>
+
+        <g opacity=".55">
+          <line x1="320" y1="120" x2="470" y2="86"  stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
+          <line x1="320" y1="188" x2="470" y2="188" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
+          <line x1="320" y1="256" x2="470" y2="292" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
+          <line x1="320" y1="324" x2="470" y2="396" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
+        </g>
+
+        <text x="478" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.4">FOUR STRUCTURES, NOTHING ALLOCATED</text>
+
+        <rect x="478" y="42" width="508" height="82" rx="5" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.4"/>
+        <text x="496" y="66" font-size="13" font-weight="600" fill="currentColor">identity → a byte in a table</text>
+        <text x="496" y="87" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">GRID.aFxSlot[chain][slot] = FX_DELAY_S</text>
+        <text x="496" y="107" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">behaviour looked up in g_aFxEntry[id], in flash</text>
+
+        <rect x="478" y="144" width="508" height="82" rx="5" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.4"/>
+        <text x="496" y="168" font-size="13" font-weight="600" fill="currentColor">position → an array index</text>
+        <text x="496" y="189" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">the column number it sits in</text>
+        <text x="496" y="209" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">order is where it is in the array - no links to maintain</text>
+
+        <rect x="478" y="246" width="508" height="82" rx="5" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.4"/>
+        <text x="496" y="270" font-size="13" font-weight="600" fill="currentColor">state → a static array indexed by plane</text>
+        <text x="496" y="291" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">static DELAY_STATE aState[4];  in fx_delay.c</text>
+        <text x="496" y="311" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">the effect owns its memory, privately, at a fixed address</text>
+
+        <rect x="478" y="348" width="508" height="82" rx="5" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.4"/>
+        <text x="496" y="372" font-size="13" font-weight="600" fill="currentColor">parameters → a computable address</text>
+        <text x="496" y="393" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">aFxParam[chain][eFxType][idx]</text>
+        <text x="496" y="413" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">no cursor, no arena bookkeeping, no allParamNum</text>
+
+        <line x1="14" y1="462" x2="986" y2="462" stroke="currentColor" stroke-width="1" opacity=".22"/>
+        <text x="14" y="492" font-size="13.5" fill="currentColor">An "instance" is now the pair
+          <tspan font-family="IBM Plex Mono, monospace" font-weight="600" fill="var(--new)">(chain, plane)</tspan>
+          applied to a row of
+          <tspan font-family="IBM Plex Mono, monospace" font-weight="600" fill="var(--new)">g_aFxEntry[]</tspan>.
+          Nothing to construct, nothing to allocate, no pointer that can dangle.</text>
+      </svg>
+    </div>
+    <figcaption><b>Why the object could be removed.</b> Not because objects are bad — because each of the
+    four things it held has a home strictly better than being a member: identity as a byte is serialisable and
+    sendable; position as an index needs no maintenance; state as a static array has a compile-time address; a
+    parameter whose address is computable needs no allocator.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>Your own code was already reaching for this. <code>paramAlloc[]</code> was you pulling parameters
+    <em>out</em> of the objects into one contiguous block, and it was the best structural idea in the C++
+    design. It survives here — with the <code>Module::allParamNum</code> bump cursor deleted, because with
+    one-of-each-type-per-chain the offset into that block is computable.</p>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s2">
+  <p class="snum">02 — the graph</p>
+  <h3 class="sh">Same information, different container</h3>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 430" role="img" aria-label="A chain stored as heap objects joined by pointers, compared with the same chain stored as four bytes in a table plus static per-effect state.">
+        <defs>
+          <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <line x1="500" y1="10" x2="500" y2="418" stroke="currentColor" stroke-width="1" opacity=".18"/>
+
+        <text x="14" y="24" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--old)" letter-spacing="1.3">THEN — 60 heap objects, 120 pointers</text>
+
+        <g font-size="11.5" font-family="IBM Plex Mono, monospace">
+          <rect x="20" y="52" width="96" height="52" rx="4" fill="var(--old-soft)" stroke="var(--old)" stroke-width="1.3"/>
+          <text x="68" y="74" text-anchor="middle" font-weight="600" fill="currentColor">Amp</text>
+          <text x="68" y="92" text-anchor="middle" font-size="10" fill="var(--ink-3)">input</text>
+          <rect x="148" y="52" width="96" height="52" rx="4" fill="var(--old-soft)" stroke="var(--old)" stroke-width="1.3"/>
+          <text x="196" y="74" text-anchor="middle" font-weight="600" fill="currentColor">Overdrive</text>
+          <text x="196" y="92" text-anchor="middle" font-size="10" fill="var(--ink-3)">new'd</text>
+          <rect x="276" y="52" width="96" height="52" rx="4" fill="var(--old-soft)" stroke="var(--old)" stroke-width="1.3"/>
+          <text x="324" y="74" text-anchor="middle" font-weight="600" fill="currentColor">Delay</text>
+          <text x="324" y="92" text-anchor="middle" font-size="10" fill="var(--ink-3)">new'd</text>
+          <rect x="404" y="52" width="72" height="52" rx="4" fill="var(--old-soft)" stroke="var(--old)" stroke-width="1.3"/>
+          <text x="440" y="74" text-anchor="middle" font-weight="600" fill="currentColor">Amp</text>
+          <text x="440" y="92" text-anchor="middle" font-size="10" fill="var(--ink-3)">output</text>
+        </g>
+
+        <g stroke="var(--old)" stroke-width="1.4" fill="none" color="var(--old)">
+          <line x1="116" y1="70" x2="146" y2="70" marker-end="url(#ar2)"/>
+          <line x1="244" y1="70" x2="274" y2="70" marker-end="url(#ar2)"/>
+          <line x1="372" y1="70" x2="402" y2="70" marker-end="url(#ar2)"/>
+          <line x1="146" y1="88" x2="118" y2="88" marker-end="url(#ar2)"/>
+          <line x1="274" y1="88" x2="246" y2="88" marker-end="url(#ar2)"/>
+          <line x1="402" y1="88" x2="374" y2="88" marker-end="url(#ar2)"/>
+        </g>
+        <text x="20" y="126" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">nextModule →   ← prevModule</text>
+
+        <text x="20" y="164" font-size="12.5" fill="currentColor" font-weight="600">Each object carries its own output[2].</text>
+        <text x="20" y="184" font-size="12" fill="var(--ink-2)">A module reads prevModule-&gt;output — except Amp,</text>
+        <text x="20" y="202" font-size="12" fill="var(--ink-2)">which read its own. Two conventions, no contract.</text>
+
+        <text x="20" y="240" font-size="12.5" fill="currentColor" font-weight="600">To reorder, rewrite six pointers.</text>
+        <text x="20" y="260" font-size="12" fill="var(--ink-2)">Every FX_MOVE_UP branch did this by hand, live,</text>
+        <text x="20" y="278" font-size="12" fill="var(--ink-2)">inside the same loop that was walking the list.</text>
+
+        <rect x="20" y="300" width="456" height="100" rx="5" fill="none" stroke="var(--warn)" stroke-width="1.3" stroke-dasharray="4 3"/>
+        <text x="36" y="324" font-size="12" font-weight="600" fill="var(--warn)">Failure modes this shape allows</text>
+        <text x="36" y="346" font-size="11.5" fill="var(--ink-2)">· add an effect already in the chain → self-loop → hang</text>
+        <text x="36" y="365" font-size="11.5" fill="var(--ink-2)">· unplugPrev leaves the other half of the link dangling</text>
+        <text x="36" y="384" font-size="11.5" fill="var(--ink-2)">· prevModule-&gt;prevModule when prevModule is NULL</text>
+
+        <text x="516" y="24" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.3">NOW — four bytes in a table</text>
+
+        <g font-family="IBM Plex Mono, monospace" font-size="11.5">
+          <rect x="520" y="52" width="106" height="52" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+          <text x="573" y="72" text-anchor="middle" font-size="10" fill="var(--ink-3)">slot 0</text>
+          <text x="573" y="92" text-anchor="middle" font-weight="600" fill="currentColor">OVERDRIVE_M</text>
+          <rect x="636" y="52" width="106" height="52" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+          <text x="689" y="72" text-anchor="middle" font-size="10" fill="var(--ink-3)">slot 1</text>
+          <text x="689" y="92" text-anchor="middle" font-weight="600" fill="currentColor">DELAY_M</text>
+          <rect x="752" y="52" width="106" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.3"/>
+          <text x="805" y="72" text-anchor="middle" font-size="10" fill="var(--ink-3)">slot 2</text>
+          <text x="805" y="92" text-anchor="middle" fill="var(--ink-3)">FX_TYPE_NONE</text>
+          <rect x="868" y="52" width="106" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.3"/>
+          <text x="921" y="72" text-anchor="middle" font-size="10" fill="var(--ink-3)">slot 3</text>
+          <text x="921" y="92" text-anchor="middle" fill="var(--ink-3)">FX_TYPE_NONE</text>
+        </g>
+
+        <text x="520" y="128" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">order = array order. nothing to link.</text>
+
+        <text x="520" y="164" font-size="12.5" fill="currentColor" font-weight="600">Buffers belong to the chain, not to effects.</text>
+        <text x="520" y="184" font-size="12" fill="var(--ink-2)">aPlane[4][64] in audio_sys.c. Every effect</text>
+        <text x="520" y="202" font-size="12" fill="var(--ink-2)">transforms it in place. One stated contract.</text>
+
+        <text x="520" y="240" font-size="12.5" fill="currentColor" font-weight="600">To reorder, swap two bytes.</text>
+        <text x="520" y="260" font-size="12" fill="var(--ink-2)">And the interface never sends a reorder command</text>
+        <text x="520" y="278" font-size="12" fill="var(--ink-2)">at all — it sends the new array. See §16.</text>
+
+        <rect x="520" y="300" width="456" height="100" rx="5" fill="none" stroke="var(--new)" stroke-width="1.3"/>
+        <text x="536" y="324" font-size="12" font-weight="600" fill="var(--new)">Why those failures cannot be expressed</text>
+        <text x="536" y="346" font-size="11.5" fill="var(--ink-2)">· duplicate type in a chain → refused by Validate()</text>
+        <text x="536" y="365" font-size="11.5" fill="var(--ink-2)">· no links exist, so no link can be left half-written</text>
+        <text x="536" y="384" font-size="11.5" fill="var(--ink-2)">· no chain of dereferences to walk off the end of</text>
+      </svg>
+    </div>
+    <figcaption><b>The chain, both ways.</b> The right side is not a simplification — it stores exactly the
+    same fact ("overdrive, then delay"). What changed is that the fact is now <em>data</em> rather than
+    <em>topology</em>, so it can be validated in one pass, sent over a wire, saved to a preset, and swapped
+    atomically.</figcaption>
+  </figure>
+</section>
+
+<hr class="big">
+
+<section id="s3">
+  <p class="snum">03 — the consequence</p>
+  <h3 class="sh">Two of your constraints removed the allocator</h3>
+
+  <p class="col">Both of these are <em>yours</em>, from the GUI model. Together they mean memory can be
+  reserved per <em>(plane, effect type)</em> instead of per instance — and once that is true, there is nothing
+  left for an allocator to do.</p>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 380" role="img" aria-label="Chain widths always sum to four in every topology, and only one instance of each effect type exists per chain, so effect state tiles the same four plane slots exactly.">
+        <text x="14" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.3">INVARIANT 1 — chain widths always sum to 4</text>
+
+        <g font-size="11.5" font-family="IBM Plex Mono, monospace">
+          <text x="14" y="52" fill="var(--ink-3)">4 mono</text>
+          <rect x="150" y="38" width="196" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="248" y="54" text-anchor="middle" fill="currentColor">1</text>
+          <rect x="352" y="38" width="196" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="450" y="54" text-anchor="middle" fill="currentColor">1</text>
+          <rect x="554" y="38" width="196" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="652" y="54" text-anchor="middle" fill="currentColor">1</text>
+          <rect x="756" y="38" width="196" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="854" y="54" text-anchor="middle" fill="currentColor">1</text>
+
+          <text x="14" y="92" fill="var(--ink-3)">stereo + 2 mono</text>
+          <rect x="150" y="78" width="398" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="349" y="94" text-anchor="middle" fill="currentColor">2</text>
+          <rect x="554" y="78" width="196" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="652" y="94" text-anchor="middle" fill="currentColor">1</text>
+          <rect x="756" y="78" width="196" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="854" y="94" text-anchor="middle" fill="currentColor">1</text>
+
+          <text x="14" y="132" fill="var(--ink-3)">2 mono + stereo</text>
+          <rect x="150" y="118" width="196" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="248" y="134" text-anchor="middle" fill="currentColor">1</text>
+          <rect x="352" y="118" width="196" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="450" y="134" text-anchor="middle" fill="currentColor">1</text>
+          <rect x="554" y="118" width="398" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="753" y="134" text-anchor="middle" fill="currentColor">2</text>
+
+          <text x="14" y="172" fill="var(--ink-3)">2 stereo</text>
+          <rect x="150" y="158" width="398" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="349" y="174" text-anchor="middle" fill="currentColor">2</text>
+          <rect x="554" y="158" width="398" height="22" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="753" y="174" text-anchor="middle" fill="currentColor">2</text>
+        </g>
+
+        <text x="150" y="204" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-3)">plane 0</text>
+        <text x="352" y="204" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-3)">plane 1</text>
+        <text x="554" y="204" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-3)">plane 2</text>
+        <text x="756" y="204" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-3)">plane 3</text>
+
+        <line x1="14" y1="228" x2="986" y2="228" stroke="currentColor" stroke-width="1" opacity=".2"/>
+
+        <text x="14" y="256" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.3">INVARIANT 2 — one instance of each effect TYPE per chain</text>
+
+        <text x="14" y="284" font-size="12.5" fill="var(--ink-2)">So a delay line is reserved once per PLANE, not once per slot. Whatever the topology, the reservations tile</text>
+        <text x="14" y="302" font-size="12.5" fill="var(--ink-2)">the same four plane slots exactly — a 2-plane stereo instance uses precisely what two mono instances would.</text>
+
+        <rect x="14" y="322" width="972" height="44" rx="5" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.5"/>
+        <text x="500" y="341" text-anchor="middle" font-size="13" font-weight="600" fill="var(--new)">Worst case = 4 planes × (sum of every effect type&apos;s state) = 3.2 MiB. Reserve that, and</text>
+        <text x="500" y="359" text-anchor="middle" font-size="13" font-weight="600" fill="var(--new)">every arrangement the GUI can express is playable. No allocator, no rejection for memory.</text>
+      </svg>
+    </div>
+    <figcaption><b>The proof that static reservation is affordable.</b> This is why the bump allocator and the
+    "configuration refused for lack of memory" path that earlier drafts had could both be deleted. Your "I do
+    not consider restraining the user" requirement forced worst-case budgeting, and worst-case budgeting is
+    what removed the allocator.</figcaption>
+  </figure>
+
+  <div class="col">
+    <div class="note">
+      <p><b>The one thing that <em>is</em> refused</b> is structural, not resource: a duplicate block type in
+      a chain, a mixer that does not span its column, an effect whose width does not match the chain. Those
+      are configurations the GUI cannot express if it obeys the shared descriptor table — so tripping one is
+      an interface bug, and the running graph is left untouched.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================================== -->
+<div class="part">
+  <p class="pn">Part II</p>
+  <h2>The machine</h2>
+  <p>What actually runs: the grid, the loop that walks it, the journey of one block of audio, the two
+  execution contexts, and where every byte lives.</p>
+</div>
+
+<section id="s4">
+  <p class="snum">04 — the grid</p>
+  <h3 class="sh">Your screen, and the indices underneath it</h3>
+
+  <p class="col">The machine is <code>CHAIN_MAX_QTY</code> rows by <code>GRID_SLOT_QTY</code> columns. A cell
+  holds one block: FX, Recorder, Looper, or nothing. One column may instead hold the Mixer, which spans every
+  chain at once. At most one block of each type per chain — so with four slots and four block types, a chain
+  can hold exactly one of each and <b>the grid is exactly saturated</b>.</p>
+
+  <p class="col">Your GUI draws IN on the <em>right</em>. <code>aSlot[chain][0]</code> is the <em>IN</em> side.
+  So screen column and array index run in opposite directions, and that is the kind of thing that costs a
+  day.</p>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 470" role="img" aria-label="The GUI grid drawn with IN at the right and OUT at the left, mapped onto array indices that run from IN at index zero to OUT at index three.">
+        <defs>
+          <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <text x="14" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="currentColor" letter-spacing="1.3">WHAT YOU SEE — signal flows right to left</text>
+
+        <rect x="14" y="42" width="52" height="248" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.4"/>
+        <text x="40" y="172" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="var(--new)">OUT</text>
+        <rect x="934" y="42" width="52" height="248" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.4"/>
+        <text x="960" y="172" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="var(--new)">IN</text>
+
+        <g font-family="IBM Plex Mono, monospace" font-size="11">
+          <text x="78"  y="34" font-size="10" fill="var(--ink-3)">screen col 0</text>
+          <text x="290" y="34" font-size="10" fill="var(--ink-3)">screen col 1</text>
+          <text x="502" y="34" font-size="10" fill="var(--ink-3)">screen col 2</text>
+          <text x="714" y="34" font-size="10" fill="var(--ink-3)">screen col 3</text>
+
+          <rect x="78" y="42" width="196" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="176" y="73" text-anchor="middle" fill="var(--ink-3)">empty</text>
+          <rect x="290" y="42" width="196" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="388" y="73" text-anchor="middle" fill="var(--ink-3)">empty</text>
+          <rect x="714" y="42" width="196" height="52" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+          <text x="812" y="73" text-anchor="middle" font-weight="600" fill="currentColor">FX block</text>
+
+          <rect x="78" y="106" width="196" height="52" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+          <text x="176" y="137" text-anchor="middle" font-weight="600" fill="currentColor">Looper</text>
+          <rect x="290" y="106" width="196" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="388" y="137" text-anchor="middle" fill="var(--ink-3)">empty</text>
+          <rect x="714" y="106" width="196" height="52" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+          <text x="812" y="137" text-anchor="middle" font-weight="600" fill="currentColor">Recorder</text>
+
+          <rect x="78" y="170" width="196" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="176" y="201" text-anchor="middle" fill="var(--ink-3)">empty</text>
+          <rect x="290" y="170" width="196" height="52" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+          <text x="388" y="201" text-anchor="middle" font-weight="600" fill="currentColor">FX block</text>
+          <rect x="714" y="170" width="196" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="812" y="201" text-anchor="middle" fill="var(--ink-3)">empty</text>
+
+          <rect x="78" y="234" width="196" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="176" y="265" text-anchor="middle" fill="var(--ink-3)">empty</text>
+          <rect x="290" y="234" width="196" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="388" y="265" text-anchor="middle" fill="var(--ink-3)">empty</text>
+          <rect x="714" y="234" width="196" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="812" y="265" text-anchor="middle" fill="var(--ink-3)">empty</text>
+        </g>
+
+        <rect x="502" y="42" width="196" height="244" rx="4" fill="none" stroke="var(--new)" stroke-width="2.2"/>
+        <text x="600" y="168" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="700" fill="var(--new)">MIXER</text>
+        <text x="600" y="188" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-3)">takes the whole column</text>
+
+        <line x1="928" y1="308" x2="72" y2="308" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar3)" opacity=".6"/>
+        <text x="500" y="328" text-anchor="middle" font-size="12" fill="var(--ink-2)">signal</text>
+
+        <line x1="14" y1="356" x2="986" y2="356" stroke="currentColor" stroke-width="1" opacity=".2"/>
+        <text x="14" y="382" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.3">WHAT THE CODE INDEXES — aSlot[chain][col], col 0 = IN</text>
+
+        <g font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600">
+          <rect x="78"  y="398" width="196" height="34" rx="4" fill="var(--new-soft)" stroke="var(--new-rule)"/>
+          <text x="176" y="420" text-anchor="middle" fill="var(--new)">col 3</text>
+          <rect x="290" y="398" width="196" height="34" rx="4" fill="var(--new-soft)" stroke="var(--new-rule)"/>
+          <text x="388" y="420" text-anchor="middle" fill="var(--new)">col 2</text>
+          <rect x="502" y="398" width="196" height="34" rx="4" fill="var(--new-soft)" stroke="var(--new-rule)"/>
+          <text x="600" y="420" text-anchor="middle" fill="var(--new)">col 1  ← nMixerCol</text>
+          <rect x="714" y="398" width="196" height="34" rx="4" fill="var(--new-soft)" stroke="var(--new-rule)"/>
+          <text x="812" y="420" text-anchor="middle" fill="var(--new)">col 0</text>
+        </g>
+
+        <text x="14" y="458" font-family="IBM Plex Mono, monospace" font-size="12" fill="currentColor">arrayCol = GRID_SLOT_QTY - 1 - screenCol</text>
+        <text x="330" y="458" font-size="12" fill="var(--ink-2)">— the interface owns this flip when it fills PROTO_CFG.</text>
+      </svg>
+    </div>
+    <figcaption><b>Screen order versus array order.</b> The engine walks columns 0→3, which is IN→OUT, so
+    upstream blocks naturally run first. Your leftmost column is array index 3. Do the flip once, on the
+    interface side, when building the config message — never in the audio path.</figcaption>
+  </figure>
+
+  <div class="tscroll">
+    <table>
+      <caption>the four topologies — g_aTopology[] in grid.c, in flash</caption>
+      <thead>
+        <tr><th style="width:22%">Topology</th><th style="width:12%">Chains</th><th>Chain → planes</th><th style="width:14%">Widths</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="k">TOPO_4_MONO</td><td>4</td><td class="mono">0→[0] · 1→[1] · 2→[2] · 3→[3]</td><td class="mono">1+1+1+1</td></tr>
+        <tr><td class="k">TOPO_ST1_2MONO</td><td>3</td><td class="mono">0→[0,1] · 1→[2] · 2→[3]</td><td class="mono">2+1+1</td></tr>
+        <tr><td class="k">TOPO_2MONO_ST2</td><td>3</td><td class="mono">0→[0] · 1→[1] · 2→[2,3]</td><td class="mono">1+1+2</td></tr>
+        <tr><td class="k">TOPO_2_STEREO</td><td>2</td><td class="mono">0→[0,1] · 1→[2,3]</td><td class="mono">2+2</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s5">
+  <p class="snum">05 — the engine</p>
+  <h3 class="sh">One loop, no special cases</h3>
+
+  <p class="col">Your own description of the grid edges — <em>"first input module processes, then all modules
+  after it, then mixer, then all else"</em> — turned out to <em>be</em> the engine. There is no pre-chain and
+  no post-chain in this design. There is a grid and a mixer column index.</p>
+
+  <pre><code><span class="c">/* grid.c — Grid_Process(). This is the entire engine. */</span>
+for (nCol = 0U; nCol &lt; GRID_SLOT_QTY; nCol++)
+{
+    if ((S8)nCol == pGrid-&gt;<span class="hl">nMixerCol</span>)
+    {
+        Mixer_Process(pGrid, apPlane, nFrames);      <span class="c">/* sees every chain at once */</span>
+    }
+    else
+    {
+        for (nChain = 0U; nChain &lt; pGrid-&gt;nChainQty; nChain++)
+            ProcessCell(pGrid, nChain, pGrid-&gt;aSlot[nChain][nCol], apChain, nFrames);
+    }
+}</code></pre>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 340" role="img" aria-label="Execution order across the grid: all chains complete column zero, then column one, then the mixer column runs across every chain, then column three.">
+        <defs>
+          <marker id="ar5b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <text x="14" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.3">EXECUTION ORDER — column by column, all chains in step</text>
+
+        <g font-family="IBM Plex Mono, monospace" font-size="11">
+          <text x="14" y="62" fill="var(--ink-3)">chain 0</text>
+          <text x="14" y="106" fill="var(--ink-3)">chain 1</text>
+          <text x="14" y="150" fill="var(--ink-3)">chain 2</text>
+          <text x="14" y="194" fill="var(--ink-3)">chain 3</text>
+        </g>
+
+        <g font-family="IBM Plex Mono, monospace" font-size="11">
+          <rect x="86"  y="44" width="150" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="161" y="64" text-anchor="middle" fill="currentColor">1  FX</text>
+          <rect x="86"  y="88" width="150" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="161" y="108" text-anchor="middle" fill="currentColor">2  FX</text>
+          <rect x="86"  y="132" width="150" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="161" y="152" text-anchor="middle" fill="var(--ink-3)">3  —</text>
+          <rect x="86"  y="176" width="150" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="161" y="196" text-anchor="middle" fill="currentColor">4  Looper</text>
+
+          <rect x="256" y="44" width="150" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="331" y="64" text-anchor="middle" fill="currentColor">5  Recorder</text>
+          <rect x="256" y="88" width="150" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="331" y="108" text-anchor="middle" fill="var(--ink-3)">6  —</text>
+          <rect x="256" y="132" width="150" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="331" y="152" text-anchor="middle" fill="currentColor">7  Looper</text>
+          <rect x="256" y="176" width="150" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="331" y="196" text-anchor="middle" fill="var(--ink-3)">8  —</text>
+
+          <rect x="426" y="44" width="150" height="162" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="2.4"/>
+          <text x="501" y="118" text-anchor="middle" font-size="13" font-weight="700" fill="var(--new)">9  MIXER</text>
+          <text x="501" y="138" text-anchor="middle" font-size="10" fill="var(--ink-3)">all chains at once</text>
+
+          <rect x="596" y="44" width="150" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="671" y="64" text-anchor="middle" fill="currentColor">10 FX</text>
+          <rect x="596" y="88" width="150" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="671" y="108" text-anchor="middle" fill="currentColor">11 Recorder</text>
+          <rect x="596" y="132" width="150" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="671" y="152" text-anchor="middle" fill="var(--ink-3)">12 —</text>
+          <rect x="596" y="176" width="150" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="671" y="196" text-anchor="middle" fill="var(--ink-3)">13 —</text>
+        </g>
+
+        <text x="86"  y="232" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">col 0</text>
+        <text x="256" y="232" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">col 1</text>
+        <text x="426" y="232" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">col 2</text>
+        <text x="596" y="232" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">col 3</text>
+
+        <line x1="86" y1="252" x2="740" y2="252" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar5b)" color="var(--new)"/>
+        <text x="770" y="256" font-size="11.5" fill="var(--ink-2)">IN → OUT</text>
+
+        <text x="14" y="292" font-size="12.5" font-weight="600" fill="currentColor">Why the mixer needs no synchronisation</text>
+        <text x="14" y="314" font-size="12.5" fill="var(--ink-2)">Column-wise iteration guarantees every chain has finished column c before column c+1 begins. That is exactly the</text>
+        <text x="14" y="332" font-size="12.5" fill="var(--ink-2)">precondition the mixer needs to sum across chains — so there is nothing to lock, wait on, or order by hand.</text>
+      </svg>
+    </div>
+    <figcaption><b>Numbers show the call order.</b> Mixer absent (<code>nMixerCol == -1</code>), mixer at
+    either edge, empty chains, empty cells — every one falls out of this loop with no special case.</figcaption>
+  </figure>
+</section>
+
+<hr class="big">
+
+<section id="s6">
+  <p class="snum">06 — the hot path</p>
+  <h3 class="sh">What happens every 1.33 ms</h3>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 320" role="img" aria-label="A block flows from the SAI DMA buffers through de-interleaving to planar float, the recorder slot clear, the grid column loop, meters, re-interleaving and back out, with the recorder stream branching to SPI.">
+        <defs>
+          <marker id="ar6b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <text x="14" y="20" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.3">ONE INTERRUPT — SAI1 block A DMA, half and full complete</text>
+
+        <g font-size="11.5">
+          <rect x="14" y="44" width="118" height="72" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="73" y="68" text-anchor="middle" font-weight="600" fill="currentColor">SAI1 + SAI2</text>
+          <text x="73" y="85" text-anchor="middle" font-size="10" fill="var(--ink-3)">2 stereo streams</text>
+          <text x="73" y="101" text-anchor="middle" font-size="10" fill="var(--ink-3)">S32, 24-bit</text>
+
+          <rect x="164" y="44" width="130" height="72" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+          <text x="229" y="68" text-anchor="middle" font-weight="600" fill="currentColor">de-interleave</text>
+          <text x="229" y="85" text-anchor="middle" font-size="10" fill="var(--ink-3)">→ planar FLOAT32</text>
+          <text x="229" y="101" text-anchor="middle" font-size="10" fill="var(--ink-3)">aPlane[4][64], DTCM</text>
+
+          <rect x="326" y="44" width="118" height="72" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+          <text x="385" y="68" text-anchor="middle" font-weight="600" fill="currentColor">Recorder</text>
+          <text x="385" y="85" text-anchor="middle" font-size="10" fill="var(--ink-3)">BeginBlock()</text>
+          <text x="385" y="101" text-anchor="middle" font-size="10" fill="var(--ink-3)">silence slots</text>
+
+          <rect x="476" y="34" width="180" height="92" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="2"/>
+          <text x="566" y="60" text-anchor="middle" font-weight="700" fill="var(--new)" font-size="13">Grid_Process()</text>
+          <text x="566" y="80" text-anchor="middle" font-size="10.5" fill="var(--ink-3)">4 columns × N chains</text>
+          <text x="566" y="97" text-anchor="middle" font-size="10.5" fill="var(--ink-3)">FX · Recorder · Looper</text>
+          <text x="566" y="114" text-anchor="middle" font-size="10.5" fill="var(--ink-3)">Mixer on its column</text>
+
+          <rect x="688" y="44" width="112" height="72" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+          <text x="744" y="68" text-anchor="middle" font-weight="600" fill="currentColor">meters</text>
+          <text x="744" y="85" text-anchor="middle" font-size="10" fill="var(--ink-3)">peak + RMS</text>
+          <text x="744" y="101" text-anchor="middle" font-size="10" fill="var(--ink-3)">per plane</text>
+
+          <rect x="832" y="44" width="154" height="72" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+          <text x="909" y="68" text-anchor="middle" font-weight="600" fill="currentColor">clamp + interleave</text>
+          <text x="909" y="85" text-anchor="middle" font-size="10" fill="var(--ink-3)">count clips</text>
+          <text x="909" y="101" text-anchor="middle" font-size="10" fill="var(--ink-3)">→ SAI TX</text>
+        </g>
+
+        <g stroke="var(--new)" stroke-width="1.5" color="var(--new)" fill="none">
+          <line x1="132" y1="80" x2="162" y2="80" marker-end="url(#ar6b)"/>
+          <line x1="294" y1="80" x2="324" y2="80" marker-end="url(#ar6b)"/>
+          <line x1="444" y1="80" x2="474" y2="80" marker-end="url(#ar6b)"/>
+          <line x1="656" y1="80" x2="686" y2="80" marker-end="url(#ar6b)"/>
+          <line x1="800" y1="80" x2="830" y2="80" marker-end="url(#ar6b)"/>
+        </g>
+
+        <line x1="566" y1="126" x2="566" y2="176" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar6b)" color="var(--new)" stroke-dasharray="4 3"/>
+        <rect x="470" y="176" width="192" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+        <text x="566" y="197" text-anchor="middle" font-size="11.5" font-weight="600" fill="currentColor">SPI2 → interface</text>
+        <text x="566" y="215" text-anchor="middle" font-size="10" fill="var(--ink-3)">4 slots always, fixed stride</text>
+
+        <line x1="909" y1="126" x2="909" y2="176" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar6b)" color="var(--new)" stroke-dasharray="4 3"/>
+        <rect x="810" y="176" width="176" height="52" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+        <text x="898" y="197" text-anchor="middle" font-size="11.5" font-weight="600" fill="currentColor">Params_TempoAdvance</text>
+        <text x="898" y="215" text-anchor="middle" font-size="10" fill="var(--ink-3)">bar position for the looper</text>
+
+        <line x1="14" y1="256" x2="986" y2="256" stroke="currentColor" stroke-width="1" opacity=".2"/>
+        <text x="14" y="282" font-size="12.5" font-weight="600" fill="currentColor">Budget: 640 000 cycles at 480 MHz.</text>
+        <text x="290" y="282" font-size="12.5" fill="var(--ink-2)">16 effect-planes × 64 frames = 1024 effect-samples →
+          <tspan font-family="IBM Plex Mono, monospace" font-weight="600" fill="var(--new)">~625 cycles per sample per effect.</tspan></text>
+        <text x="14" y="306" font-size="12" fill="var(--ink-2)">Then: one indirect call per module per <tspan font-style="italic">sample</tspan> — about 2.1 M calls/s, 13–15% of the core on dispatch alone.
+          Now: one call per module per <tspan font-style="italic">block</tspan> — 0.2%.</text>
+      </svg>
+    </div>
+    <figcaption><b>Where the CPU came back.</b> Not from leaving C++ — a C vtable call and a C++ virtual call
+    compile to the same three instructions. From processing 64 frames per dispatch instead of 1, and from your
+    grid model capping the machine at 16 effect-planes.</figcaption>
+  </figure>
+
+  <div class="stats">
+    <div class="stat"><span class="v">64</span><span class="k2">frames / block</span></div>
+    <div class="stat"><span class="v">2.67<span style="font-size:.6em"> ms</span></span><span class="k2">buffer latency</span></div>
+    <div class="stat"><span class="v">16</span><span class="k2">effect-planes, always</span></div>
+    <div class="stat"><span class="v">1<span style="font-size:.6em"> ISR</span></span><span class="k2">for all 4 channels</span></div>
+  </div>
+
+  <div class="col">
+    <div class="note">
+      <p><b>Why one interrupt is enough.</b> All four SAI blocks are already synchronous to SAI1 block A in
+      your <code>sai.c</code> (<code>SAI_SYNCHRONOUS_EXT_SAI1</code>), so they share one frame sync. That is
+      also why the old <code>saiAdapterCheckUpdate(a1) || saiAdapterCheckUpdate(a2)</code> bug cannot be
+      expressed here: it short-circuited, so whenever adapter 1 had a flag, adapter 2's buffer offset never
+      advanced — while the body went on using the stale offset. With one timebase there is nothing to get out
+      of step.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s7">
+  <p class="snum">07 — concurrency</p>
+  <h3 class="sh">Two contexts, one pointer between them</h3>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 330" role="img" aria-label="The audio ISR and the super-loop, connected only by an atomic pointer store publishing a shadow grid, with meters crossing back as single aligned words.">
+        <defs>
+          <marker id="ar7b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <rect x="14" y="30" width="420" height="240" rx="6" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.8"/>
+        <text x="34" y="58" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="700" fill="var(--new)">AUDIO ISR — highest priority</text>
+        <text x="34" y="80" font-size="12" fill="var(--ink-2)">AudioIo_OnDmaHalf → AudioSys_ProcessBlock</text>
+        <text x="34" y="106" font-size="12" fill="currentColor">· all DSP, and only DSP</text>
+        <text x="34" y="128" font-size="12" fill="currentColor">· reads pActive once per block</text>
+        <text x="34" y="150" font-size="12" fill="currentColor">· writes meters, CPU load, overrun count</text>
+        <text x="34" y="172" font-size="12" fill="currentColor">· calls no OS API — there is no OS</text>
+        <text x="34" y="204" font-size="11.5" fill="var(--ink-3)">If FreeRTOS ever appears, this must sit numerically</text>
+        <text x="34" y="222" font-size="11.5" fill="var(--ink-3)">above configMAX_SYSCALL_INTERRUPT_PRIORITY and</text>
+        <text x="34" y="240" font-size="11.5" fill="var(--ink-3)">then never touch a FromISR call either.</text>
+
+        <rect x="566" y="30" width="420" height="240" rx="6" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.8"/>
+        <text x="586" y="58" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="700" fill="currentColor">SUPER-LOOP — main()</text>
+        <text x="586" y="80" font-size="12" fill="var(--ink-2)">CtrlLink_Poll → Grid_Apply → telemetry → WFI</text>
+        <text x="586" y="106" font-size="12" fill="currentColor">· parses frames, validates configs</text>
+        <text x="586" y="128" font-size="12" fill="currentColor">· clears delay lines of ADDED effects</text>
+        <text x="586" y="150" font-size="12" fill="currentColor">· sends ACKs and telemetry</text>
+        <text x="586" y="172" font-size="12" fill="currentColor">· sleeps in __WFI() between commands</text>
+        <text x="586" y="204" font-size="11.5" fill="var(--ink-3)">The old loop spun at 100% duty forever. On a</text>
+        <text x="586" y="222" font-size="11.5" fill="var(--ink-3)">battery pedal — which the % in your header bar</text>
+        <text x="586" y="240" font-size="11.5" fill="var(--ink-3)">says this is — that one line is real playing time.</text>
+
+        <line x1="566" y1="120" x2="440" y2="120" stroke="var(--new)" stroke-width="2.4" marker-end="url(#ar7b)" color="var(--new)"/>
+        <text x="503" y="108" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" fill="var(--new)">pActive</text>
+        <text x="503" y="140" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-3)">1 store</text>
+
+        <line x1="440" y1="186" x2="562" y2="186" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar7b)" opacity=".55"/>
+        <text x="501" y="176" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-3)">meters</text>
+        <text x="501" y="204" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-3)">torn = harmless</text>
+
+        <line x1="14" y1="296" x2="986" y2="296" stroke="currentColor" stroke-width="1" opacity=".2"/>
+        <text x="14" y="322" font-size="12.5" fill="var(--ink-2)">An aligned 32-bit store is atomic on Cortex-M7, so
+          <tspan font-weight="600" fill="currentColor">that one arrow is the whole synchronisation design.</tspan>
+          No mutex, no critical section, no disabled interrupts.</text>
+      </svg>
+    </div>
+    <figcaption><b>The handoff.</b> The ISR latches <code>pActive</code> at the top of the block, so a config
+    published mid-block takes effect on the next one. Because memory never moves, the swap needs no fade and
+    produces no gap.</figcaption>
+  </figure>
+</section>
+
+<hr class="big">
+
+<section id="s8">
+  <p class="snum">08 — memory</p>
+  <h3 class="sh">Four tiers, chosen by access pattern</h3>
+
+  <div class="pair">
+    <div class="card o">
+      <h5>Then</h5>
+      <p><code>new Amp()</code> × 69 into a 5.5 KiB heap sharing 16 KiB of DTCM with the stack, plus a
+      <code>paramAlloc[246]</code> arena handed out by a static bump cursor, guarded by
+      <code>while(1);</code> on overflow.</p>
+      <p>Delay lines: none of the eleven effects had one yet, so nothing had been sized.</p>
+    </div>
+    <div class="card n">
+      <h5>Now</h5>
+      <p>No heap, no cursor, no allocator. Each effect declares a <code>static</code> array indexed by plane
+      in its own <code>.c</code>, using a section macro; the totals are proved to fit at compile time by
+      <code>FXC_STATIC_ASSERT</code> in <code>mem_map.h</code>.</p>
+      <p>Two SDRAM tiers, because of cache — not capacity.</p>
+    </div>
+  </div>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 400" role="img" aria-label="Four memory tiers: DTCM for scratch and parameters, AXI SRAM for short delay lines, SDRAM bank one for long delay lines, SDRAM bank two for loop audio, each with its measured usage.">
+        <text x="14" y="20" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.3">FOUR TIERS, CHOSEN BY ACCESS PATTERN</text>
+
+        <g font-size="12">
+          <text x="14" y="58" font-family="IBM Plex Mono, monospace" font-weight="600" fill="currentColor">DTCM</text>
+          <text x="14" y="75" font-size="10.5" fill="var(--ink-3)">0 wait, uncached</text>
+          <rect x="150" y="42" width="620" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <rect x="150" y="42" width="44" height="30" rx="3" fill="var(--new)"/>
+          <text x="784" y="62" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">~8 KiB / 112 KiB</text>
+          <text x="204" y="62" font-size="11" fill="currentColor">planes · params · grid · meters · mixer matrix</text>
+
+          <text x="14" y="118" font-family="IBM Plex Mono, monospace" font-weight="600" fill="currentColor">AXI SRAM</text>
+          <text x="14" y="135" font-size="10.5" fill="var(--ink-3)">cached, fast</text>
+          <rect x="150" y="102" width="620" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <rect x="150" y="102" width="442" height="30" rx="3" fill="var(--new)"/>
+          <text x="784" y="122" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">228 KiB / 320 KiB</text>
+          <text x="164" y="122" font-size="11" fill="var(--surface)" font-weight="600">reverb · chorus · flanger · vibrato — the SHORT lines</text>
+
+          <text x="14" y="178" font-family="IBM Plex Mono, monospace" font-weight="600" fill="currentColor">SDRAM 1</text>
+          <text x="14" y="195" font-size="10.5" fill="var(--ink-3)">0xC0000000</text>
+          <rect x="150" y="162" width="620" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <rect x="150" y="162" width="114" height="30" rx="3" fill="var(--new)"/>
+          <text x="784" y="182" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">2.93 MiB / 16 MiB</text>
+          <text x="274" y="182" font-size="11" fill="currentColor">4 × 4-second delay lines, FLOAT32 — 13 MiB spare</text>
+
+          <text x="14" y="238" font-family="IBM Plex Mono, monospace" font-weight="600" fill="currentColor">SDRAM 2</text>
+          <text x="14" y="255" font-size="10.5" fill="var(--ink-3)">0xD0000000</text>
+          <rect x="150" y="222" width="620" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <rect x="150" y="222" width="320" height="30" rx="3" fill="var(--new)"/>
+          <text x="784" y="242" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">8.24 MiB / 16 MiB</text>
+          <text x="164" y="242" font-size="11" fill="var(--surface)" font-weight="600">4 × 15-second loops, packed 24-bit</text>
+          <text x="480" y="242" font-size="11" fill="currentColor">7.4 MiB spare → undo at ~12.8 s</text>
+        </g>
+
+        <line x1="14" y1="290" x2="986" y2="290" stroke="currentColor" stroke-width="1" opacity=".2"/>
+
+        <text x="14" y="316" font-size="12.5" font-weight="600" fill="currentColor">Why short lines may not go in SDRAM</text>
+        <text x="14" y="338" font-size="12" fill="var(--ink-2)">A loaded machine has ~96 short delay-line streams. Each advances 8 cache lines per block, so the whole 16 KiB</text>
+        <text x="14" y="356" font-size="12" fill="var(--ink-2)">D-cache is replaced ~3× per block with zero reuse — roughly 300 µs of a 1333 µs budget in linefills alone.</text>
+        <text x="14" y="380" font-size="12" fill="var(--ink-2)">The long lines are one stream per plane, 512 B per block, ~1.5 MB/s total against ~150 MB/s. Those are fine.</text>
+      </svg>
+    </div>
+    <figcaption><b>The two-tier split is a cache decision, not a capacity one.</b> Both banks have room to
+    spare; the reason chorus and reverb live in internal SRAM is that many small concurrent streams destroy a
+    16 KiB cache, while a few large sequential ones do not.</figcaption>
+  </figure>
+</section>
+
+<!-- =========================================================================== -->
+<div class="part">
+  <p class="pn">Part III</p>
+  <h2>The parts</h2>
+  <p>Every block, every parameter, and the reasoning behind each. This is the reference half of the
+  document.</p>
+</div>
+
+<section id="s9">
+  <p class="snum">09 — effect types</p>
+  <h3 class="sh">There are no width-agnostic effects</h3>
+
+  <div class="col">
+    <div class="answer">
+      <h5 class="lbl">The rule</h5>
+      <p>Every effect is <b>either mono-only or stereo-only</b>. A mono delay and a stereo delay are two
+      different effect types with two different parameter lists — not one effect with a width flag.</p>
+      <p>The pool is therefore <b>22 types</b>, not 11. The GUI still shows 11 entries, because both variants
+      share a display name and the interface resolves which id to send from the chain's width.</p>
+    </div>
+  </div>
+
+  <p class="col">This is not bookkeeping. A stereo delay has Ping-pong; a stereo compressor has Link; a stereo
+  tremolo has Phase, and at 180° that same effect <em>is</em> an auto-panner. None of those controls has a
+  mono meaning. The earlier draft had a single <code>Amp</code> with a <code>Pan</code> parameter that
+  silently did nothing on a mono chain — which is exactly the smell this removes.</p>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 420" role="img" aria-label="The GUI holds one concept and resolves the mono or stereo id from the chain width; the two variants share static memory because they can never be live on the same planes.">
+        <defs>
+          <marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <text x="14" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.3">HOW THE GUI PICKS A VARIANT</text>
+
+        <rect x="14" y="42" width="170" height="58" rx="5" fill="var(--surface-2)" stroke="var(--rule)"/>
+        <text x="99" y="66" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">user drops "Delay"</text>
+        <text x="99" y="86" text-anchor="middle" font-size="10.5" fill="var(--ink-3)">one entry in the menu</text>
+
+        <line x1="184" y1="71" x2="242" y2="71" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar9)" opacity=".6"/>
+
+        <rect x="246" y="34" width="300" height="74" rx="5" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.5"/>
+        <text x="396" y="58" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="600" fill="var(--new)">FX_VARIANT_FOR_WIDTH(FX_DELAY_M, w)</text>
+        <text x="396" y="78" text-anchor="middle" font-size="10.5" fill="var(--ink-3)">mono ids are EVEN, stereo is id + 1</text>
+        <text x="396" y="96" text-anchor="middle" font-size="10.5" fill="var(--ink-3)">from the same shared descriptor both chips hold</text>
+
+        <line x1="546" y1="55" x2="612" y2="55" stroke="var(--new)" stroke-width="1.4" marker-end="url(#ar9)" color="var(--new)"/>
+        <line x1="546" y1="88" x2="612" y2="88" stroke="var(--new)" stroke-width="1.4" marker-end="url(#ar9)" color="var(--new)"/>
+
+        <rect x="616" y="38" width="370" height="34" rx="4" fill="var(--surface)" stroke="var(--new-rule)"/>
+        <text x="632" y="60" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">width 1 → FX_DELAY_M &nbsp;· 4 params</text>
+
+        <rect x="616" y="76" width="370" height="34" rx="4" fill="var(--surface)" stroke="var(--new-rule)"/>
+        <text x="632" y="98" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="currentColor">width 2 → FX_DELAY_S &nbsp;· 6 params</text>
+
+        <line x1="14" y1="140" x2="986" y2="140" stroke="currentColor" stroke-width="1" opacity=".2"/>
+
+        <text x="14" y="168" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.3">AND THE TWO VARIANTS SHARE THEIR MEMORY</text>
+
+        <text x="14" y="198" font-size="12" fill="var(--ink-2)">A chain is either mono or stereo, so the variants can never be live on the same planes.</text>
+
+        <g font-family="IBM Plex Mono, monospace" font-size="11">
+          <text x="14" y="238" fill="var(--ink-3)">4 mono</text>
+          <rect x="150" y="222" width="196" height="26" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="248" y="240" text-anchor="middle" fill="currentColor">DELAY_M</text>
+          <rect x="352" y="222" width="196" height="26" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="450" y="240" text-anchor="middle" fill="currentColor">DELAY_M</text>
+          <rect x="554" y="222" width="196" height="26" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="652" y="240" text-anchor="middle" fill="currentColor">DELAY_M</text>
+          <rect x="756" y="222" width="196" height="26" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="854" y="240" text-anchor="middle" fill="currentColor">DELAY_M</text>
+
+          <text x="14" y="288" fill="var(--ink-3)">2 stereo</text>
+          <rect x="150" y="272" width="398" height="26" rx="3" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.8"/>
+          <text x="349" y="290" text-anchor="middle" fill="currentColor">DELAY_S — banks 0 and 1</text>
+          <rect x="554" y="272" width="398" height="26" rx="3" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.8"/>
+          <text x="753" y="290" text-anchor="middle" fill="currentColor">DELAY_S — banks 2 and 3</text>
+        </g>
+
+        <text x="150" y="318" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">aLine[0]</text>
+        <text x="352" y="318" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">aLine[1]</text>
+        <text x="554" y="318" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">aLine[2]</text>
+        <text x="756" y="318" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">aLine[3]</text>
+
+        <rect x="14" y="340" width="972" height="60" rx="5" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.5"/>
+        <text x="500" y="362" text-anchor="middle" font-size="13" font-weight="600" fill="var(--new)">Splitting the pool by width costs ZERO extra memory.</text>
+        <text x="500" y="384" text-anchor="middle" font-size="12.5" fill="var(--ink-2)">A stereo instance at plane base p uses exactly the two banks two mono instances on planes p and p+1 would have used.</text>
+      </svg>
+    </div>
+    <figcaption><b>One concept in the GUI, two types in the engine, one memory budget.</b> Both firmwares
+    compile the same <code>g_aFxDesc</code>, so the interface can never send a variant the chain cannot
+    hold.</figcaption>
+  </figure>
+
+  <h4>The consequence you asked for</h4>
+  <p class="col">Because a mono delay is not convertible into a stereo delay, a chain that changes width
+  cannot keep its effects. <code>Validate()</code> enforces it: the effect's declared <code>nWidth</code> must
+  equal the chain's width exactly, or the whole configuration is refused with
+  <code>PROTO_RES_BAD_WIDTH</code> and the running graph is left untouched.</p>
+
+  <div class="col">
+    <div class="note">
+      <p><b>One place I did something different from what you said.</b> You described the chain being
+      <em>cleared</em> on a topology change. I made the audio side <em>refuse</em> a width-mismatched grid
+      instead, because a preset carries a topology <em>and</em> a matching layout — auto-clearing would wipe
+      every preset load. The interface must send a cleared or re-populated chain, which it has to do anyway to
+      redraw the GUI, and it cannot get it wrong because it holds the same descriptor table. The user-visible
+      behaviour is what you asked for; only the question of who does the clearing differs.</p>
+    </div>
+  </div>
+
+  <h4>Ping-pong, the flagship case</h4>
+  <p class="col">This is the clearest example of a stereo variant being a genuinely different algorithm rather
+  than the mono one run twice.</p>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 340" role="img" aria-label="With ping-pong at zero each plane feeds its own delay line; at full ping-pong each plane's regeneration crosses into the other line, so repeats alternate between left and right.">
+        <defs>
+          <marker id="ar9b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <line x1="500" y1="10" x2="500" y2="240" stroke="currentColor" stroke-width="1" opacity=".18"/>
+
+        <text x="14" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="currentColor" letter-spacing="1.2">Ping-pong = 0 — each plane feeds itself</text>
+
+        <g font-size="11" font-family="IBM Plex Mono, monospace">
+          <rect x="20" y="44" width="150" height="42" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="95" y="70" text-anchor="middle" fill="currentColor">line L</text>
+          <rect x="20" y="118" width="150" height="42" rx="4" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="95" y="144" text-anchor="middle" fill="currentColor">line R</text>
+        </g>
+        <path d="M170 55 h 40 v 42 h -40" fill="none" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar9b)" color="var(--new)"/>
+        <path d="M170 129 h 40 v 42 h -40" fill="none" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar9b)" color="var(--new)"/>
+        <text x="226" y="80"  font-size="10.5" fill="var(--ink-3)">fb</text>
+        <text x="226" y="154" font-size="10.5" fill="var(--ink-3)">fb</text>
+
+        <text x="20" y="196" font-size="12" fill="var(--ink-2)">Impulse into L → every repeat stays in L.</text>
+        <text x="20" y="216" font-size="12" fill="var(--ink-2)">A dual-mono delay. Fine, and often what you want.</text>
+
+        <text x="516" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.2">Ping-pong = 1 — regeneration crosses over</text>
+
+        <g font-size="11" font-family="IBM Plex Mono, monospace">
+          <rect x="522" y="44" width="150" height="42" rx="4" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="597" y="70" text-anchor="middle" fill="currentColor">line L</text>
+          <rect x="522" y="118" width="150" height="42" rx="4" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="597" y="144" text-anchor="middle" fill="currentColor">line R</text>
+        </g>
+        <path d="M672 55 h 46 v 84 h -46" fill="none" stroke="var(--new)" stroke-width="1.8" marker-end="url(#ar9b)" color="var(--new)"/>
+        <path d="M522 76 h -32 v 84 h 32" fill="none" stroke="var(--new)" stroke-width="1.8" marker-end="url(#ar9b)" color="var(--new)"/>
+        <text x="732" y="100" font-size="10.5" fill="var(--new)">L fb → R</text>
+        <text x="400" y="122" font-size="10.5" fill="var(--new)">R fb → L</text>
+
+        <text x="522" y="196" font-size="12" fill="var(--ink-2)">Impulse into L → repeat 1 left, repeat 2 right,</text>
+        <text x="522" y="216" font-size="12" fill="var(--ink-2)">repeat 3 left. The tests assert exactly that.</text>
+
+        <line x1="14" y1="258" x2="986" y2="258" stroke="currentColor" stroke-width="1" opacity=".2"/>
+        <text x="14" y="284" font-size="12.5" font-weight="600" fill="currentColor">Why this forces a separate type</text>
+        <text x="14" y="306" font-size="12.5" fill="var(--ink-2)">Both lines must be READ before either is written, because each line&apos;s input depends on the other line&apos;s output. That is</text>
+        <text x="14" y="324" font-size="12.5" fill="var(--ink-2)">not "the mono algorithm, twice" — it is a different loop, with a control that has no mono meaning.</text>
+      </svg>
+    </div>
+    <figcaption><b>Tested, not asserted.</b> An impulse into the left plane with full ping-pong produces
+    repeat 1 left, repeat 2 right, repeat 3 left — each at least 50× the other plane's energy. At ping-pong 0
+    it stays left throughout.</figcaption>
+  </figure>
+</section>
+
+<hr class="big">
+
+<section id="s10">
+  <p class="snum">10 — reference</p>
+  <h3 class="sh">Every effect, every parameter</h3>
+
+  <p class="col">The complete pool, from <code>Shared/fx_defs.c</code>. Parameters marked
+  <span class="tag s">sync</span> can be tempo-locked to a note division;
+  <span class="tag m">step</span> is a small integer rather than a continuous control. Every stereo variant
+  repeats its mono variant's parameters in the same order and appends the stereo-only ones — a convention that
+  keeps the GUI's two parameter pages aligned.</p>
+
+  <div class="tscroll">
+    <table>
+      <caption>the effect pool — 11 concepts, 22 types</caption>
+      <thead>
+        <tr>
+          <th style="width:15%">Effect</th>
+          <th style="width:8%">Type id</th>
+          <th style="width:5%">W</th>
+          <th style="width:5%">N</th>
+          <th>Parameters</th>
+          <th style="width:11%">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="grp"><td colspan="6">implemented</td></tr>
+        <tr>
+          <td rowspan="2"><b>Amp</b></td>
+          <td class="now">FX_AMP_M</td><td class="mono">1</td><td class="mono num">1</td>
+          <td class="mono">Gain</td>
+          <td rowspan="2"><span class="tag keep">real</span></td>
+        </tr>
+        <tr>
+          <td class="now">FX_AMP_S</td><td class="mono">2</td><td class="mono num">3</td>
+          <td class="mono">Gain · <b>Pan</b> · <b>Width</b> <span style="color:var(--ink-3)">(mid/side)</span></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2"><b>Delay</b></td>
+          <td class="now">FX_DELAY_M</td><td class="mono">1</td><td class="mono num">4</td>
+          <td class="mono">Time <span class="tag s">sync</span> · Feedback · Tone · Mix</td>
+          <td rowspan="2"><span class="tag keep">real</span></td>
+        </tr>
+        <tr>
+          <td class="now">FX_DELAY_S</td><td class="mono">2</td><td class="mono num">6</td>
+          <td class="mono">Time <span class="tag s">sync</span> · Feedback · Tone · Mix · <b>Ping-pong</b> · <b>Spread</b></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2"><b>Overdrive</b></td>
+          <td class="now">FX_OVERDRIVE_M</td><td class="mono">1</td><td class="mono num">4</td>
+          <td class="mono">Drive · Bias · Level · Mix</td>
+          <td rowspan="2"><span class="tag keep">real</span></td>
+        </tr>
+        <tr>
+          <td class="now">FX_OVERDRIVE_S</td><td class="mono">2</td><td class="mono num">5</td>
+          <td class="mono">Drive · Bias · Level · Mix · <b>Spread</b></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2"><b>Tremolo</b></td>
+          <td class="now">FX_TREMOLO_M</td><td class="mono">1</td><td class="mono num">3</td>
+          <td class="mono">Rate <span class="tag s">sync</span> · Depth · Shape</td>
+          <td rowspan="2"><span class="tag keep">real</span></td>
+        </tr>
+        <tr>
+          <td class="now">FX_TREMOLO_S</td><td class="mono">2</td><td class="mono num">4</td>
+          <td class="mono">Rate <span class="tag s">sync</span> · Depth · Shape · <b>Phase</b> <span style="color:var(--ink-3)">(180° = auto-pan)</span></td>
+        </tr>
+
+        <tr class="grp"><td colspan="6">registered, memory reserved, DSP to be written</td></tr>
+        <tr>
+          <td rowspan="2"><b>Chorus</b></td>
+          <td class="now">FX_CHORUS_M</td><td class="mono">1</td><td class="mono num">4</td>
+          <td class="mono">Rate <span class="tag s">sync</span> · Depth · Delay · Mix</td>
+          <td rowspan="2"><span class="tag todo">stub</span></td>
+        </tr>
+        <tr>
+          <td class="now">FX_CHORUS_S</td><td class="mono">2</td><td class="mono num">5</td>
+          <td class="mono">Rate <span class="tag s">sync</span> · Depth · Delay · Mix · <b>Spread</b></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2"><b>Compressor</b></td>
+          <td class="now">FX_COMPRESSOR_M</td><td class="mono">1</td><td class="mono num">5</td>
+          <td class="mono">Threshold · Ratio · Attack · Release · Makeup</td>
+          <td rowspan="2"><span class="tag todo">stub</span></td>
+        </tr>
+        <tr>
+          <td class="now">FX_COMPRESSOR_S</td><td class="mono">2</td><td class="mono num">6</td>
+          <td class="mono">Threshold · Ratio · Attack · Release · Makeup · <b>Link</b></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2"><b>Distortion</b></td>
+          <td class="now">FX_DISTORTION_M</td><td class="mono">1</td><td class="mono num">4</td>
+          <td class="mono">Drive · Tone · Level · Mix</td>
+          <td rowspan="2"><span class="tag todo">stub</span></td>
+        </tr>
+        <tr>
+          <td class="now">FX_DISTORTION_S</td><td class="mono">2</td><td class="mono num">5</td>
+          <td class="mono">Drive · Tone · Level · Mix · <b>Spread</b></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2"><b>Flanger</b></td>
+          <td class="now">FX_FLANGER_M</td><td class="mono">1</td><td class="mono num">4</td>
+          <td class="mono">Rate <span class="tag s">sync</span> · Depth · Feedback · Mix</td>
+          <td rowspan="2"><span class="tag todo">stub</span></td>
+        </tr>
+        <tr>
+          <td class="now">FX_FLANGER_S</td><td class="mono">2</td><td class="mono num">5</td>
+          <td class="mono">Rate <span class="tag s">sync</span> · Depth · Feedback · Mix · <b>Spread</b></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2"><b>Phaser</b></td>
+          <td class="now">FX_PHASER_M</td><td class="mono">1</td><td class="mono num">5</td>
+          <td class="mono">Rate <span class="tag s">sync</span> · Depth · Feedback · Stages <span class="tag m">step</span> · Mix</td>
+          <td rowspan="2"><span class="tag todo">stub</span></td>
+        </tr>
+        <tr>
+          <td class="now">FX_PHASER_S</td><td class="mono">2</td><td class="mono num">6</td>
+          <td class="mono">Rate <span class="tag s">sync</span> · Depth · Feedback · Stages <span class="tag m">step</span> · Mix · <b>Spread</b></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2"><b>Reverb</b></td>
+          <td class="now">FX_REVERB_M</td><td class="mono">1</td><td class="mono num">5</td>
+          <td class="mono">Decay · Pre-delay <span class="tag s">sync</span> · Damping · Diffusion · Mix</td>
+          <td rowspan="2"><span class="tag todo">stub</span></td>
+        </tr>
+        <tr>
+          <td class="now">FX_REVERB_S</td><td class="mono">2</td><td class="mono num">6</td>
+          <td class="mono">Decay · Pre-delay <span class="tag s">sync</span> · Damping · Diffusion · Mix · <b>Width</b></td>
+        </tr>
+
+        <tr>
+          <td rowspan="2"><b>Vibrato</b></td>
+          <td class="now">FX_VIBRATO_M</td><td class="mono">1</td><td class="mono num">2</td>
+          <td class="mono">Rate <span class="tag s">sync</span> · Depth</td>
+          <td rowspan="2"><span class="tag todo">stub</span></td>
+        </tr>
+        <tr>
+          <td class="now">FX_VIBRATO_S</td><td class="mono">2</td><td class="mono num">3</td>
+          <td class="mono">Rate <span class="tag s">sync</span> · Depth · <b>Spread</b></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col">
+    <p><b>Bold</b> marks the parameters that exist only in the stereo variant. A test asserts that every
+    stereo variant has strictly more parameters than its mono partner — if a stereo variant would be identical
+    to the mono one run twice, it should not exist.</p>
+
+    <p>What the four stereo-only controls mean:</p>
+    <ul class="plain">
+      <li><b>Spread</b> — for the modulation effects, the LFO phase offset between the planes; for the drives,
+      how much harder one side is driven than the other. This is what makes the result <em>wide</em> rather
+      than the same thing twice.</li>
+      <li><b>Ping-pong</b> — how much of each delay line's regeneration crosses into the other line.</li>
+      <li><b>Link</b> — how much the two compressor detectors share. Anything below full link makes the image
+      shift with whichever side is louder, so 1.0 is the default.</li>
+      <li><b>Width</b> — mid/side balance on the Amp; tail decorrelation on the Reverb.</li>
+      <li><b>Phase</b> — the tremolo LFO offset. At 180° the effect becomes an auto-panner.</li>
+    </ul>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s11">
+  <p class="snum">11 — FX block</p>
+  <h3 class="sh">Four slots, and a bypass that keeps the tails</h3>
+
+  <p class="col">One FX block per chain, up to <code>FXBLOCK_SLOT_QTY</code> effects in it, at most one of
+  each type. The slots run in array order, so reordering is swapping two bytes.</p>
+
+  <h4>Bypass is "trails on"</h4>
+  <p class="col">A disabled effect is <b>not skipped</b>. Its process function still runs, so its delay line
+  keeps advancing and its tail keeps decaying — then the block's dry signal is restored on top. Stomping a
+  delay off lets the existing repeats ring out instead of freezing them.</p>
+
+  <pre><code><span class="c">/* fxblock.c — the bypass path */</span>
+for (p = 0U; p &lt; nWidth; p++)
+    memcpy(aDry[p], apChain[p], nFrames * sizeof(FLOAT32));   <span class="c">/* save dry   */</span>
+
+pEntry-&gt;pfProcess(&amp;tCtx, apChain, nFrames);                   <span class="c">/* let it run */</span>
+
+for (p = 0U; p &lt; nWidth; p++)
+    memcpy(apChain[p], aDry[p], nFrames * sizeof(FLOAT32));   <span class="c">/* restore    */</span></code></pre>
+
+  <div class="col">
+    <p>This is also why <b>toggling an effect never rebuilds the graph</b>: enabling and disabling is one bit
+    in <code>GRID.aFxEnabled</code>, applied on the next block, with no gap. Only <em>adding</em> or
+    <em>removing</em> an effect changes the grid — a menu operation, not a footswitch.</p>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s12">
+  <p class="snum">12 — mixer</p>
+  <h3 class="sh">A routing matrix that occupies a column</h3>
+
+  <p class="col">Every chain can feed every chain: an <em>n</em>×<em>n</em> matrix of cells, each with a gain
+  and a pan. Input configuration always matches output configuration, so destination chain <em>i</em> has the
+  same width as source chain <em>i</em> — but sources and destinations can still differ in width when a
+  topology mixes stereo and mono chains.</p>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 300" role="img" aria-label="Three width transitions: stereo to mono folds at minus three decibels, mono to stereo uses a constant-power pan, and matched widths multiply per plane.">
+        <defs>
+          <marker id="ar12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <text x="14" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.3">THREE WIDTH TRANSITIONS</text>
+
+        <g font-size="11" font-family="IBM Plex Mono, monospace">
+          <rect x="20" y="48" width="76" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="58" y="68" text-anchor="middle" fill="currentColor">L</text>
+          <rect x="20" y="88" width="76" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="58" y="108" text-anchor="middle" fill="currentColor">R</text>
+          <line x1="96" y1="63" x2="176" y2="80" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar12)" color="var(--new)"/>
+          <line x1="96" y1="103" x2="176" y2="86" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar12)" color="var(--new)"/>
+          <rect x="180" y="68" width="76" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="218" y="88" text-anchor="middle" fill="currentColor">mono</text>
+          <text x="20" y="146" font-size="12" font-weight="600" fill="currentColor" font-family="IBM Plex Sans">2 → 1</text>
+          <text x="20" y="166" font-size="11" fill="var(--ink-2)" font-family="IBM Plex Sans">(L + R) × gain × 0.707</text>
+          <text x="20" y="184" font-size="11" fill="var(--ink-3)" font-family="IBM Plex Sans">−3 dB, preserves power</text>
+        </g>
+
+        <g font-size="11" font-family="IBM Plex Mono, monospace">
+          <rect x="360" y="68" width="76" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="398" y="88" text-anchor="middle" fill="currentColor">mono</text>
+          <line x1="436" y1="80" x2="516" y2="63" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar12)" color="var(--new)"/>
+          <line x1="436" y1="86" x2="516" y2="103" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar12)" color="var(--new)"/>
+          <rect x="520" y="48" width="76" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="558" y="68" text-anchor="middle" fill="currentColor">L</text>
+          <rect x="520" y="88" width="76" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="558" y="108" text-anchor="middle" fill="currentColor">R</text>
+          <text x="360" y="146" font-size="12" font-weight="600" fill="currentColor" font-family="IBM Plex Sans">1 → 2</text>
+          <text x="360" y="166" font-size="11" fill="var(--ink-2)" font-family="IBM Plex Sans">in × gain × cos(pan) / sin(pan)</text>
+          <text x="360" y="184" font-size="11" fill="var(--ink-3)" font-family="IBM Plex Sans">constant power, centre = 0.707 both</text>
+        </g>
+
+        <g font-size="11" font-family="IBM Plex Mono, monospace">
+          <rect x="700" y="48" width="76" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="738" y="68" text-anchor="middle" fill="currentColor">L</text>
+          <rect x="700" y="88" width="76" height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="738" y="108" text-anchor="middle" fill="currentColor">R</text>
+          <line x1="776" y1="63" x2="856" y2="63" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar12)" color="var(--new)"/>
+          <line x1="776" y1="103" x2="856" y2="103" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar12)" color="var(--new)"/>
+          <rect x="860" y="48" width="76" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="898" y="68" text-anchor="middle" fill="currentColor">L</text>
+          <rect x="860" y="88" width="76" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="898" y="108" text-anchor="middle" fill="currentColor">R</text>
+          <text x="700" y="146" font-size="12" font-weight="600" fill="currentColor" font-family="IBM Plex Sans">n → n</text>
+          <text x="700" y="166" font-size="11" fill="var(--ink-2)" font-family="IBM Plex Sans">per-plane multiply</text>
+          <text x="700" y="184" font-size="11" fill="var(--ink-3)" font-family="IBM Plex Sans">pan is ignored</text>
+        </g>
+
+        <line x1="14" y1="214" x2="986" y2="214" stroke="currentColor" stroke-width="1" opacity=".2"/>
+        <text x="14" y="240" font-size="12.5" font-weight="600" fill="currentColor">Two things the old mixer got wrong</text>
+        <text x="14" y="262" font-size="12.5" fill="var(--ink-2)">1. It divided by 1/N. Guitar channels are uncorrelated, so their sum grows as √N — 1/N over-attenuates audibly, and two</text>
+        <text x="14" y="280" font-size="12.5" fill="var(--ink-2)">   sources came out quieter than one. 2. It counted sources that were connected but NULL, so one bus&apos;s level depended on</text>
+        <text x="14" y="298" font-size="12.5" fill="var(--ink-2)">   what was patched somewhere else. Both fixed; auto gain is now 1/√N, only counts live sources, and is a switch.</text>
+      </svg>
+    </div>
+    <figcaption><b>Width transitions and auto gain.</b> Every gain is also ramped toward its target once per
+    block with a one-pole filter — without that, every gain change zipper-clicks. It is the most commonly
+    omitted detail in a homebrew mixer.</figcaption>
+  </figure>
+
+  <div class="col">
+    <div class="note">
+      <p><b>My recommendation, which the switch exists to let you test.</b> Use auto gain to pick the
+      <em>default</em> gain of a newly created connection, and leave it off in normal operation. A bus whose
+      level changes because the user touched a <em>different</em> bus is baffling from the front panel, and
+      with FLOAT32 internally there is no clipping to protect against until the output conversion. Meters plus
+      a clip counter are the honest protection.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s13">
+  <p class="snum">13 — looper</p>
+  <h3 class="sh">Two lengths, four transports</h3>
+
+  <p class="col"><b>Looper identity is determined by plane, not by chain.</b> Planes 0–1 belong to looper 0,
+  planes 2–3 to looper 1, in every topology. Length is per looper pair; transport is per chain, and the two
+  chains of a pair run independently.</p>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 340" role="img" aria-label="In four-mono, four chains each take one recorder slot and four transports share two loop lengths; in two-stereo, two chains take two slots each and each owns one loop length.">
+        <text x="14" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="currentColor" letter-spacing="1.2">4 MONO</text>
+
+        <g font-size="11">
+          <rect x="14" y="40" width="150" height="34" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="89" y="62" text-anchor="middle" fill="currentColor">chain 0 · plane 0</text>
+          <rect x="14" y="80" width="150" height="34" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="89" y="102" text-anchor="middle" fill="currentColor">chain 1 · plane 1</text>
+          <rect x="14" y="120" width="150" height="34" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="89" y="142" text-anchor="middle" fill="currentColor">chain 2 · plane 2</text>
+          <rect x="14" y="160" width="150" height="34" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="89" y="182" text-anchor="middle" fill="currentColor">chain 3 · plane 3</text>
+        </g>
+
+        <text x="200" y="34" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">recorder slots</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="11">
+          <rect x="200" y="40" width="86" height="34" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="243" y="62" text-anchor="middle" fill="var(--new)">slot 0</text>
+          <rect x="200" y="80" width="86" height="34" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="243" y="102" text-anchor="middle" fill="var(--new)">slot 1</text>
+          <rect x="200" y="120" width="86" height="34" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="243" y="142" text-anchor="middle" fill="var(--new)">slot 2</text>
+          <rect x="200" y="160" width="86" height="34" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="243" y="182" text-anchor="middle" fill="var(--new)">slot 3</text>
+        </g>
+
+        <text x="308" y="34" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">transports · lengths</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="308" y="40" width="66" height="34" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="341" y="61" text-anchor="middle" fill="var(--new)">xport 0</text>
+          <rect x="308" y="80" width="66" height="34" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="341" y="101" text-anchor="middle" fill="var(--new)">xport 1</text>
+          <rect x="308" y="120" width="66" height="34" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="341" y="141" text-anchor="middle" fill="var(--new)">xport 2</text>
+          <rect x="308" y="160" width="66" height="34" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="341" y="181" text-anchor="middle" fill="var(--new)">xport 3</text>
+
+          <rect x="384" y="40" width="76" height="74" rx="3" fill="none" stroke="var(--new)" stroke-width="1.8"/>
+          <text x="422" y="72" text-anchor="middle" fill="var(--new)" font-weight="600">len 0</text>
+          <text x="422" y="90" text-anchor="middle" font-size="9.5" fill="var(--ink-3)">shared</text>
+          <rect x="384" y="120" width="76" height="74" rx="3" fill="none" stroke="var(--new)" stroke-width="1.8"/>
+          <text x="422" y="152" text-anchor="middle" fill="var(--new)" font-weight="600">len 1</text>
+          <text x="422" y="170" text-anchor="middle" font-size="9.5" fill="var(--ink-3)">shared</text>
+        </g>
+
+        <line x1="500" y1="14" x2="500" y2="240" stroke="currentColor" stroke-width="1" opacity=".18"/>
+
+        <text x="516" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="currentColor" letter-spacing="1.2">2 STEREO</text>
+
+        <g font-size="11">
+          <rect x="516" y="40" width="164" height="74" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="598" y="72" text-anchor="middle" fill="currentColor">chain 0 · planes 0,1</text>
+          <text x="598" y="90" text-anchor="middle" font-size="10" fill="var(--ink-3)">width 2</text>
+          <rect x="516" y="120" width="164" height="74" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="598" y="152" text-anchor="middle" fill="currentColor">chain 1 · planes 2,3</text>
+          <text x="598" y="170" text-anchor="middle" font-size="10" fill="var(--ink-3)">width 2</text>
+        </g>
+
+        <text x="700" y="34" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">slots</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="11">
+          <rect x="700" y="40" width="86" height="74" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="743" y="70" text-anchor="middle" fill="var(--new)">slot 0</text>
+          <text x="743" y="88" text-anchor="middle" fill="var(--new)">slot 1</text>
+          <rect x="700" y="120" width="86" height="74" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="743" y="150" text-anchor="middle" fill="var(--new)">slot 2</text>
+          <text x="743" y="168" text-anchor="middle" fill="var(--new)">slot 3</text>
+        </g>
+
+        <text x="806" y="34" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">transport · length</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="806" y="40" width="80" height="74" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="846" y="82" text-anchor="middle" fill="var(--new)">xport 0</text>
+          <rect x="806" y="120" width="80" height="74" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="846" y="162" text-anchor="middle" fill="var(--new)">xport 1</text>
+          <rect x="896" y="40" width="80" height="74" rx="3" fill="none" stroke="var(--new)" stroke-width="1.8"/>
+          <text x="936" y="76" text-anchor="middle" fill="var(--new)" font-weight="600">len 0</text>
+          <text x="936" y="94" text-anchor="middle" font-size="9.5" fill="var(--ink-3)">sole owner</text>
+          <rect x="896" y="120" width="80" height="74" rx="3" fill="none" stroke="var(--new)" stroke-width="1.8"/>
+          <text x="936" y="156" text-anchor="middle" fill="var(--new)" font-weight="600">len 1</text>
+          <text x="936" y="174" text-anchor="middle" font-size="9.5" fill="var(--ink-3)">sole owner</text>
+        </g>
+
+        <line x1="14" y1="240" x2="986" y2="240" stroke="currentColor" stroke-width="1" opacity=".2"/>
+        <text x="14" y="266" font-size="12.5" font-weight="600" fill="currentColor">The asymmetry to notice</text>
+        <text x="14" y="288" font-size="12.5" fill="var(--ink-2)">Recorder slots are <tspan font-weight="600" fill="currentColor">exactly saturated in every topology</tspan> — a tap consumes its chain&apos;s width, and widths sum to 4. Four chains</text>
+        <text x="14" y="306" font-size="12.5" fill="var(--ink-2)">with taps need exactly four slots, and so do two stereo chains. Loop LENGTHS are always 2, whatever the topology — so in</text>
+        <text x="14" y="324" font-size="12.5" fill="var(--ink-2)">4-mono four chains share two lengths, while in 2-stereo each chain owns one outright. That was your specification.</text>
+      </svg>
+    </div>
+    <figcaption><b>Both blocks scale with chain width, but their scarce resources do not scale the same
+    way.</b> The recorder's resource follows the topology exactly; the looper's is fixed at two regardless.</figcaption>
+  </figure>
+
+  <div class="col">
+    <p><b>Storage.</b> Four plane buffers of 15 s, packed 24-bit, in SDRAM bank 2 — 8.24 MiB of 16 MiB.
+    Packed 24-bit rather than FLOAT32 because float would cost 11.5 MiB and close the door on undo, which
+    needs a second buffer of the same size.</p>
+    <p><b>Length is tempo-derived:</b> <code>bars × Params_BarFrames()</code>. The maximum usable bar count
+    therefore depends on both BPM and time signature, and the GUI needs the same arithmetic to bound its
+    picker. Changing a pair's bar count while either of its transports is non-idle is refused rather than
+    applied — truncating audio playing on the other chain would be worse.</p>
+    <p><b>Tempo re-lock is a deliberate placeholder.</b> Each loop records <code>fRecordedBpm</code> and it is
+    written today; playback rate is hardcoded to 1.0. The field exists now specifically so loops and presets
+    saved before re-lock ships stay valid after it does — that is the only expensive part of adding it
+    later.</p>
+  </div>
+
+  <div class="tscroll">
+    <table>
+      <caption>what a topology change does to each kind of state</caption>
+      <thead>
+        <tr><th style="width:22%">State</th><th style="width:18%">On change</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="k">grid layout</td><td class="verdict" style="color:var(--new)">from the message</td>
+            <td>The audio side never invents or empties a layout. Merging chains is a UI decision, and the interface is the only place that knows what the user meant. But an effect whose width no longer matches is refused — see §09.</td></tr>
+        <tr><td class="k">effect audio state</td><td class="verdict" style="color:var(--old)">cleared</td>
+            <td>Planes get remapped between chains, so a plane's history belongs to a different signal than it did a moment ago.</td></tr>
+        <tr><td class="k">parameters</td><td class="verdict" style="color:var(--new)">preserved</td>
+            <td>Keyed by <code>[chain][type]</code>, so they follow the chain number. Note this is a <em>reinterpretation</em> — chain 1's settings now belong to a chain made of different planes.</td></tr>
+        <tr><td class="k">loop audio</td><td class="verdict" style="color:var(--new)">preserved</td>
+            <td>Buffers are per <em>plane</em> and planes never move.</td></tr>
+        <tr><td class="k">loop transports</td><td class="verdict" style="color:var(--warn)">stopped</td>
+            <td><b>A real bug you found.</b> Transports are per chain but buffers are per plane. Going 4-mono to 2-stereo, the transport recording plane 1 would suddenly have been advancing planes 2 and 3.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s14">
+  <p class="snum">14 — recorder</p>
+  <h3 class="sh">A tap that needs no arbitration</h3>
+
+  <div class="col">
+    <p>The recorder passes audio through unchanged and copies it into the stream sent to the interface over
+    SPI. A chain's recorder occupies the stream slots corresponding to its own planes — and because chain
+    widths always sum to <code>AUDIO_CH_QTY</code>, "a recorder in every chain" needs exactly
+    <code>REC_SLOT_QTY</code> slots in <em>every</em> topology. The map is a pure function of the topology, so
+    it cannot conflict and needs no arbitration.</p>
+
+    <p><b>The stream is fixed width.</b> Four slots are always transmitted, interleaved, with silence in
+    unused ones. Keeping the stride constant means the interface never reprograms its MDMA de-interleave
+    descriptor when the number of taps changes — only if the bit depth changes.</p>
+  </div>
+
+  <div class="tscroll">
+    <table>
+      <caption>recorder versus looper</caption>
+      <thead>
+        <tr><th style="width:20%"></th><th style="width:38%">Recorder</th><th>Looper</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="k">direction</td><td>audio → out of the chip</td><td>audio → memory → back into the chain</td></tr>
+        <tr><td class="k">affects signal</td><td>No. A tap must be inaudible — tested.</td><td>Yes. Playback is summed into the chain.</td></tr>
+        <tr><td class="k">at width 1</td><td>1 stream slot</td><td>1 plane buffer, 1 transport</td></tr>
+        <tr><td class="k">at width 2</td><td>2 consecutive slots</td><td>2 plane buffers under <em>one</em> transport, so L and R cannot drift apart</td></tr>
+        <tr><td class="k">scarce resource</td><td>4 slots — exactly saturated, never conflicts</td><td>2 lengths — fixed regardless of topology</td></tr>
+        <tr><td class="k">state</td><td>None, beyond a 1 KiB staging buffer in DTCM</td><td>Transport, position, length, recorded BPM + 8.24 MiB SDRAM</td></tr>
+        <tr><td class="k">tempo</td><td>None</td><td>Length is <code>bars × Params_BarFrames()</code></td></tr>
+        <tr><td class="k">who hears it</td><td>the SD card, via MDMA on the other chip</td><td>the player, immediately</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col">
+    <div class="note warn">
+      <p><strong>Cross-chip contract.</strong> Samples are <code>S32</code> carrying a 24-bit value, so the
+      interleave stride is <code>REC_SLOT_QTY × 4</code> bytes. The current <code>Recorder.c</code> on the
+      interface assumes 16-bit samples and an 8-byte stride — that has to change with this. The slot count
+      never changes, only the depth, so it is a one-time edit.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s15">
+  <p class="snum">15 — parameters</p>
+  <h3 class="sh">Addressing, tempo, and the preset blob</h3>
+
+  <div class="col">
+    <p>A parameter is addressed by <b>(chain, effect type, index)</b>. Because at most one instance of each
+    type exists per chain, that address is unique and computable — no allocator, no handle, no negotiation:</p>
+  </div>
+
+  <pre><code>g_aFxParam[nChain][eFxType][nIdx]        <span class="c">/* 4 × 22 × 8 × 8 B = 5 632 B, DTCM */</span></code></pre>
+
+  <div class="col">
+    <p>Reordering effects inside an FX block therefore does not disturb their settings, which is what a user
+    expects. Values are <b>always normalised 0..1</b> on the wire; the mapping to seconds, Hz or dB lives in
+    the effect that owns the parameter, never in the GUI — so adding an effect never requires a change on the
+    interface side.</p>
+
+    <h4>Tempo</h4>
+    <p>The convention both firmwares must agree on: <b>BPM defines the quarter-note duration, regardless of
+    time signature.</b> Bar length in quarter notes is <code>nBeatsPerBar × (4 / nBeatUnit)</code>.</p>
+    <ul class="plain">
+      <li>4/4 at 120 BPM → 4 × 1.0 × 0.5 s = <b>2.00 s</b></li>
+      <li>6/8 at 120 BPM → 6 × 0.5 × 0.5 s = <b>1.50 s</b> (six eighths = three quarters)</li>
+    </ul>
+    <p>A syncable parameter carries <code>bSync</code> and a <code>NOTE_DIV</code>. Resolution happens once
+    per block: <code>FxParam_TimeSec</code> returns the division against the current tempo, clamped to what
+    the effect can actually store — a whole note at 40 BPM is 6 s but the delay line is 4 s, so it clamps
+    rather than reading outside the buffer.</p>
+
+    <h4>Concurrency</h4>
+    <p>Written by the super-loop, read by the audio ISR, no lock. An aligned FLOAT32 store is atomic on
+    Cortex-M7, so a value is never seen half-written. A parameter update does write three fields
+    non-atomically, so for at most one block — 1.33 ms — the ISR can see a new value with the old division.
+    That is inaudible on a knob and not worth a seqlock.</p>
+
+    <h4>Presets</h4>
+    <p>The format is fixed now even though save/load is not implemented, because the expensive part of adding
+    it later is discovering that the stored data lacks a field. Magic, version, dimensions, the whole
+    <code>PROTO_CFG</code>, the parameter array, CRC-16. Round-trip tested, including rejection of a single
+    flipped bit.</p>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s16">
+  <p class="snum">16 — control link</p>
+  <h3 class="sh">Send state, not edits</h3>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 500" role="img" aria-label="The old path sent an FX_ADD command that performed pointer surgery inside the audio loop; the new path sends the whole configuration to the super-loop, which validates it and publishes a shadow grid with one pointer store.">
+        <defs>
+          <marker id="ar16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <text x="14" y="22" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--old)" letter-spacing="1.3">THEN — eight commands that edit a live graph</text>
+
+        <rect x="14" y="40" width="150" height="46" rx="4" fill="var(--old-soft)" stroke="var(--old)" stroke-width="1.3"/>
+        <text x="89" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">Interface</text>
+        <text x="89" y="77" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-3)">TouchGFX</text>
+
+        <line x1="164" y1="63" x2="256" y2="63" stroke="var(--old)" stroke-width="1.5" marker-end="url(#ar16)" color="var(--old)"/>
+        <text x="210" y="53" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--old)">FX_ADD</text>
+        <text x="210" y="80" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-3)">5 bytes, no CRC</text>
+
+        <rect x="256" y="40" width="164" height="46" rx="4" fill="var(--old-soft)" stroke="var(--old)" stroke-width="1.3"/>
+        <text x="338" y="60" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">circular DMA buf</text>
+        <text x="338" y="77" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--warn)">CPU writes into it</text>
+
+        <line x1="420" y1="63" x2="506" y2="63" stroke="var(--old)" stroke-width="1.5" marker-end="url(#ar16)" color="var(--old)"/>
+
+        <rect x="506" y="30" width="470" height="130" rx="5" fill="none" stroke="var(--warn)" stroke-width="1.5"/>
+        <text x="524" y="52" font-size="12.5" font-weight="600" fill="var(--warn)">inside AudioSys::update(), same 41.6 µs budget</text>
+        <text x="524" y="74" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor">updateGUI() → ~200 lines of pointer surgery</text>
+        <text x="524" y="93" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor">unplugNext / plugNext / unplugPrev / plugNext …</text>
+        <text x="524" y="115" font-size="11.5" fill="var(--ink-2)">no bounds check · no atomicity · NULL paths reachable</text>
+        <text x="524" y="134" font-size="11.5" fill="var(--ink-2)">a dropped byte desyncs the frame permanently — and a</text>
+        <text x="524" y="151" font-size="11.5" fill="var(--ink-2)">desynced command is still a VALID command</text>
+
+        <line x1="14" y1="196" x2="986" y2="196" stroke="currentColor" stroke-width="1" opacity=".2"/>
+
+        <text x="14" y="228" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600"
+              fill="var(--new)" letter-spacing="1.3">NOW — one message, validated off the audio path</text>
+
+        <rect x="14" y="250" width="150" height="46" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+        <text x="89" y="270" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">Interface</text>
+        <text x="89" y="287" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-3)">owns the UI model</text>
+
+        <line x1="164" y1="273" x2="262" y2="273" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar16)" color="var(--new)"/>
+        <text x="213" y="263" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--new)">PROTO_CFG</text>
+        <text x="213" y="290" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-3)">96 B, framed, CRC</text>
+
+        <rect x="262" y="250" width="158" height="46" rx="4" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.3"/>
+        <text x="341" y="270" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">ctrl_link ring</text>
+        <text x="341" y="287" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-3)">ISR writes, loop reads</text>
+
+        <line x1="420" y1="273" x2="506" y2="273" stroke="var(--new)" stroke-width="1.5" marker-end="url(#ar16)" color="var(--new)"/>
+
+        <rect x="506" y="230" width="470" height="132" rx="5" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.5"/>
+        <text x="524" y="252" font-size="12.5" font-weight="600" fill="var(--new)">Grid_Apply() — SUPER-LOOP, never the ISR</text>
+        <text x="524" y="275" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor">1. Validate()      structurally impossible → refuse</text>
+        <text x="524" y="294" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor">2. diff vs running, reset only ADDED effects</text>
+        <text x="524" y="313" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor">3. fill the shadow GRID</text>
+        <text x="524" y="332" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--new)" font-weight="600">4. pActive = pNew;   ← one aligned store</text>
+        <text x="524" y="353" font-size="11.5" fill="var(--ink-2)">on refusal the running graph is untouched and still playing</text>
+
+        <line x1="14" y1="392" x2="986" y2="392" stroke="currentColor" stroke-width="1" opacity=".2"/>
+
+        <text x="14" y="418" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="600" fill="currentColor">FRAME LAYOUT</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="11">
+          <rect x="14"  y="430" width="80"  height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="54"  y="450" text-anchor="middle" fill="currentColor">0xA5</text>
+          <rect x="98"  y="430" width="80"  height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="138" y="450" text-anchor="middle" fill="currentColor">0x5A</text>
+          <rect x="182" y="430" width="80"  height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="222" y="450" text-anchor="middle" fill="var(--new)">LEN</text>
+          <rect x="266" y="430" width="80"  height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="306" y="450" text-anchor="middle" fill="var(--new)">CMD</text>
+          <rect x="350" y="430" width="440" height="30" rx="3" fill="var(--new-soft)" stroke="var(--new)"/>
+          <text x="570" y="450" text-anchor="middle" fill="var(--new)">payload [LEN]</text>
+          <rect x="794" y="430" width="90"  height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="839" y="450" text-anchor="middle" fill="currentColor">CRC lo</text>
+          <rect x="888" y="430" width="90"  height="30" rx="3" fill="var(--surface-2)" stroke="var(--rule)"/>
+          <text x="933" y="450" text-anchor="middle" fill="currentColor">CRC hi</text>
+        </g>
+        <line x1="182" y1="470" x2="790" y2="470" stroke="var(--new)" stroke-width="1.2" opacity=".7"/>
+        <text x="486" y="488" text-anchor="middle" font-size="11" fill="var(--ink-2)">CRC-16/CCITT-FALSE covers LEN, CMD and payload — not the sync word</text>
+      </svg>
+    </div>
+    <figcaption><b>Send state, not edits.</b> The interface already owns the complete UI model, so having it
+    describe operations on a remote graph was doing the work twice and giving the two halves a chance to
+    disagree. 96 bytes is 8.3 ms at 115200 baud — far cheaper than the code it replaces.</figcaption>
+  </figure>
+
+  <div class="tscroll">
+    <table>
+      <caption>the command set — Shared/fx_protocol.h, PROTO_VERSION 2</caption>
+      <thead>
+        <tr><th style="width:26%">Command</th><th style="width:10%">Dir</th><th style="width:12%">Payload</th><th>What it does</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="k">PROTO_CMD_SET_CONFIG</td><td>→ audio</td><td class="mono num">96 B</td>
+            <td>The whole machine: topology, grid, FX slots, enable bits, mixer matrix, loop bars, tempo. Replaces all eight of the old mutation commands.</td></tr>
+        <tr><td class="k">PROTO_CMD_SET_PARAM</td><td>→ audio</td><td class="mono num">8 B</td>
+            <td>One parameter by (chain, type, index), with its sync mode and division.</td></tr>
+        <tr><td class="k">PROTO_CMD_SET_TEMPO</td><td>→ audio</td><td class="mono num">4 B</td>
+            <td>BPM ×10 and the time signature.</td></tr>
+        <tr><td class="k">PROTO_CMD_TRANSPORT</td><td>→ audio</td><td class="mono num">4 B</td>
+            <td>Looper stop / record / overdub / play / clear, per chain.</td></tr>
+        <tr><td class="k">PROTO_CMD_PING</td><td>→ audio</td><td class="mono num">0 B</td><td>Liveness.</td></tr>
+        <tr><td class="k">PROTO_CMD_ACK</td><td>→ interface</td><td class="mono num">8 B</td>
+            <td>Result code plus the committed recorder slot map. <b>The interface must wait for this before trusting the SPI stream layout.</b></td></tr>
+        <tr><td class="k">PROTO_CMD_TELEMETRY</td><td>→ interface</td><td class="mono num">48 B</td>
+            <td>Every 40 ms: CPU load and peak, overrun count, per-plane peak and RMS, loop positions and lengths, transport states, tuner fields.</td></tr>
+        <tr><td class="k">PROTO_CMD_PONG</td><td>→ interface</td><td class="mono num">0 B</td><td>Reply to PING.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pair">
+    <div class="card o">
+      <h5>Then</h5>
+      <ul>
+        <li>8 mutation commands, 5-byte unframed frames</li>
+        <li>graph edited from inside the audio loop</li>
+        <li><code>RxBuf[1] -= 3</code> — CPU writing into a live DMA buffer</li>
+        <li>GUI blocked: <code>while (!updateFlag);</code></li>
+        <li>no CRC, no resync, no bounds check</li>
+      </ul>
+    </div>
+    <div class="card n">
+      <h5>Now</h5>
+      <ul>
+        <li>1 state message + 3 small ones</li>
+        <li>graph built in the super-loop, swapped at a block boundary</li>
+        <li>payload copied out of the ring before use</li>
+        <li>nothing blocks; the ACK is asynchronous</li>
+        <li>sync word, length, CRC-16, resync on any error</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================================== -->
+<div class="part">
+  <p class="pn">Part IV</p>
+  <h2>Correspondence</h2>
+  <p>Where each piece of the two previous concepts went, and what came from them unchanged.</p>
+</div>
+
+<section id="s17">
+  <p class="snum">17 — the C++ concept</p>
+  <h3 class="sh">File by file</h3>
+
+  <div class="tscroll">
+    <table>
+      <caption>AudioController/Modules → AudioController_Claude</caption>
+      <thead>
+        <tr><th style="width:23%">Yours</th><th style="width:28%">Mine</th><th style="width:13%"></th><th>What changed</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="was">Module.hpp<br>class Module</td>
+          <td class="now">— dissolved —<br><span style="color:var(--ink-3)">fx_common.h holds only a contract</span></td>
+          <td class="verdict"><span class="tag gone">gone</span></td>
+          <td>Four jobs split four ways. See §01.</td>
+        </tr>
+        <tr>
+          <td class="was">virtual void process()=0</td>
+          <td class="now">FX_PROCESS_FN<br>g_aFxEntry[FX_TYPE_QTY]</td>
+          <td class="verdict"><span class="tag keep">kept</span></td>
+          <td>Still one function pointer — but one <code>const</code> table in flash, not a vptr per object. And the signature now <em>states</em> what may be read and written.</td>
+        </tr>
+        <tr>
+          <td class="was">prevModule / nextModule<br>plugNext / unplugPrev</td>
+          <td class="now">GRID.aSlot[chain][col]<br>GRID.aFxSlot[chain][slot]</td>
+          <td class="verdict"><span class="tag moved">replaced</span></td>
+          <td>Pointers → indices. Order is array order, so there is nothing to keep consistent.</td>
+        </tr>
+        <tr>
+          <td class="was">float output[STEREO]</td>
+          <td class="now">aPlane[4][64] in audio_sys.c</td>
+          <td class="verdict"><span class="tag moved">replaced</span></td>
+          <td>Buffers belong to the chain, planar, processed in place. Fixes the Amp-reads-its-own-output contradiction.</td>
+        </tr>
+        <tr>
+          <td class="was">Parameter.hpp<br>paramAlloc[] + allParamNum</td>
+          <td class="now">params.c<br>aFxParam[chain][type][idx]</td>
+          <td class="verdict"><span class="tag keep">kept</span></td>
+          <td><b>Your best idea.</b> Contiguous arena retained; the bump cursor deleted because the offset is computable.</td>
+        </tr>
+        <tr>
+          <td class="was">Mixer.hpp</td>
+          <td class="now">mixer.c + GRID.nMixerCol</td>
+          <td class="verdict"><span class="tag keep">kept</span></td>
+          <td>Promoted from "a thing beside the chains" to a grid column. Gains smoothed; 1/√N instead of 1/N; NULL sources no longer counted in the divisor.</td>
+        </tr>
+        <tr>
+          <td class="was">AudioSys::update()</td>
+          <td class="now">AudioSys_ProcessBlock()<br>+ Grid_Process()</td>
+          <td class="verdict"><span class="tag moved">split</span></td>
+          <td>I/O conversion and metering separated from graph traversal. Runs in an ISR, not a polled loop.</td>
+        </tr>
+        <tr>
+          <td class="was">AudioSys::updateGUI()<br><span style="color:var(--ink-3)">~200 lines</span></td>
+          <td class="now">Grid_Apply()<br><span style="color:var(--ink-3)">validate + publish</span></td>
+          <td class="verdict"><span class="tag gone">inverted</span></td>
+          <td>The single biggest deletion. See §16.</td>
+        </tr>
+        <tr>
+          <td class="was">AudioSys::includeModules()</td>
+          <td class="now">— none —</td>
+          <td class="verdict"><span class="tag gone">gone</span></td>
+          <td>Nothing to create. <code>AudioSys_Init()</code> only <em>initialises</em> what already exists at fixed addresses.</td>
+        </tr>
+        <tr>
+          <td class="was">GUIadapter.h/.c</td>
+          <td class="now">ctrl_link.c<br>Shared/fx_protocol.h</td>
+          <td class="verdict"><span class="tag moved">rewritten</span></td>
+          <td>Framed, CRC'd, resynchronising, non-blocking, HAL-free and therefore testable.</td>
+        </tr>
+        <tr>
+          <td class="was">MySAIadapter × 2<br>checkUpdate(a) || (b)</td>
+          <td class="now">audio_io.c</td>
+          <td class="verdict"><span class="tag moved">rewritten</span></td>
+          <td>All four SAI blocks were already synchronous to SAI1_A in your <code>sai.c</code>, so one interrupt drives everything and the short-circuit bug cannot be expressed.</td>
+        </tr>
+        <tr>
+          <td class="was">SysGlobals.h</td>
+          <td class="now">Config/audio_cfg.h<br>Shared/fx_defs.h</td>
+          <td class="verdict"><span class="tag moved">split</span></td>
+          <td>Split by <em>ownership</em>: what the interface must also know lives in <code>Shared/</code>, once.</td>
+        </tr>
+        <tr>
+          <td class="was">Handy.h<br><span style="color:var(--ink-3)">two divergent copies</span></td>
+          <td class="now">general.h <span style="color:var(--ink-3)">(SHIELD)</span></td>
+          <td class="verdict"><span class="tag gone">gone</span></td>
+          <td>Both copies were C++-only (<code>&lt;limits&gt;</code>, <code>using u8 =</code>), and one had an unbalanced paren that survived only because the macro was never used.</td>
+        </tr>
+        <tr>
+          <td class="was">Amp — a buffer holder<br>whose process() was never called</td>
+          <td class="now">fx_amp.c — gain, and pan only in stereo</td>
+          <td class="verdict"><span class="tag moved">clarified</span></td>
+          <td>The buffer-holding job now belongs to the plane array. And the Pan control that did nothing on a mono chain is gone — it exists only in <code>FX_AMP_S</code>.</td>
+        </tr>
+        <tr>
+          <td class="was">Overdrive::process<br><span style="color:var(--ink-3)">(drive+0.1)*10.0</span></td>
+          <td class="now">fx_overdrive.c</td>
+          <td class="verdict"><span class="tag moved">ported</span></td>
+          <td>Same curve, three bugs fixed: double promotion on every sample, <code>std::abs</code> on a float that would truncate to int in C, and a local array named <code>abs</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s18">
+  <p class="snum">18 — the C draft</p>
+  <h3 class="sh">The vtable, specifically</h3>
+
+  <p class="col">Your <code>AudioController_C</code> draft is where the interesting disagreement is, because
+  the compile errors are not the point — the shape is.</p>
+
+  <div class="pair">
+    <div class="card o">
+      <h5>Your module_vtable_t</h5>
+      <pre class="old" style="margin:0"><code>{
+  <span class="hl">process</span>,      <span class="c">/* polymorphic  */</span>
+  moduleInit,   <span class="c">/* same for all */</span>
+  plugNext,     <span class="c">/* same for all */</span>
+  plugPrev,     <span class="c">/* same for all */</span>
+  unplugNext,   <span class="c">/* same for all */</span>
+  unplugPrev    <span class="c">/* same for all */</span>
+}</code></pre>
+      <p style="margin-top:14px">Six entries. <b>Five are the same function for every module type.</b> Those
+      are not virtual functions — they are ordinary functions that happen to take a
+      <code>module_t*</code>.</p>
+    </div>
+    <div class="card n">
+      <h5>FX_ENTRY</h5>
+      <pre style="margin:0"><code>{
+  <span class="hl">pfProcess</span>,   <span class="c">/* polymorphic */</span>
+  <span class="hl">pfReset</span>      <span class="c">/* polymorphic */</span>
+}</code></pre>
+      <p style="margin-top:14px">Two entries, both genuinely per-type. <code>plugNext</code> and friends do
+      not exist because there are no links. Init is a plain call from
+      <code>AudioSys_Init()</code>, because a constructor cannot be virtual — you cannot dispatch through a
+      vtable you have not set yet.</p>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="note warn">
+      <p><strong>The trap that macro was setting.</strong> <code>_MODULE_VTABLE()</code> named
+      <code>plug_next</code>, <code>plug_prev</code>, <code>unplug_next</code>, <code>unplug_prev</code> — and
+      <code>Mixer.c</code> defined its own <code>static</code> functions with those exact names and
+      <em>different signatures</em>. Any use of the macro inside <code>Mixer.c</code> would have bound to the
+      mixer's versions. It compiles, it links, and it silently corrupts the graph. That is the cost of
+      hand-rolling the five things the compiler was doing for you.</p>
+    </div>
+  </div>
+
+  <div class="tscroll">
+    <table>
+      <caption>AudioController_C → AudioController_Claude</caption>
+      <thead>
+        <tr><th style="width:30%">Your draft</th><th style="width:26%">Mine</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="was">module_t super;<br><span style="color:var(--ink-3)">struct inheritance</span></td>
+          <td class="now">— none —</td>
+          <td>With state already static-per-plane and behaviour static-per-type, there is nothing left for a base struct to hold.</td>
+        </tr>
+        <tr>
+          <td class="was">self-&gt;vtable = _MODULE_VTABLE(...)</td>
+          <td class="now">g_aFxEntry[] in flash</td>
+          <td>Your version put a fresh copy of the table in <em>every instance</em>. A vtable is meant to be one shared read-only object — that was the guarantee C++ was giving you for free.</td>
+        </tr>
+        <tr>
+          <td class="was">self-&gt;vtable-&gt;moduleInit(self, …)</td>
+          <td class="now">Xxx_Init() — plain call</td>
+          <td>Requires the vtable to be valid before the object is initialised, and is not polymorphic anyway.</td>
+        </tr>
+        <tr>
+          <td class="was">static u32 allParamNum;<br><span style="color:var(--ink-3)">in Module.h</span></td>
+          <td class="now">— none —</td>
+          <td>A <code>static</code> in a header gives every <code>.c</code> its own private copy. No diagnostic, no crash — just silently wrong counts forever.</td>
+        </tr>
+        <tr>
+          <td class="was">include_modules()<br><span style="color:var(--ink-3)">stack-local modules</span></td>
+          <td class="now">static arrays in each effect</td>
+          <td>Every pointer stored into <code>self-&gt;modules[][]</code> dangled the instant the function returned. The one bug that would have made nothing work at all.</td>
+        </tr>
+        <tr>
+          <td class="was">mixer_vtable_t<br><span style="color:var(--ink-3)">copy of audio_sys_vtable</span></td>
+          <td class="now">mixer.c — plain functions</td>
+          <td>A mixer is not a module and does not need dispatch. Your comment at the top of <code>Mixer.h</code> already said this; the code had not caught up.</td>
+        </tr>
+        <tr>
+          <td class="was">m_id_t · p_id_t</td>
+          <td class="now">FX_TYPE · per-effect param enums<br><span style="color:var(--ink-3)">in Shared/fx_defs.h</span></td>
+          <td><b>Kept, and promoted.</b> Both firmwares now compile one definition, so they cannot disagree about what parameter 2 of Chorus is.</td>
+        </tr>
+        <tr>
+          <td class="was">update_GUI() { /* TODO */ }</td>
+          <td class="now">Grid_Apply + ctrl_link</td>
+          <td>The empty TODO was the hardest part of the design, and inverting it is what made it small.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s19">
+  <p class="snum">19 — provenance</p>
+  <h3 class="sh">What came from you, unchanged</h3>
+
+  <p class="col">Worth being explicit about, because the rearrangement can make it look like more was
+  discarded than actually was:</p>
+
+  <ul class="plain col">
+    <li><b>The contiguous parameter arena.</b> Pulling parameters out of the objects into one block was the
+    single best structural idea in the C++ design. It is your preset format, your MDMA target and your GUI
+    address space, all for free.</li>
+    <li><b>The mixer as a routing matrix</b> rather than another node in the chain. Correct instinct; I only
+    moved it into a column.</li>
+    <li><b>Preallocate everything once, never allocate during audio.</b> Your <code>includeModules()</code>
+    ran once from <code>main</code> and after that <code>FX_ADD</code> only relinked. That discipline is
+    right — I just removed the last allocation too.</li>
+    <li><b>Hardware adapters separating DSP from HAL.</b> Already plain C, already the right seam. It became
+    the <code>Platform/</code> boundary that makes the host test build possible.</li>
+    <li><b>The grid model, and both invariants that make the memory design work.</b> Widths summing to 4 and
+    one-of-each-type-per-chain are yours. They are the reason there is no allocator.</li>
+    <li><b>Your description of the grid edges</b> — "then mixer, then all else" — which turned out to be the
+    engine, and is simpler than the pre/post-chain structure I had carried for three rounds.</li>
+    <li><b>The mono/stereo split itself.</b> You were right that a stereo delay is a different effect, not a
+    wider one. It cost 11 extra ids and zero extra memory, and it deleted a whole category of "this parameter
+    does nothing right now".</li>
+    <li><b>Two bugs you found by asking questions:</b> loop transports surviving a plane remap, and the
+    absence of any declared width behaviour at all.</li>
+  </ul>
+</section>
+
+
+<!-- =========================================================================== -->
+<div class="part">
+  <p class="pn">Part V</p>
+  <h2>Practical</h2>
+  <p>How to extend it, what has to happen before it runs on hardware, and what is still undecided.</p>
+</div>
+
+<section id="s20">
+  <p class="snum">20 — extending</p>
+  <h3 class="sh">Adding an effect</h3>
+
+  <div class="col">
+    <ol class="plain">
+      <li><b>Decide the two variants first.</b> Before writing any DSP, answer: what does the stereo variant
+      have that the mono one cannot? If the honest answer is "nothing, it just runs twice", write only the
+      mono one.</li>
+      <li>Copy <code>fx_template.c</code> / <code>.h</code>, rename <code>FxTemplate_*</code> to
+      <code>FxMyEffectM_*</code> and <code>FxMyEffectS_*</code>.</li>
+      <li>In <code>Shared/fx_defs.h</code>: append <code>FX_MYEFFECT_M</code> and <code>FX_MYEFFECT_S</code>
+      in that order, mono at an <b>even</b> id (<code>FX_VARIANT_FOR_WIDTH</code> depends on it), without
+      renumbering anything; bump <code>FX_TYPE_QTY</code> by two; add both parameter index enums.</li>
+      <li>In <code>Shared/fx_defs.c</code>: both descriptor arrays and both rows, with <code>nWidth</code> 1
+      and 2 and the <b>same display name</b>.</li>
+      <li><b>Copy both <code>fx_defs</code> files to the interface project.</b> They are duplicated on
+      purpose and must stay byte-identical.</li>
+      <li><code>Modules/params.c</code>: two rows in <code>aDefaultNorm</code>.</li>
+      <li><code>Modules/Effects/fx_registry.c</code>: two rows.</li>
+      <li>If it needs a delay line, declare <b>one</b> static array indexed by plane and let both variants
+      share it — see <code>fx_delay.c</code>. Add its size to the budget in <code>mem_map.h</code> so the
+      static assertion keeps covering the real footprint.</li>
+      <li>Add a test.</li>
+    </ol>
+
+    <h4>The five rules inside a process function</h4>
+    <ol class="plain">
+      <li><b>Process in place.</b> <code>apPlane[p]</code> holds the input on entry and must hold the output
+      on exit.</li>
+      <li><b>State is indexed by plane, parameters by chain.</b> There is no instance object and nothing is
+      allocated.</li>
+      <li><b>Know your width at compile time.</b> A mono effect touches <code>apPlane[0]</code>; a stereo
+      effect touches both. The grid guarantees the chain matches, so there is no runtime width branch.</li>
+      <li><b>Resolve parameters once per block</b>, not per sample — that is most of why block processing is
+      fast.</li>
+      <li><b>Smooth anything the user can turn</b> that multiplies the signal.</li>
+    </ol>
+    <p>And one prohibition: no HAL, no <code>malloc</code>, no <code>printf</code>, no float literal without
+    an <code>f</code>.</p>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s21">
+  <p class="snum">21 — bring-up</p>
+  <h3 class="sh">Before this runs on hardware</h3>
+
+  <div class="col">
+    <ol class="plain">
+      <li><b>Linker script.</b> <code>.dtcm</code> and <code>.itcm</code> are <code>(NOLOAD)</code> with no
+      input-section patterns in <code>STM32H743VITX_FLASH.ld</code>, so objects land there only via GNU ld's
+      orphan-merge-by-name rule and get <b>neither the .data copy nor the .bss zero fill</b>. Every static
+      here is garbage until <code>AudioSys_Init()</code> runs — which is exactly why that function exists and
+      initialises everything explicitly. In the old C++ project this was hidden by global constructors, and it
+      is the single most likely way a C++→C port fails mysteriously. <code>.itcm</code> needs
+      <code>AT&gt; FLASH</code> plus a copy loop in <code>Reset_Handler</code> before any code goes there. Add
+      <code>.sdram_fx</code> and <code>.sdram_loop</code> output sections for the two banks.</li>
+      <li><b><code>FPSCR.FZ</code> at boot.</b> One line. Reverb and delay tails decay into denormal range,
+      and denormals can cost 10–100× — a CPU spike that only appears when the room goes quiet.</li>
+      <li><b>MPU.</b> Keep <code>RAM_D1_DMA</code> non-cacheable. Map both SDRAM banks write-through, no
+      write-allocate: delay lines are streamed with no reuse, so write-allocate only buys a
+      read-for-ownership on data that is never read back.</li>
+      <li><b>SAI.</b> All four blocks are already synchronous to SAI1 block A, so one interrupt drives
+      everything and SAI2's callbacks stay unused. Move to
+      <code>SAI_PROTOCOL_DATASIZE_24BIT</code> with word-width DMA.</li>
+      <li><b>Build flags.</b> <code>-O2</code> or <code>-O3</code> on the DSP files, not <code>-Os</code>.
+      <code>-Wdouble-promotion</code> is not optional.</li>
+      <li><b>Interface side.</b> <code>Recorder.c</code> de-interleaves assuming 16-bit samples on an 8-byte
+      stride; the stream here is <code>S32</code> carrying 24 bits, so the stride is
+      <code>REC_SLOT_QTY × 4</code>. Copy <code>fx_defs.*</code>, <code>fx_protocol.h</code> and
+      <code>fx_crc.*</code> across in the same commit.</li>
+      <li><b>SDRAM timing.</b> CAS 2 at 120 MHz is aggressive for a W9812G6JH. It evidently works on the
+      interface board, but the audio board has different trace lengths, and SDRAM marginality shows up as rare
+      bit errors in delay tails — faint crackles, miserable to diagnose. Run a memory test at temperature
+      before trusting it.</li>
+    </ol>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s22">
+  <p class="snum">22 — undecided</p>
+  <h3 class="sh">Calls I made that you may want to change</h3>
+
+  <div class="tscroll">
+    <table>
+      <caption>open decisions</caption>
+      <thead>
+        <tr><th style="width:26%">Decision</th><th style="width:20%">What I chose</th><th>The alternative, and why I did not</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="k">width mismatch</td><td>refuse the config</td>
+            <td>Auto-clear the chain. I did not, because a preset carries a topology <em>and</em> a matching layout, so auto-clearing would wipe every preset load. Say the word and I will make the audio side blank width-changed chains itself.</td></tr>
+        <tr><td class="k">auto gain</td><td>1/√N, switchable, off by default in spirit</td>
+            <td>Live 1/N, as before. A bus whose level changes because the user touched a <em>different</em> bus is baffling. My recommendation is to use it for the default gain of a new connection only.</td></tr>
+        <tr><td class="k">loop length while running</td><td>refused</td>
+            <td>Truncate the audio playing on the other chain of the pair. Worse.</td></tr>
+        <tr><td class="k">loop audio on topology change</td><td>kept</td>
+            <td>Clear it. Keeping it means two mono loops of equal length merge into one stereo loop, and a stereo loop splits into its L and R. That falls out of indexing by plane — decide whether you want it.</td></tr>
+        <tr><td class="k">re-adding an effect</td><td>keeps its old parameters</td>
+            <td>Reset to defaults. <code>Params_ResetFx</code> exists for an explicit "reset effect".</td></tr>
+        <tr><td class="k">output stage</td><td>hard clamp + clip counter</td>
+            <td>Soft clip. A soft clip with unity small-signal gain still bends the whole curve, colouring clean signals.</td></tr>
+        <tr><td class="k">recorder stream</td><td>fixed 4 slots, silence in unused</td>
+            <td>Variable width. Fixed stride means the interface never reprograms MDMA when the tap count changes.</td></tr>
+        <tr><td class="k">tuner</td><td>should be an effect type, not a service</td>
+            <td>Always-on global. As a module it gets budgeted, metered and switched off like everything else. Telemetry fields exist and read zero.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="big">
+
+<section id="s23">
+  <p class="snum">23 — the code</p>
+  <h3 class="sh">File map and reading order</h3>
+
+  <figure>
+    <div class="figscroll">
+      <svg viewBox="0 0 1000 330" role="img" aria-label="Four layers: Config and Shared at the base, Modules above them containing the DSP, Platform containing the only HAL-aware files, and Test building everything below Platform on a PC.">
+        <defs>
+          <marker id="ar23" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <rect x="14" y="30" width="700" height="60" rx="5" fill="var(--surface-2)" stroke="var(--rule)"/>
+        <text x="30" y="52" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="currentColor">Platform/</text>
+        <text x="30" y="72" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">audio_io.c  ← the ONLY HAL-aware file · ctrl_link.c · main_example.c</text>
+
+        <rect x="14" y="106" width="700" height="94" rx="5" fill="var(--new-soft)" stroke="var(--new)" stroke-width="1.8"/>
+        <text x="30" y="128" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--new)">Modules/</text>
+        <text x="30" y="148" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">grid.c · fxblock.c · mixer.c · looper.c · recorder.c · params.c · audio_sys.c</text>
+        <text x="30" y="168" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">Effects/  fx_common · fx_registry · fx_amp · fx_delay · fx_overdrive · fx_tremolo</text>
+        <text x="30" y="188" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">          fx_stubs · fx_template</text>
+
+        <rect x="14" y="216" width="340" height="72" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="30" y="238" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="currentColor">Config/</text>
+        <text x="30" y="258" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">audio_cfg.h</text>
+        <text x="30" y="276" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">mem_map.h</text>
+
+        <rect x="374" y="216" width="340" height="72" rx="5" fill="var(--surface)" stroke="var(--new)" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="390" y="238" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="var(--new)">Shared/  ← duplicated to the interface</text>
+        <text x="390" y="258" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">fx_defs.h/.c · fx_protocol.h</text>
+        <text x="390" y="276" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">fx_crc.h/.c</text>
+
+        <rect x="740" y="106" width="246" height="182" rx="5" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="756" y="128" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="currentColor">Test/</text>
+        <text x="756" y="150" font-size="11.5" fill="var(--ink-2)">Builds everything below</text>
+        <text x="756" y="168" font-size="11.5" fill="var(--ink-2)">Platform on a PC.</text>
+        <text x="756" y="196" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">test_protocol.c</text>
+        <text x="756" y="214" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">test_engine.c</text>
+        <text x="756" y="232" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">test_effects.c</text>
+        <text x="756" y="256" font-size="11.5" font-weight="600" fill="var(--new)">89 268 checks</text>
+        <text x="756" y="274" font-size="11.5" fill="var(--ink-3)">0 failures · 0 warnings</text>
+
+        <line x1="364" y1="216" x2="364" y2="204" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar23)" opacity=".5"/>
+        <line x1="364" y1="106" x2="364" y2="94" stroke="currentColor" stroke-width="1.3" marker-end="url(#ar23)" opacity=".5"/>
+        <line x1="736" y1="150" x2="720" y2="150" stroke="var(--new)" stroke-width="1.4" marker-end="url(#ar23)" color="var(--new)"/>
+
+        <line x1="14" y1="306" x2="986" y2="306" stroke="currentColor" stroke-width="1" opacity=".2"/>
+        <text x="14" y="326" font-size="12.5" fill="var(--ink-2)">Nothing under <tspan font-family="IBM Plex Mono, monospace" font-weight="600" fill="currentColor">Modules/</tspan> or <tspan font-family="IBM Plex Mono, monospace" font-weight="600" fill="currentColor">Shared/</tspan> includes a HAL header. That is what makes the host build possible, and it is worth keeping.</text>
+      </svg>
+    </div>
+    <figcaption><b>Dependencies point downward only.</b> The dashed box is duplicated verbatim into the
+    interface project — the one coupling that is deliberate.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h4>Six files, in this order</h4>
+    <p>Rather than 7 800 lines, read these and you have the whole design:</p>
+    <ol class="plain">
+      <li><code>Modules/Effects/fx_common.h</code> — the contract. One page. Everything else obeys it.</li>
+      <li><code>Shared/fx_defs.h</code> — the pool, the widths, the shared dimensions.</li>
+      <li><code>Modules/grid.h</code> — the model, the invariants, how a config change is applied.</li>
+      <li><code>Modules/grid.c</code>, <code>Grid_Process()</code> at the bottom — the engine, 30 lines.</li>
+      <li><code>Config/mem_map.h</code> — why there is no allocator, with the arithmetic.</li>
+      <li><code>Modules/Effects/fx_delay.c</code> — one real effect, both variants, using every part of the
+      design.</li>
+    </ol>
+    <p>Then <code>Shared/fx_protocol.h</code> when you start on the interface side, because that file is the
+    contract between the two chips.</p>
+  </div>
+
+  <footer>
+    <p>Everything here describes <code>AudioController/AudioController_Claude</code> as it stands. The DSP
+    layer builds and runs on a PC — 89 268 checks, 0 failures, 0 warnings at <code>-Wall -Wextra
+    -Wdouble-promotion -Wfloat-conversion -Wshadow -Wcast-align</code>.
+    <code>Platform/audio_io.c</code> is the one file that has never been compiled, because it is the only one
+    that talks to the HAL.</p>
+  </footer>
+</section>
+
+</div>
