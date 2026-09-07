@@ -4,3 +4,6 @@
 [submodule "WIP/FXcursion_Audio_SHIELD/SystemSW"]
 	path = WIP/FXcursion_Audio_SHIELD/SystemSW
 	url = https://github.com/RATsynthesizers/SystemSW.git
+[submodule "WIP/VST_test_RAT/_depsJUCE"]
+	path = WIP/VST_test_RAT/_depsJUCE
+	url = https://github.com/juce-framework/JUCE.git
