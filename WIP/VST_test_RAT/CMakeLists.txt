@@ -25,11 +25,11 @@ set(CMAKE_C_STANDARD 11)
 # The firmware tree. Everything audio comes from there, nothing is copied.
 set(FW "${CMAKE_CURRENT_SOURCE_DIR}/../FXcursion_Audio_SHIELD")
 
-if(NOT EXISTS "${FW}/Shared/fx_defs.c")
+if(NOT EXISTS "${FW}/SystemSW/Lib/InterComProtocol/fx_defs.c")
     message(FATAL_ERROR "Cannot find the audio firmware at ${FW}")
 endif()
 
-add_subdirectory(_deps/JUCE)
+add_subdirectory(_depsJUCE)
 
 juce_add_plugin(VST_test_RAT
     COMPANY_NAME        "RAT Synthesizers"
@@ -52,7 +52,7 @@ target_sources(VST_test_RAT PRIVATE
     Source/FxUnits.cpp
 
     # ---- the firmware, verbatim ----------------------------------------------
-    ${FW}/Shared/fx_defs.c
+    ${FW}/SystemSW/Lib/InterComProtocol/fx_defs.c
     ${FW}/ApplicationSW/AudioEngine/Effects/fx_common.c
     ${FW}/ApplicationSW/AudioEngine/Effects/fx_registry.c
     ${FW}/ApplicationSW/AudioEngine/Effects/fx_amp.c
@@ -67,7 +67,7 @@ target_sources(VST_test_RAT PRIVATE
 
 target_include_directories(VST_test_RAT PRIVATE
     ${FW}/Config
-    ${FW}/Shared
+    ${FW}/SystemSW/Lib/InterComProtocol
     ${FW}/ApplicationSW/AudioEngine
     ${FW}/Test/host)               # stand-in for SystemSW/Include, as the unit tests use
 
@@ -111,12 +111,12 @@ target_sources(FxBenchLoadTest PRIVATE
     Source/FxUnits.cpp
     # The firmware's own mapping functions, so the readout can be compared
     # against what the DSP computes rather than trusted.
-    ${FW}/Shared/fx_defs.c
+    ${FW}/SystemSW/Lib/InterComProtocol/fx_defs.c
     ${FW}/ApplicationSW/AudioEngine/Effects/fx_common.c)
 
 target_include_directories(FxBenchLoadTest PRIVATE
     ${FW}/Config
-    ${FW}/Shared
+    ${FW}/SystemSW/Lib/InterComProtocol
     ${FW}/ApplicationSW/AudioEngine
     ${FW}/Test/host
     Source)
@@ -150,7 +150,7 @@ target_sources(FxBenchUiTest PRIVATE
     Source/FxHost.cpp
     Source/FxUnits.cpp
 
-    ${FW}/Shared/fx_defs.c
+    ${FW}/SystemSW/Lib/InterComProtocol/fx_defs.c
     ${FW}/ApplicationSW/AudioEngine/Effects/fx_common.c
     ${FW}/ApplicationSW/AudioEngine/Effects/fx_registry.c
     ${FW}/ApplicationSW/AudioEngine/Effects/fx_amp.c
@@ -165,7 +165,7 @@ target_sources(FxBenchUiTest PRIVATE
 
 target_include_directories(FxBenchUiTest PRIVATE
     ${FW}/Config
-    ${FW}/Shared
+    ${FW}/SystemSW/Lib/InterComProtocol
     ${FW}/ApplicationSW/AudioEngine
     ${FW}/Test/host
     Source)
