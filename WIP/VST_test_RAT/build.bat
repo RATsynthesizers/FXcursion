@@ -9,10 +9,11 @@ rem ============================================================================
 setlocal
 cd /d "%~dp0"
 
-if not exist "_deps\JUCE\CMakeLists.txt" (
+if not exist "_depsJUCE\CMakeLists.txt" (
     echo.
     echo JUCE is missing. From this folder:
-    echo   git clone --depth 1 --branch 8.0.4 https://github.com/juce-framework/JUCE.git _deps\JUCE
+    echo   git clone --depth 1 --branch 8.0.4 https://github.com/juce-framework/JUCE.git _depsJUCE
+    pause
     echo.
     exit /b 1
 )
