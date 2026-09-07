@@ -1,9 +1,6 @@
-[submodule "FXcursion_Interface_SHIELD/SystemSW"]
-	path = FXcursion_Interface_SHIELD/SystemSW
+[submodule "WIP/FXcursion_Interface_SHIELD/SystemSW"]
+	path = WIP/FXcursion_Interface_SHIELD/SystemSW
 	url = https://github.com/RATsynthesizers/SystemSW.git
-[submodule "FXcursion_Audio_SHIELD/SystemSW"]
-	path = FXcursion_Audio_SHIELD/SystemSW
+[submodule "WIP/FXcursion_Audio_SHIELD/SystemSW"]
+	path = WIP/FXcursion_Audio_SHIELD/SystemSW
 	url = https://github.com/RATsynthesizers/SystemSW.git
-[submodule "VST_test_RAT/SystemSW"]
-	path = FXcursion_Audio_SHIELD/_depsJUCE
-	url = https://github.com/juce-framework/JUCE.git
