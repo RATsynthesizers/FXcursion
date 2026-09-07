@@ -78,10 +78,10 @@ Include paths therefore use `${workspace_loc:/${ProjName}/...}` rather than
 
 There are also host test suites that build for the PC and exclude anything
 touching the HAL, so a green run there says nothing about whether the firmware
-compiles — build in the IDE for that:
+compiles — build in the IDE for that (or GIT Bash in Windows directory):
 
 ```
-cmake -S TestBenchmarks/FXcursion_Audio_SHIELD/Tests -B /tmp/at && cmake --build /tmp/at
+cmake -S WIP/FXcursion_Audio_SHIELD/Tests -B /tmp/at && cmake --build /tmp/at
 ```
 
 Building the firmware from the command line (or other IDEs) might be possible,
