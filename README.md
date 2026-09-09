@@ -1,27 +1,34 @@
 # FXcursion
 
-A guitar processor based on STM32H743VITX. Currently in prototype phase.
+A guitar processor based on STM32H743ZITx. Currently in prototype phase.
 
 ## Features
 
-<img src="https://user-images.githubusercontent.com/1298948/232513645-18dd9126-a2e6-42c4-89a1-5d45171cd0a9.png" alt="FXcursion render" width="50%" align="right" />
+<img width="50%" alt="pedal6 (4_black)" src="https://github.com/user-attachments/assets/a2440b81-508c-4d2c-a7ce-e9dfec20f377" align="right"/>
 
-- **A powerful mixer with 3 stereo inputs and outputs.** \
+- **A flexible mixer with 4 mono/2 stereo inputs and outputs.** \
   Easily integrate your guitar with other instruments and equipment.
 
-- **Built-in looper and recording capabilities.** \
-	Capture your musical ideas on the spot and save them to an SD-card.
+- **Built-in multitreack looper and recording capabilities.** \
+	Capture your musical ideas on the spot and save them to an SD-card, .  	
+  stay on the beat with a dedicated LED indication for the Looper.
 
-- **Dynamic effects chain.** \
+- **Modular effects chain.** \
 	Arrange reverb, chorus, distortion, flanger, and more effects in any order
-  you choose.
+  you choose - for each input or their mix. Place Recorder, Looper, FX chain,
+  Mixer and Monitor blocks in any sequence you need.
 
 - **Intuitive interface that's out of your way.** \
 	Easily adjust parameters and fine-tune your sound while staying focused on
-  your music.
+  your music. Different sound routing options to fit all scenarios, adjustable
+  and saved as presets. \
+  Thought-out navigation with knobs and buttons \
+  made both for nerds and for those who like their gear simple.
 
-- **Separate visualization display** that shows your current waveform and
-  preset names.
+- **Connectivity without compromise** \
+  	Four combined XLR/TRS inputs with phantom power, full-sized MIDI In|Out|Thru ports,
+  two external pedal/switch connectors, USB Type-C for audio streaming, file browsing
+  and charging, four mono/differential TRS outputs. 
 
 
 ## Getting started
