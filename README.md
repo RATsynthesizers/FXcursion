@@ -1,6 +1,6 @@
 # FXcursion
 
-A guitar processor based on STM32H743ZITx. Currently in prototype phase.
+A guitar processor based on STM32H743ZITx. Currently in a prototype phase - a lot of things were tested separately, but now we work on bringing everything together, including numerous hardware prototypes.
 
 ## Features
 
