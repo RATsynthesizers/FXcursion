@@ -9,7 +9,7 @@ A guitar processor based on STM32H743ZITx. Currently in a prototype phase - a lo
 - **A flexible mixer with 4 mono/2 stereo inputs and outputs.** \
   Easily integrate your guitar with other instruments and equipment.
 
-- **Built-in multitreack looper and recording capabilities.** \
+- **Built-in multitrack looper and recording capabilities.** \
 	Capture your musical ideas on the spot and save them to an SD-card, .  	
   stay on the beat with a dedicated LED indication for the Looper.
 
