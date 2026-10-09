@@ -103,8 +103,8 @@ Hardware designs are availible at https://github.com/RATsynthesizers/FXcursion-H
 
 ## Docs
 
-Documentation currently lives in the
-[wiki](https://github.com/Predtech4/ProtoStack_H743VI_V0.2/wiki).
+~Documentation currently lives in the
+[wiki](https://github.com/Predtech4/ProtoStack_H743VI_V0.2/wiki).~
 
 
 ## Sponsors
